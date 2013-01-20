@@ -1,0 +1,105 @@
+/*
+Copyright (c) 2009, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.8.0r4
+*/
+.yui-overlay,.yui-panel-container {
+	visibility: hidden;
+	position: absolute;
+	z-index: 2;
+}
+
+.yui-panel {
+	position: relative;
+}
+
+.yui-panel-container form {
+	margin: 0;
+}
+
+.mask {
+	z-index: 1;
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.yui-override-padding {
+	padding: 0 !important;
+}
+
+.yui-panel-container .container-close {
+	overflow: hidden;
+	text-indent: -10000em;
+	text-decoration: none;
+}
+
+
+.yui-skin-sam .mask {
+	background-color: #000;
+	opacity: .25;
+	filter: alpha(opacity = 25);
+}
+
+
+.yui-skin-sam .yui-panel .bd,.yui-skin-sam .yui-panel .ft {
+	background-color: #F2F2F2;
+}
+
+.yui-skin-sam .yui-panel .hd {
+	padding: 0 10px;
+	font-size: 93%;
+	line-height: 2; *
+	line-height: 1.9;
+	font-weight: bold;
+	color: #000;
+	background: url(sprite.png) repeat-x 0
+		-200px;
+}
+
+.yui-skin-sam .yui-panel .bd {
+	padding: 10px;
+}
+
+.yui-skin-sam .yui-panel .ft {
+	border-top: solid 1px #808080;
+	padding: 5px 10px;
+	font-size: 77%;
+}
+
+.yui-skin-sam .container-close {
+	position: absolute;
+	top: 5px;
+	right: 6px;
+	width: 25px;
+	height: 15px;
+	background: url(sprite.png) no-repeat 0
+		-300px;
+	cursor: pointer;
+}
+
+
+.yui-skin-sam .yui-panel-container.shadow .underlay {
+	position: absolute;
+	top: 2px;
+	left: -3px;
+	right: -3px;
+	bottom: -3px; *
+	top: 4px; *
+	left: -1px; *
+	right: -1px; *
+	bottom: -1px;
+	_top: 0;
+	_left: 0;
+	_right: 0;
+	_bottom: 0;
+	_margin-top: 3px;
+	_margin-left: -1px;
+	background-color: #000;
+	opacity: .12;
+	filter: alpha(opacity = 12);
+}
