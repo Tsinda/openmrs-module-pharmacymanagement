@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,7 +48,7 @@ public class DrugStoreFormController extends AbstractController {
 		DrugOrderService service = Context.getService(DrugOrderService.class);
 		ConceptService cs = Context.getConceptService();
 		Collection<ConceptAnswer> css = null;
-
+		
 		// Reference Data
 		drugs = Context.getConceptService().getAllDrugs();
 		List<Location> locations = locationService.getAllLocations();
@@ -168,11 +169,15 @@ public class DrugStoreFormController extends AbstractController {
 				mav.addObject("msg", "pharmacymanagement.drugorder.save");				
 			} 
 		}
-
-		map.put("drugs", drugMap);
-
+		
+		SortedSet<Map.Entry<Integer, String>> sortedDrugs = Utils.SortMapValues(drugMap);
+		List<ConceptAnswer> consumables = new ArrayList<ConceptAnswer>(css);
+		
+		List<ConceptAnswer> sortedConsumable = Utils.sortConsumable(consumables);
+		
+		map.put("drugs", sortedDrugs);
 		mav.addObject("products", products);
-		mav.addObject("css", css);
+		mav.addObject("css", Utils.sortConsumable(consumables));
 		mav.addAllObjects(map);
 		mav.addObject("locations", locations);
 		mav.addObject("dftLoc", dftLoc);
