@@ -11,7 +11,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -637,7 +640,7 @@ public class Utils {
 		return consumableDispense;
 	}
 	
-	private static Comparator<Object> DRUG_RELATED_COMPARATOR = new Comparator<Object>() {
+	private static Comparator<Object> OPENMRS_OBJECT_COMPARATOR = new Comparator<Object>() {
 		  // This is where the sorting happens.
 		  public int compare(Object obj1, Object obj2) {
 			  int compareInt = 0;
@@ -647,9 +650,25 @@ public class Utils {
 			  else if(obj1 instanceof Drug && obj2 instanceof Drug)
 				  compareInt = ((Drug) obj1).getName().toLowerCase().compareTo(((Drug) obj2).getName().toLowerCase());
 			  
+			  else if(obj1 instanceof ConceptAnswer && obj2 instanceof ConceptAnswer)
+				  compareInt = ((ConceptAnswer) obj1).getAnswerConcept().getName().getName().toLowerCase().compareTo(((ConceptAnswer) obj2).getAnswerConcept().getName().getName().toLowerCase());
+			  
 			  return compareInt;
 		  }
 	};
+	
+	private static Comparator<Map.Entry<Integer, String>> comparator = new Comparator<Map.Entry<Integer, String>>() {
+		public int compare(Map.Entry<Integer, String> obj1, Map.Entry<Integer, String> obj2) {
+			// do comparing on values first, keys second
+			return obj1.getValue().toLowerCase().compareTo(obj2.getValue().toLowerCase());
+		}
+	};
+	
+	public static SortedSet<Map.Entry<Integer, String>> SortMapValues (Map<Integer, String> map) {
+		SortedSet<Map.Entry<Integer, String>> entries = new TreeSet<Map.Entry<Integer, String>>(comparator);
+		entries.addAll(map.entrySet());
+		return entries;
+	}
 	
 	public static List<Concept> getMedsets(List<Concept> medset) {
 		  List<Concept> sortedMedset = new ArrayList<Concept>();
@@ -658,19 +677,30 @@ public class Utils {
 			  sortedMedset.add(concept);
 
 		  // Sorting Concept with medset as class by Name
-		  Collections.sort(sortedMedset, DRUG_RELATED_COMPARATOR);
+		  Collections.sort(sortedMedset, OPENMRS_OBJECT_COMPARATOR);
 
 		  return sortedMedset;
 	}
 	
+	public static List<ConceptAnswer> sortConsumable(List<ConceptAnswer> consumable) {
+		List<ConceptAnswer> sortedConsumable = new ArrayList<ConceptAnswer>();
+		
+		for(ConceptAnswer conceptAnswer : consumable)
+			sortedConsumable.add(conceptAnswer);
+		
+		Collections.sort(sortedConsumable, OPENMRS_OBJECT_COMPARATOR);
+				
+		return sortedConsumable;
+	}
+	
 	public static List<Drug> getDrugs(List<Drug> drugs) {
-		  List<Drug> sortedDrugs = new ArrayList<Drug>();
+		  List<Drug> sortedDrugs = drugs;
 
 		  for (Drug drug : drugs)
 			  sortedDrugs.add(drug);
 
 		  // Sorting Concept with medset as class by Name
-		  Collections.sort(sortedDrugs, DRUG_RELATED_COMPARATOR);
+		  Collections.sort(sortedDrugs, OPENMRS_OBJECT_COMPARATOR);
 
 		  return sortedDrugs;
 	}
