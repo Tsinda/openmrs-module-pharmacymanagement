@@ -15,13 +15,17 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.pharmacymanagement.DrugLotDate;
 import org.openmrs.module.pharmacymanagement.DrugProduct;
 import org.openmrs.module.pharmacymanagement.Pharmacy;
+import org.openmrs.module.pharmacymanagement.PharmacyConstants;
 import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
 import org.openmrs.module.pharmacymanagement.utils.Utils;
 import org.openmrs.util.OpenmrsConstants;
@@ -55,10 +59,12 @@ public class PatientDrugOrders extends ParameterizableViewController {
 		List<DrugLotDate> dlds = new ArrayList<DrugLotDate>();
 		String patientIdStr = null;
 		Patient patient = null;
+		Person person = null;
 		DrugOrderService service = Context.getService(DrugOrderService.class);
 		List<Pharmacy> pharmacyList = service.getPharmacyByLocation(dftLoc);
 		List<DrugOrder> drugOrders = new ArrayList<DrugOrder>();
 		ConceptService conceptService = Context.getConceptService();
+				
 		Pharmacy pharmacy = null;
 
 		List<DrugOrder> drugOrderList = new ArrayList<DrugOrder>();
@@ -97,7 +103,6 @@ public class PatientDrugOrders extends ParameterizableViewController {
 					dld = new DrugLotDate();
 					drugOrders1.add(drOr);
 					drugIdList.add(drOr.getDrug().getDrugId());
-
 					dld.setDrugOrder(drOr);
 					drug = conceptService.getDrug(drOr.getDrug().getDrugId());
 					dld.setDrug(drug);

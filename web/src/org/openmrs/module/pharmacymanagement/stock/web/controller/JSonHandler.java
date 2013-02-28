@@ -24,8 +24,7 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
 public class JSonHandler extends ParameterizableViewController {
 
 	protected AjaxViewRenderer viewRenderer;
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {

@@ -3,7 +3,6 @@ package org.openmrs.module.pharmacymanagement.phcymgt.web.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,13 +20,10 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mohappointment.model.Appointment;
-import org.openmrs.module.mohappointment.model.Services;
-import org.openmrs.module.mohappointment.service.IAppointmentService;
 import org.openmrs.module.mohappointment.utils.AppointmentUtil;
 import org.openmrs.module.pharmacymanagement.PharmacyConstants;
 import org.openmrs.module.pharmacymanagement.utils.Utils;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -100,6 +96,7 @@ public class DrugOrderPrescriptionController extends AbstractController {
 				drugOrder.setPatient(patient);
 				drugOrder.setDrug(drug);
 				drugOrder.setDiscontinued(false);
+				drugOrder.setOrderer(Context.getAuthenticatedUser());
 
 				if (request.getParameter("dose") != null
 						&& !request.getParameter("dose").equals(""))

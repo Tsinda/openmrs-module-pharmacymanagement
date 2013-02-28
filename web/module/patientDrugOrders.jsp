@@ -1,13 +1,16 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 <%@ include file="/WEB-INF/template/header.jsp"%>
+
 <div id="ordersId">
-<table>
+<table class="return">
 <c:if test="${!empty dlds}">
 	<thead>
 		<tr>
 			<th width="30%"><spring:message code="pharmacymanagement.designation" /></th>
+			<th width="20%">Orderer</th>
 			<th width="10%"><spring:message code="pharmacymanagement.qntyReq" /></th>
-			<th width="40%">Lot No / Solde (Expiration Date)</th>
+			<th width="10%">Frequency</th>
+			<th width="30%">Lot No / Solde (Expiration Date)</th>
 		</tr>
 	</thead>
 </c:if>
@@ -16,11 +19,12 @@
 			<c:forEach var="dld" items="${dlds}"  varStatus="num">
 				<tr>
 					<td width="30%">${num.count}. ${dld.drugOrder.drug.name}</td>
+					<td width="20%">${dld.drugOrder.orderer.person.familyName} ${dld.drugOrder.orderer.person.givenName}</td>
 					<td width="10%">
 						<input type="hidden" name="do_${num.count}" value="${dld.drugOrder.orderId}" />
 						<input type="text" name="drug_${num.count}_${dld.drugOrder.drug.drugId}" value="${dld.drugOrder.quantity}" size="5" />
 					</td>
-					
+					<td width="10%"><input type="text" value="${dld.drugOrder.frequency}" size="6" /></td>
 					<td width="30%">
 						<select name="dp_${num.count}" id="dpId_${num.count}" class="dpClass">							
 							<option value=""><center>---</center></option>
@@ -31,7 +35,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td colspan="4"><hr /></td>
+					<td colspan="5"><hr /></td>
 				</tr>
 			</c:forEach>
 		</c:if>

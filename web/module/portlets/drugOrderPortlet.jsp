@@ -139,14 +139,13 @@
 			var s = '';
 			var columns = $dm('#example_do thead th').map(function() {
 				return $dm(this).text();
-				alert($dm(this).text());
 			});		
 			var tableObject = $dm('#example_do tbody tr').map(function(i) {
 				row = {};
 				$dm(this).find('td').each(function(i) {
-				var rowName = columns[i];
-			    row[rowName] = $dm(this).text();
-			    s += $dm(this).text()+',';
+					var rowName = columns[i];
+				    row[rowName] = $dm(this).text();
+				    s += $dm(this).text()+',';
 				});
 				s += ';';
 			});
@@ -172,7 +171,8 @@
 							tmpStr += '<td align="center" style="background-color:#E5E5FF;">' + tmpArr[2] + '</td>';
 							tmpStr += '<td align="center" style="background-color:#E5E5FF;">' + tmpArr[3] + '</td>';
 							tmpStr += '<td align="center" style="background-color:#E5E5FF;">' + tmpArr[4] + '</td>';
-							tmpStr += '<td style="background-color:#E5E5FF;">&nbsp;</td><td style="background-color:#E5E5FF;">&nbsp;</td><td style="background-color:#E5E5FF;">&nbsp;</td>';
+							tmpStr += '<td align="center" style="background-color:#E5E5FF;">' + tmpArr[5] + '</td>';
+							tmpStr += '<td style="background-color:#E5E5FF;">&nbsp;</td><td style="background-color:#E5E5FF;">&nbsp;</td>';
 							$dm('#presc-drugs'+count).html(tmpStr);
 							count++
 						}
@@ -439,9 +439,9 @@
   </tr>
   <tr>
     <td>Insurance type</td>
-    <td>: RAMA</td>
+    <td>: ${empty model.insuranceType ? 'None' : model.insuranceType}</td>
     <td>Id No</td>
-    <td>: 3223ti4jioj333</td>
+    <td>: ${empty model.insuranceNumber ? 'None' : model.insuranceNumber}</td>
   </tr>
   <tr>
     <td>Names</td>

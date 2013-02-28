@@ -154,7 +154,7 @@ $dsm(document).ready(function() {
 			<td><input type="text" name="encDate" id="encDateId"
 			onchange="CompareDates('<openmrs:datePattern />');"
 			onfocus="showCalendar(this)" class="date" size="11" /><br /><span id="msgErrorId"></span></td>			
-			<td><input type="text" name="weight" size="5" /></td>
+			<td><input type="text" name="weight" size="5" value="${obsWeight.valueNumeric}" /></td>
 			<!-- <td><input type="text" name="remainingDrug" size="4" /></td> -->
 			<td><openmrs_tag:dateField formFieldName="nvDate"
 				startValue="${date}" /></td>

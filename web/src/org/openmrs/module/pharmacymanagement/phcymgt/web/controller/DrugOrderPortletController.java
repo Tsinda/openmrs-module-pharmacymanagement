@@ -4,7 +4,6 @@
 package org.openmrs.module.pharmacymanagement.phcymgt.web.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,14 +16,15 @@ import org.openmrs.ConceptClass;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.pharmacymanagement.DrugProduct;
 import org.openmrs.module.pharmacymanagement.PharmacyConstants;
-import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
 import org.openmrs.module.pharmacymanagement.utils.Utils;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.controller.PortletController;
@@ -38,18 +38,20 @@ public class DrugOrderPortletController extends PortletController {
 	protected void populateModel(HttpServletRequest request,
 			Map<String, Object> model){
 		ConceptService conceptService = Context.getConceptService();
+		ObsService obsService = Context.getObsService();
 		OrderService orderService = Context.getOrderService();
 		List<Drug> drugs = Context.getConceptService().getAllDrugs();
 		Map<Integer, String> drugMap = new HashMap<Integer, String>();
-		DrugOrderService dos = Context.getService(DrugOrderService.class);
 		LocationService locationService = Context.getLocationService();
 		ConceptClass cc = conceptService.getConceptClass(9);
 		List<Concept> medSet = conceptService.getConceptsByClass(cc);
 		List<Concept> concMedset = Utils.getMedsets(medSet);
 		String[] possibleFrequency = Utils.getPossibleFrequencyFromGlobalProperty("pharmacymanagement.possibleFrequency");
-		int currSolde = 0;
+		Concept insuranceTypeConcept = conceptService.getConcept(PharmacyConstants.RWANDA_INSURANCE_TYPE);
+		Concept insuranceNumberConcept = conceptService.getConcept(PharmacyConstants.RWANDA_INSURANCE_NUMBER);
 		
 		Location dftLoc = null;
+		Person person = null;
 		String locationStr = Context.getAuthenticatedUser().getUserProperties()
 				.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
 
@@ -65,10 +67,16 @@ public class DrugOrderPortletController extends PortletController {
 				&& !request.getParameter("patientId").equals("")) {
 			patient = Context.getPatientService().getPatient(
 					Integer.valueOf(request.getParameter("patientId")));
+			person = Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("patientId")));
 		}
-
+		
+		List<Obs> insuranceTypeObsList = obsService.getObservationsByPersonAndConcept(person, insuranceTypeConcept);
+		String insuranceType = insuranceTypeObsList.size() == 0 ? null : insuranceTypeObsList.get(insuranceTypeObsList.size() -1).getValueCoded().getName().getName();
+		List<Obs> insuranceNumberObsList = obsService.getObservationsByPersonAndConcept(person, insuranceNumberConcept);
+		String insuranceNumber = insuranceNumberObsList.size() == 0 ? null : insuranceNumberObsList.get(insuranceNumberObsList.size() -1 ).getValueText();
+		
 		List<DrugOrder> drugOrders = new ArrayList<DrugOrder>();
-		Collection<DrugProduct> dpList = dos.getAllProducts();
+//		Collection<DrugProduct> dpList = dos.getAllProducts();
 		if (patient != null) {
 			drugOrders = orderService.getDrugOrdersByPatient(patient);
 			model.put("patient", patient);
@@ -114,7 +122,8 @@ public class DrugOrderPortletController extends PortletController {
 		model.put("drugsAtaTime", possibleFrequency[0]);
 		model.put("timesAday", possibleFrequency[1]);
 		model.put("days", possibleFrequency[2]);
-		System.out.println("Drug Order End ******************************** " + new Date());
+		model.put("insuranceType", insuranceType);
+		model.put("insuranceNumber", insuranceNumber);
 		super.populateModel(request, model);
 	}
 	

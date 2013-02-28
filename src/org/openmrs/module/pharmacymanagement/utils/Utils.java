@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.Drug;
@@ -39,7 +41,28 @@ import org.openmrs.module.pharmacymanagement.ProductReturnStore;
 import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
 
 public class Utils {
-	// private Log log = LogFactory.getLog(this.getClass());
+	 private Log log = LogFactory.getLog(this.getClass());
+	
+	/**
+	 * returns the current entered obs from a list of specific <code>Obs</code>
+	 * 
+	 * @param numbers
+	 * @return
+	 */
+	public static Integer biggestObsIdNubmer(List<Obs> numbers) {
+
+		int tmp = 0, big = 0;
+		for (Obs obs : numbers) {
+			if (tmp < obs.getObsId()) {
+				big = obs.getObsId();
+				tmp = big;
+			} else {
+				big = tmp;
+				tmp = big;
+			}
+		}
+		return big;
+	}
 
 	/**
 	 * Auto generated method comment
@@ -694,12 +717,12 @@ public class Utils {
 	}
 	
 	public static List<Drug> getDrugs(List<Drug> drugs) {
-		  List<Drug> sortedDrugs = drugs;
+		  List<Drug> sortedDrugs = new ArrayList<Drug>();
 
 		  for (Drug drug : drugs)
 			  sortedDrugs.add(drug);
 
-		  // Sorting Concept with medset as class by Name
+		  // Sorting Drugs by Name
 		  Collections.sort(sortedDrugs, OPENMRS_OBJECT_COMPARATOR);
 
 		  return sortedDrugs;

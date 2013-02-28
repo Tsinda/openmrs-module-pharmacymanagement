@@ -22,8 +22,7 @@ import org.springframework.web.servlet.view.AbstractView;
 public class AjaxViewRenderer extends AbstractView {
 	private static final Log log = LogFactory.getLog(AjaxViewRenderer.class);
 	protected String sourceKey = "source";
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	protected void renderMergedOutputModel(Map map, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {

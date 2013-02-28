@@ -21,10 +21,12 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -45,7 +47,7 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 	@SuppressWarnings("unused")
 	private Log log = LogFactory.getLog(this.getClass());
 
-	@SuppressWarnings({ "unused", "unchecked" })
+	@SuppressWarnings({ "unused" })
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -67,7 +69,7 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 		OrderService orderService = Context.getOrderService();
 		user = Context.getAuthenticatedUser();
 		String pharmacyIdStr = null;
-		
+		ObsService obsService = Context.getObsService();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		
 		DrugOrderService service = Context.getService(DrugOrderService.class);
@@ -111,6 +113,21 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 					.getParameter("dopId")));
 			mav.addObject("dop", dop);
 		}
+		
+		if(request.getParameter("patientId") != null && !request.getParameter("patientId").equals("")) {
+			Person person = Context.getPersonService().getPerson(
+					Integer.valueOf(patientIdStr));
+			Obs obsWeight = obsService
+					.getObs(Utils.biggestObsIdNubmer(obsService
+							.getObservationsByPersonAndConcept(
+									person,
+									conceptService
+											.getConcept(PharmacyConstants.WEIGHT))));
+			mav.addObject("obsWeight", obsWeight);
+		}
+		
+		
+		
 
 		if (request.getParameter("patientId") != null
 				&& !request.getParameter("patientId").equals("")
@@ -257,7 +274,7 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 		}
 		
 		if (patientIdStr != null && !patientIdStr.equals("")) {
-			int patientId = Integer.parseInt(patientIdStr);		
+			int patientId = Integer.parseInt(patientIdStr);
 			mav.addObject("patient", Context.getPatientService().getPatient(patientId));
 		}
 		
