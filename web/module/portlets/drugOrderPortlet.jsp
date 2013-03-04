@@ -13,6 +13,9 @@
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/calendar1.js" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/jquery.PrintArea.js" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/dataentrystyle.css" />
+<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/chosen.css" />
+<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/chosen.jquery.min.js" />
+
 <script type="text/javascript">
 	var $dm = jQuery.noConflict();
 
@@ -242,6 +245,7 @@
 			$dm('#dquantity').val(quantity);
 		});
 		
+		$dm('#dname').chosen();
 	});
 </script>
 
@@ -318,12 +322,13 @@
 <input type="hidden" name="orderId" id="editing" /> <input
 	type="hidden" name="editcreate" id="editingcreating" />
 <table>
+<!-- 
 	<tr class="toBRepl">		
 		<td>Drug Family</td>
 		<td>
 			<input name="appointmentId" type="hidden" value="${param.appointmentId}" />
 			<input name="serviceId" type="hidden" value="${param.appointmentId}" />
-			<select name="medSet" id="medSetId">
+			<select name="medSet" id="medSetId" style="width:500px;">
 				<option><center>--Drug Family--</center></option>
 				<c:forEach items="${model.medSet}" var="medset">
 					<option value="${medset.conceptId}">${medset.name.name}</option>
@@ -339,15 +344,14 @@
 			</select>
 		</td>
 	</tr>
+	 -->
 	<tr>
 		<td><spring:message code="Drug Details" /></td>
-		<td><select name="drugs" id="dname">
-				<option value="">--Drug Details--</option>
-		
-		<!--
-			<c:forEach items="${model.drugMap}" var="drug">
-				<option value="${drug.key}">${drug.value}</option>
-			</c:forEach> -->
+		<td><select name="drugs" id="dname" style="width:500px;">
+				<option value="">--Drug--</option>
+				<c:forEach items="${model.drugs}" var="drug">
+					<option value="${drug.drugId}">${drug.name}</option>
+				</c:forEach>
 		</select></td>
 	</tr>
 	<tr>
