@@ -54,7 +54,6 @@ public class DrugOrderPrescriptionController extends AbstractController {
 		OrderService orderService = Context.getOrderService();
 		LocationService locationService = Context.getLocationService();
 
-		
 		Location dftLoc = null;
 		String locationStr = Context.getAuthenticatedUser().getUserProperties()
 				.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
@@ -71,9 +70,10 @@ public class DrugOrderPrescriptionController extends AbstractController {
 				Integer appointmentId = null;
 
 				// For appointment creation
-				if (request.getParameter("appointmentId") != null && !request.getParameter("appointmentId").equals(""))
-						appointmentId = Integer.parseInt(request
-								.getParameter("appointmentId"));
+				if (request.getParameter("appointmentId") != null
+						&& !request.getParameter("appointmentId").equals(""))
+					appointmentId = Integer.parseInt(request
+							.getParameter("appointmentId"));
 
 				DrugOrder drugOrder = new DrugOrder();
 				Drug drug = conceptService.getDrug(Integer.valueOf(request
@@ -122,10 +122,11 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					orderService.saveOrder(drugOrder);
 
 					/**
-					 * _____________Setting Appointment as Attended here and creating a pharmacy waiting one:
+					 * _____________Setting Appointment as Attended here and
+					 * creating a pharmacy waiting one:
 					 */
 					createPharmacyAppointment(request, patient, null);
-					
+
 					/**
 					 * __________________________________________________
 					 */
@@ -251,18 +252,24 @@ public class DrugOrderPrescriptionController extends AbstractController {
 	/**
 	 * Auto generated method comment
 	 * 
-	 * @param request HttpServletRequest parameter to be used
-	 * @param patient the patient that is going to pharmacy services
+	 * @param request
+	 *            HttpServletRequest parameter to be used
+	 * @param patient
+	 *            the patient that is going to pharmacy services
 	 * @throws NumberFormatException
 	 */
 	private void createPharmacyAppointment(HttpServletRequest request,
 			Patient patient, Encounter encounter) throws NumberFormatException {
-		if (request.getParameter("appointmentId") != null && !request.getParameter("appointmentId").equals("")) {
+		
+		if (request.getParameter("appointmentId") != null
+				&& !request.getParameter("appointmentId").equals("")) {
 			Appointment appointment = AppointmentUtil
-					.getWaitingAppointmentById(Integer.valueOf(request.getParameter("appointmentId")));
+					.getWaitingAppointmentById(Integer.valueOf(request
+							.getParameter("appointmentId")));
 			Utils.setConsultationAppointmentAsAttended(appointment);
-
-			Utils.createWaitingPharmacyAppointment(patient, encounter);
 		}
+
+		// Create Pharmacy waiting appointment here:
+		Utils.createWaitingPharmacyAppointment(patient, encounter);
 	}
 }
