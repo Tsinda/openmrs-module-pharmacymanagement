@@ -41,8 +41,8 @@ import org.openmrs.module.pharmacymanagement.ProductReturnStore;
 import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
 
 public class Utils {
-	 private Log log = LogFactory.getLog(this.getClass());
-	
+	private Log log = LogFactory.getLog(this.getClass());
+
 	/**
 	 * returns the current entered obs from a list of specific <code>Obs</code>
 	 * 
@@ -167,25 +167,28 @@ public class Utils {
 		return Integer.valueOf(Context.getAdministrationService()
 				.getGlobalProperty(id));
 	}
-	
-	public static String[] getPossibleFrequencyFromGlobalProperty(String id) {		
-		return Context.getAdministrationService().getGlobalProperty(id).split(",");
+
+	public static String[] getPossibleFrequencyFromGlobalProperty(String id) {
+		return Context.getAdministrationService().getGlobalProperty(id)
+				.split(",");
 	}
-	
-	
-	
+
 	/**
 	 * check the days where solde was zero.
+	 * 
 	 * @param date
 	 * @param drugId
 	 * @param conceptId
 	 * @param locationId
 	 * @return
 	 */
-	public static boolean emptyDays(String date, String drugId, String conceptId, String locationId) {		
+	public static boolean emptyDays(String date, String drugId,
+			String conceptId, String locationId) {
 		boolean isTrue = false;
 		int soldeOnDate = 0;
-		soldeOnDate = Context.getService(DrugOrderService.class).getSoldeByFromDrugLocation(date, drugId, conceptId, locationId);
+		soldeOnDate = Context
+				.getService(DrugOrderService.class)
+				.getSoldeByFromDrugLocation(date, drugId, conceptId, locationId);
 		if (soldeOnDate == 0) {
 			isTrue = true;
 		}
@@ -208,25 +211,27 @@ public class Utils {
 		cal.set(Calendar.DATE, lastDateOfMonth);
 		return cal.getTime().getDate();
 	}
-	
-	public static Integer stockOut(DrugProduct dp,
-			int year, int month, String locationId) {
+
+	public static Integer stockOut(DrugProduct dp, int year, int month,
+			String locationId) {
 		int month1 = month - 1;
 		int daysOfMonth = getLastDayOfMonth(year, month1);
 		int count = 0;
 		for (int i = 1; i <= daysOfMonth; i++) {
 			String date = year + "" + month1 + "" + i;
-			if(dp.getDrugId() != null) {
-				if (emptyDays(date, dp.getDrugId().getDrugId()+"", null, locationId))
+			if (dp.getDrugId() != null) {
+				if (emptyDays(date, dp.getDrugId().getDrugId() + "", null,
+						locationId))
 					count++;
 			} else {
-				if (emptyDays(date, null, dp.getConceptId().getConceptId()+"", locationId))
+				if (emptyDays(date, null,
+						dp.getConceptId().getConceptId() + "", locationId))
 					count++;
 			}
 		}
 		return count;
 	}
-	
+
 	/**
 	 * gets sum of all drug physical count with the same expiration date and lot
 	 * number in the main stock
@@ -338,9 +343,10 @@ public class Utils {
 				codedConceptQuestionId);
 		if (questionConcept != null) {
 			for (ConceptAnswer ca : questionConcept.getAnswers()) {
-				answersMap.put(ca.getAnswerConcept().getConceptId(), ca
-						.getAnswerConcept().getDisplayString().toLowerCase(
-								Context.getLocale()));
+				answersMap.put(
+						ca.getAnswerConcept().getConceptId(),
+						ca.getAnswerConcept().getDisplayString()
+								.toLowerCase(Context.getLocale()));
 			}
 		}
 		return answersMap;
@@ -564,18 +570,21 @@ public class Utils {
 	 * @param pharmacyId
 	 * @return
 	 */
-	public static Set<DrugProduct> getLotsExpDp(String conceptId, String drugId,
-			String locationId, String pharmacyId) {
+	public static Set<DrugProduct> getLotsExpDp(String conceptId,
+			String drugId, String locationId, String pharmacyId) {
 		DrugOrderService service = Context.getService(DrugOrderService.class);
 		Set<DrugProduct> dpSet = new HashSet<DrugProduct>();
-				
+
 		if (pharmacyId != null) {
 			Collection<PharmacyInventory> piList = service
 					.getAllPharmacyInventory();
-			for (PharmacyInventory pi : piList) {				
-				if (pi.getDrugproductId().getCmddrugId().getPharmacy().getPharmacyId() == Integer.valueOf(pharmacyId)) {
-					if (drugId != null && pi.getDrugproductId().getDrugId() != null) {
-						if (pi.getDrugproductId().getDrugId().getDrugId().toString().equals(drugId)) {				
+			for (PharmacyInventory pi : piList) {
+				if (pi.getDrugproductId().getCmddrugId().getPharmacy()
+						.getPharmacyId() == Integer.valueOf(pharmacyId)) {
+					if (drugId != null
+							&& pi.getDrugproductId().getDrugId() != null) {
+						if (pi.getDrugproductId().getDrugId().getDrugId()
+								.toString().equals(drugId)) {
 							dpSet.add(pi.getDrugproductId());
 						}
 					} else if (conceptId != null) {
@@ -590,17 +599,18 @@ public class Utils {
 		}
 		return dpSet;
 	}
-	
-	
+
 	/**
-	 * configures the Dispensed to be dynamic, if there is no dispensing in the current month, the go back until where you had dispensing
+	 * configures the Dispensed to be dynamic, if there is no dispensing in the
+	 * current month, the go back until where you had dispensing
 	 * 
 	 * @param goBackXMonth
 	 * @param to
 	 * @return
 	 * @throws ParseException
 	 */
-	public static String DispensingConfig(int goBackXMonth, String to) throws ParseException {
+	public static String DispensingConfig(int goBackXMonth, String to)
+			throws ParseException {
 		String from = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date toDate = sdf.parse(to);
@@ -611,124 +621,146 @@ public class Utils {
 		from = sdf.format(cal.getTime());
 		return from;
 	}
-	
+
 	public static PharmacyInventory getPharmacyInventoryByDrugProduct(int dpId) {
 		DrugOrderService dos = Context.getService(DrugOrderService.class);
 		Collection<PharmacyInventory> piList = dos.getAllPharmacyInventory();
 		List<PharmacyInventory> piList1 = new ArrayList<PharmacyInventory>();
-		for(PharmacyInventory pharmaInv : piList) {
-			if(pharmaInv.getDrugproductId().getDrugproductId() == dpId) {
+		for (PharmacyInventory pharmaInv : piList) {
+			if (pharmaInv.getDrugproductId().getDrugproductId() == dpId) {
 				piList1.add(pharmaInv);
 			}
 		}
 		PharmacyInventory pi = null;
 		int tmpId = 0;
-		for(PharmacyInventory phInv : piList1) {
-			if(tmpId < phInv.getPharmacyInventoryId()) {
+		for (PharmacyInventory phInv : piList1) {
+			if (tmpId < phInv.getPharmacyInventoryId()) {
 				pi = phInv;
-			}	
+			}
 		}
 		return pi;
 	}
-	
-	public static DrugProductInventory getDrugProductInventoryByDrugProduct(int dpId) {
+
+	public static DrugProductInventory getDrugProductInventoryByDrugProduct(
+			int dpId) {
 		DrugOrderService dos = Context.getService(DrugOrderService.class);
 		List<DrugProductInventory> dpList = dos.getAllDrugProductInventory();
 		List<DrugProductInventory> dpList1 = new ArrayList<DrugProductInventory>();
-		for(DrugProductInventory dpInv : dpList) {
-			if(dpInv.getDrugproductId().getDrugproductId() == dpId) {
+		for (DrugProductInventory dpInv : dpList) {
+			if (dpInv.getDrugproductId().getDrugproductId() == dpId) {
 				dpList1.add(dpInv);
 			}
 		}
 		DrugProductInventory dp = null;
 		int tmpId = 0;
-		for(DrugProductInventory dpInv : dpList1) {
-			if(tmpId < dpInv.getInventoryId()) {
+		for (DrugProductInventory dpInv : dpList1) {
+			if (tmpId < dpInv.getInventoryId()) {
 				dp = dpInv;
-			}	
+			}
 		}
 		return dp;
 	}
-	
-	
+
 	public static ConsumableDispense getConsumableDispense(int cdId) {
-		Collection<ConsumableDispense> cdList = Context.getService(DrugOrderService.class).getAllConsumableDipsense();
+		Collection<ConsumableDispense> cdList = Context.getService(
+				DrugOrderService.class).getAllConsumableDipsense();
 		ConsumableDispense consumableDispense = null;
-		for(ConsumableDispense cd : cdList) {
-			if(cd.getConsumabledispenseId() == cdId) {
+		for (ConsumableDispense cd : cdList) {
+			if (cd.getConsumabledispenseId() == cdId) {
 				consumableDispense = cd;
 				break;
 			}
 		}
 		return consumableDispense;
 	}
-	
+
 	private static Comparator<Object> OPENMRS_OBJECT_COMPARATOR = new Comparator<Object>() {
-		  // This is where the sorting happens.
-		  public int compare(Object obj1, Object obj2) {
-			  int compareInt = 0;
-			  if(obj1 instanceof Concept && obj2 instanceof Concept)
-				  compareInt = ((Concept) obj1).getName().getName().toLowerCase().compareTo(((Concept) obj2).getName().getName().toLowerCase());
-			  
-			  else if(obj1 instanceof Drug && obj2 instanceof Drug)
-				  compareInt = ((Drug) obj1).getName().toLowerCase().compareTo(((Drug) obj2).getName().toLowerCase());
-			  
-			  else if(obj1 instanceof ConceptAnswer && obj2 instanceof ConceptAnswer)
-				  compareInt = ((ConceptAnswer) obj1).getAnswerConcept().getName().getName().toLowerCase().compareTo(((ConceptAnswer) obj2).getAnswerConcept().getName().getName().toLowerCase());
-			  
-			  return compareInt;
-		  }
-	};
-	
-	private static Comparator<Map.Entry<Integer, String>> comparator = new Comparator<Map.Entry<Integer, String>>() {
-		public int compare(Map.Entry<Integer, String> obj1, Map.Entry<Integer, String> obj2) {
-			// do comparing on values first, keys second
-			return obj1.getValue().toLowerCase().compareTo(obj2.getValue().toLowerCase());
+		// This is where the sorting happens.
+		public int compare(Object obj1, Object obj2) {
+			int compareInt = 0;
+			if (obj1 instanceof Concept && obj2 instanceof Concept)
+				compareInt = ((Concept) obj1)
+						.getName()
+						.getName()
+						.toLowerCase()
+						.compareTo(
+								((Concept) obj2).getName().getName()
+										.toLowerCase());
+
+			else if (obj1 instanceof Drug && obj2 instanceof Drug)
+				compareInt = ((Drug) obj1).getName().toLowerCase()
+						.compareTo(((Drug) obj2).getName().toLowerCase());
+
+			else if (obj1 instanceof ConceptAnswer
+					&& obj2 instanceof ConceptAnswer)
+				compareInt = ((ConceptAnswer) obj1)
+						.getAnswerConcept()
+						.getName()
+						.getName()
+						.toLowerCase()
+						.compareTo(
+								((ConceptAnswer) obj2).getAnswerConcept()
+										.getName().getName().toLowerCase());
+
+			return compareInt;
 		}
 	};
-	
-	public static SortedSet<Map.Entry<Integer, String>> SortMapValues (Map<Integer, String> map) {
-		SortedSet<Map.Entry<Integer, String>> entries = new TreeSet<Map.Entry<Integer, String>>(comparator);
+
+	private static Comparator<Map.Entry<Integer, String>> comparator = new Comparator<Map.Entry<Integer, String>>() {
+		public int compare(Map.Entry<Integer, String> obj1,
+				Map.Entry<Integer, String> obj2) {
+			// do comparing on values first, keys second
+			return obj1.getValue().toLowerCase()
+					.compareTo(obj2.getValue().toLowerCase());
+		}
+	};
+
+	public static SortedSet<Map.Entry<Integer, String>> SortMapValues(
+			Map<Integer, String> map) {
+		SortedSet<Map.Entry<Integer, String>> entries = new TreeSet<Map.Entry<Integer, String>>(
+				comparator);
 		entries.addAll(map.entrySet());
 		return entries;
 	}
-	
+
 	public static List<Concept> getMedsets(List<Concept> medset) {
-		  List<Concept> sortedMedset = new ArrayList<Concept>();
+		List<Concept> sortedMedset = new ArrayList<Concept>();
 
-		  for (Concept concept : medset)
-			  sortedMedset.add(concept);
+		for (Concept concept : medset)
+			sortedMedset.add(concept);
 
-		  // Sorting Concept with medset as class by Name
-		  Collections.sort(sortedMedset, OPENMRS_OBJECT_COMPARATOR);
+		// Sorting Concept with medset as class by Name
+		Collections.sort(sortedMedset, OPENMRS_OBJECT_COMPARATOR);
 
-		  return sortedMedset;
+		return sortedMedset;
 	}
-	
-	public static List<ConceptAnswer> sortConsumable(List<ConceptAnswer> consumable) {
+
+	public static List<ConceptAnswer> sortConsumable(
+			List<ConceptAnswer> consumable) {
 		List<ConceptAnswer> sortedConsumable = new ArrayList<ConceptAnswer>();
-		
-		for(ConceptAnswer conceptAnswer : consumable)
+
+		for (ConceptAnswer conceptAnswer : consumable)
 			sortedConsumable.add(conceptAnswer);
-		
+
 		Collections.sort(sortedConsumable, OPENMRS_OBJECT_COMPARATOR);
-				
+
 		return sortedConsumable;
 	}
-	
+
 	public static List<Drug> getDrugs(List<Drug> drugs) {
-		  List<Drug> sortedDrugs = new ArrayList<Drug>();
+		List<Drug> sortedDrugs = new ArrayList<Drug>();
 
-		  for (Drug drug : drugs)
-			  sortedDrugs.add(drug);
+		for (Drug drug : drugs)
+			sortedDrugs.add(drug);
 
-		  // Sorting Drugs by Name
-		  Collections.sort(sortedDrugs, OPENMRS_OBJECT_COMPARATOR);
+		// Sorting Drugs by Name
+		Collections.sort(sortedDrugs, OPENMRS_OBJECT_COMPARATOR);
 
-		  return sortedDrugs;
+		return sortedDrugs;
 	}
-	
-	public static void setConsultationAppointmentAsAttended(Appointment appointment){
+
+	public static void setConsultationAppointmentAsAttended(
+			Appointment appointment) {
 		AppointmentUtil.saveAttendedAppointment(appointment);
 	}
 
@@ -737,33 +769,36 @@ public class Utils {
 	 * 
 	 * @param patient
 	 */
-	public static void createWaitingPharmacyAppointment(Patient patient, Encounter encounter) {
+	public static void createWaitingPharmacyAppointment(Patient patient,
+			Encounter encounter) {
 		Appointment waitingAppointment = new Appointment();
-		Services service = AppointmentUtil.getServiceByConcept(
-				Context.getConceptService().getConcept(6711));
-		
+		Services service = AppointmentUtil.getServiceByConcept(Context
+				.getConceptService().getConcept(6711));
+
 		// Setting appointment attributes
 		waitingAppointment.setAppointmentDate(new Date());
 		waitingAppointment.setAttended(false);
 		waitingAppointment.setVoided(false);
 		waitingAppointment.setCreatedDate(new Date());
 		waitingAppointment.setCreator(Context.getAuthenticatedUser());
-		waitingAppointment.setProvider(Context.getAuthenticatedUser().getPerson());
+		waitingAppointment.setProvider(Context.getAuthenticatedUser()
+				.getPerson());
 		waitingAppointment.setNote("This is a waiting patient to the Pharmacy");
 		waitingAppointment.setPatient(patient);
-		waitingAppointment.setLocation(Context.getLocationService().getDefaultLocation());
+		waitingAppointment.setLocation(Context.getLocationService()
+				.getDefaultLocation());
 
 		waitingAppointment.setService(service);
-		
-		if(encounter != null)
+
+		if (encounter != null)
 			waitingAppointment.setEncounter(encounter);
-		
+
 		AppointmentUtil.saveWaitingAppointment(waitingAppointment);
-		
+
 	}
 
 	public static void setPharmacyAppointmentAsAttended(Appointment appointment) {
 		AppointmentUtil.saveAttendedAppointment(appointment);
 	}
-	
+
 }
