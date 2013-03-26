@@ -123,13 +123,7 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					/**
 					 * _____________Setting Appointment as Attended here and creating a pharmacy waiting one:
 					 */
-					if (request.getParameter("appointmentId") != null && !request.getParameter("appointmentId").equals("")) {
-						Appointment appointment = AppointmentUtil
-								.getWaitingAppointmentById(Integer.valueOf(request.getParameter("appointmentId")));
-						Utils.setConsultationAppointmentAsAttended(appointment);
-
-						Utils.createWaitingPharmacyAppointment(patient, null);
-					}
+					createPharmacyAppointment(request, patient);
 					
 					/**
 					 * __________________________________________________
@@ -251,5 +245,23 @@ public class DrugOrderPrescriptionController extends AbstractController {
 		}
 		return new ModelAndView(new RedirectView(
 				"../../patientDashboard.form?patientId=" + patientId));
+	}
+
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param request
+	 * @param patient
+	 * @throws NumberFormatException
+	 */
+	private void createPharmacyAppointment(HttpServletRequest request,
+			Patient patient) throws NumberFormatException {
+		if (request.getParameter("appointmentId") != null && !request.getParameter("appointmentId").equals("")) {
+			Appointment appointment = AppointmentUtil
+					.getWaitingAppointmentById(Integer.valueOf(request.getParameter("appointmentId")));
+			Utils.setConsultationAppointmentAsAttended(appointment);
+
+			Utils.createWaitingPharmacyAppointment(patient, null);
+		}
 	}
 }
