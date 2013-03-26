@@ -13,6 +13,6 @@
 	<classpathentry kind="lib" path="lib-common/openmrs-api-1.6.2.12911-dev.jar"/>
 	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.6.2.12911-dev.jar"/>
 	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.6.2.12911-dev.jar"/>
-	<classpathentry kind="lib" path="lib-common/mohappointment-0.0.7.jar"/>
+	<classpathentry kind="lib" path="lib-common/mohappointment-0.0.7.jar" sourcepath="lib-common/mohappointment-0.0.7.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

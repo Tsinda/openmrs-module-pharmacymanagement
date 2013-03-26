@@ -758,7 +758,7 @@ public class Utils {
 		if(encounter != null)
 			waitingAppointment.setEncounter(encounter);
 		
-		AppointmentUtil.saveWaitingAppointment(waitingAppointment);		
+		AppointmentUtil.saveWaitingAppointment(waitingAppointment);
 		
 	}
 

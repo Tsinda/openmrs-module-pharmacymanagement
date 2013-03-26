@@ -135,6 +135,7 @@
 
 		$dm('#create').click(function() {
 			$dm("#editingcreating").attr("value", "create");
+			$dm('#dname').chosen({no_results_text: "No results matched"});
 		});		
 		
 		$dm('#print_ordonance').click(function() {
@@ -245,7 +246,6 @@
 			$dm('#dquantity').val(quantity);
 		});
 		
-		$dm('#dname').chosen();
 	});
 </script>
 

@@ -27,7 +27,7 @@
 #createditdialog-container code {background: #141414; border-left: 3px solid #65B43D; color: #F5F5F5; font-weight: bold; display: block; margin-bottom: 12px; padding: 4px 6px 6px;}
 
 #simplemodal-container a {color: #ddd;}
-#createditdialog-container a {color: #ddd;}
+#createditdialog-container a {color: #000;}
 
 #simplemodal-container a.modalCloseImg { background: url(../x.png) no-repeat; width: 25px; height: 29px; display: inline; z-index: 806; position: absolute; top: -15px; right: -16px; cursor: pointer;}
 #createditdialog-container a.dialogCloseImg {background: url(../x.png) no-repeat; width: 25px; height: 29px; display: inline; z-index: 806; position: absolute; top: -15px; right: -16px; cursor: pointer;}

@@ -11,6 +11,76 @@
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/dataentrystyle.css" />
 
 
+
+<div>
+
+<div id="outer">
+<%@ include file="template/leftMenu.jsp"%>
+</div>
+<div id="middle">
+
+<%@ include file="template/dispensingLocalHeader.jsp"%>
+
+<br />
+<br />
+<div class="boxHeader">
+<center><b><spring:message code="Drug Dispensing" /></b></center>
+</div>
+<div class="daebox">
+<form method="post" name="frm">
+<table class="shadow">
+	<thead>
+		<tr class="adhere">
+			<th><spring:message code="pharmacymanagement.patient" /></th>
+			<th><spring:message code="pharmacymanagement.pharmacy" /></th>
+			<th><spring:message code="pharmacymanagement.visitDate" /></th>
+			<th><spring:message code="pharmacymanagement.weight" /></th>
+			<th><spring:message code="pharmacymanagement.nextVisitDate" /></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><openmrs:fieldGen type="org.openmrs.Patient"
+				formFieldName="patientId" val="${patient}" /></td>
+			<td>
+				<select name="pharmacy" id="pharmacyId">
+					<option value="">-- select --</option>
+					<c:forEach var="phcy" items="${pharmacyList}">
+						<option value="${phcy.pharmacyId}" ${phcy.name eq pharmacy.name.name ? 'selected="selected"' : ''}>${phcy.name}</option>
+					</c:forEach>
+				</select></td>
+			<td><input type="text" name="encDate" id="encDateId"
+			onchange="CompareDates('<openmrs:datePattern />');"
+			onfocus="showCalendar(this)" class="date" size="11" /><br /><span id="msgErrorId"></span></td>			
+			<td><input type="text" name="weight" size="5" value="${obsWeight.valueNumeric}" /></td>
+			<!-- <td><input type="text" name="remainingDrug" size="4" /></td> -->
+			<td><openmrs_tag:dateField formFieldName="nvDate"
+				startValue="${date}" /></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+			<fieldset><legend><spring:message code="Drugs" /></legend>
+			<div id="drugs"></div>
+			</fieldset>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="8"><input type="submit" value="Save" id="saveButton" /></td>
+		</tr>
+	</tbody>
+</table>
+</form>
+</div>
+<br />
+<hr />
+<br />
+
+<div id="pharmaRpt">
+</div>
+</div>
+
+<div style="clear: both;"></div>
+</div>
 <script type="text/javascript">
 var pId=0;
 var pattId = 0;
@@ -114,73 +184,4 @@ $dsm(document).ready(function() {
 });
 
 </script>
-<div>
-
-<div id="outer">
-<%@ include file="template/leftMenu.jsp"%>
-</div>
-<div id="middle">
-
-<%@ include file="template/dispensingLocalHeader.jsp"%>
-
-<br />
-<br />
-<div class="boxHeader">
-<center><b><spring:message code="Drug Dispensing" /></b></center>
-</div>
-<div class="daebox">
-<form method="post" name="frm">
-<table class="shadow">
-	<thead>
-		<tr class="adhere">
-			<th><spring:message code="pharmacymanagement.patient" /></th>
-			<th><spring:message code="pharmacymanagement.pharmacy" /></th>
-			<th><spring:message code="pharmacymanagement.visitDate" /></th>
-			<th><spring:message code="pharmacymanagement.weight" /></th>
-			<th><spring:message code="pharmacymanagement.nextVisitDate" /></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td><openmrs:fieldGen type="org.openmrs.Patient"
-				formFieldName="patientId" val="${patient}" /></td>
-			<td>
-				<select name="pharmacy" id="pharmacyId">
-					<option value="">-- select --</option>
-					<c:forEach var="phcy" items="${pharmacyList}">
-						<option value="${phcy.pharmacyId}" ${phcy.name eq pharmacy.name.name ? 'selected="selected"' : ''}>${phcy.name}</option>
-					</c:forEach>
-				</select></td>
-			<td><input type="text" name="encDate" id="encDateId"
-			onchange="CompareDates('<openmrs:datePattern />');"
-			onfocus="showCalendar(this)" class="date" size="11" /><br /><span id="msgErrorId"></span></td>			
-			<td><input type="text" name="weight" size="5" value="${obsWeight.valueNumeric}" /></td>
-			<!-- <td><input type="text" name="remainingDrug" size="4" /></td> -->
-			<td><openmrs_tag:dateField formFieldName="nvDate"
-				startValue="${date}" /></td>
-		</tr>
-		<tr>
-			<td colspan="8">
-			<fieldset><legend><spring:message code="Drugs" /></legend>
-			<div id="drugs"></div>
-			</fieldset>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="8"><input type="submit" value="Save" id="saveButton" /></td>
-		</tr>
-	</tbody>
-</table>
-</form>
-</div>
-<br />
-<hr />
-<br />
-
-<div id="pharmaRpt">
-</div>
-</div>
-
-<div style="clear: both;"></div>
-</div>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

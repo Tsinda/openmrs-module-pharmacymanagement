@@ -121,7 +121,7 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					orderService.saveOrder(drugOrder);
 
 					/**
-					 * _____________Setting Appointment as Attended here:
+					 * _____________Setting Appointment as Attended here and creating a pharmacy waiting one:
 					 */
 					if (request.getParameter("appointmentId") != null && !request.getParameter("appointmentId").equals("")) {
 						Appointment appointment = AppointmentUtil
