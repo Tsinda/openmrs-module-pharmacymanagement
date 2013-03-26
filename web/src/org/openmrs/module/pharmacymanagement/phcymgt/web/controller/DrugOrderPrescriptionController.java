@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -123,7 +124,7 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					/**
 					 * _____________Setting Appointment as Attended here and creating a pharmacy waiting one:
 					 */
-					createPharmacyAppointment(request, patient);
+					createPharmacyAppointment(request, patient, null);
 					
 					/**
 					 * __________________________________________________
@@ -250,18 +251,18 @@ public class DrugOrderPrescriptionController extends AbstractController {
 	/**
 	 * Auto generated method comment
 	 * 
-	 * @param request
-	 * @param patient
+	 * @param request HttpServletRequest parameter to be used
+	 * @param patient the patient that is going to pharmacy services
 	 * @throws NumberFormatException
 	 */
 	private void createPharmacyAppointment(HttpServletRequest request,
-			Patient patient) throws NumberFormatException {
+			Patient patient, Encounter encounter) throws NumberFormatException {
 		if (request.getParameter("appointmentId") != null && !request.getParameter("appointmentId").equals("")) {
 			Appointment appointment = AppointmentUtil
 					.getWaitingAppointmentById(Integer.valueOf(request.getParameter("appointmentId")));
 			Utils.setConsultationAppointmentAsAttended(appointment);
 
-			Utils.createWaitingPharmacyAppointment(patient, null);
+			Utils.createWaitingPharmacyAppointment(patient, encounter);
 		}
 	}
 }
