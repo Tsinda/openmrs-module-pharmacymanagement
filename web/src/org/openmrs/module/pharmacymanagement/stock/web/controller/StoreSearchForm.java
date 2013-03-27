@@ -54,19 +54,15 @@ public class StoreSearchForm extends ParameterizableViewController {
 		if(request.getParameter("consumable") != null && !request.getParameter("consumable").equals("")) {
 			if(request.getParameter("consumable").equals("0")) {
 				for(DrugProductInventory dpi : itemsInStore) {
-					if(dpi.getDrugproductId().getDrugId() != null) {
-						drugId = dpi.getDrugproductId().getDrugId().getDrugId() + "";
-						name = dpi.getDrugproductId().getDrugId().getName();
-					}
 					if(dpi.getDrugproductId().getConceptId() != null) {
 						consumableId = dpi.getDrugproductId().getConceptId().getConceptId() + "";
 						name = dpi.getDrugproductId().getConceptId().getName().getName();
 					}
-					String consStr = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, consumableId, locationStr)[1] + "";
-					String inStr = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, consumableId, locationStr)[0] + "";
+					String consStr1 = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, consumableId, locationStr)[1] + "";
+					String inStr1 = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, consumableId, locationStr)[0] + "";
 
-					out = consStr != null ? Integer.valueOf(consStr) : 0;
-					in = inStr != null ? Integer.valueOf(inStr) : 0;
+					out = (consStr1 != null) ? Integer.valueOf(consStr1) : 0;
+					in = (inStr1 != null) ? Integer.valueOf(inStr1) : 0;
 					solde = in - out;
 					
 					storeWarning = new StoreWarning();
@@ -74,23 +70,30 @@ public class StoreSearchForm extends ParameterizableViewController {
 					storeWarning.setIn(in);
 					storeWarning.setLotNo(dpi.getDrugproductId().getLotNo());
 					storeWarning.setExpirationDate(dpi.getDrugproductId().getExpiryDate() + "");
-					storeWarning.setDrugName(drugId != null ? dpi.getDrugproductId().getDrugId().getName() : dpi.getDrugproductId().getConceptId().getName().getName());
+					storeWarning.setDrugName(name);
 					storeWarning.setStore(solde);
 					
 					itemMap.put(name, storeWarning);
 					drugId = null;
 					consumableId = null;
 				}
-			} else {						
+			} else {
 				for(DrugProductInventory dpi : itemsInStore) {
 					consumableId = request.getParameter("consumable");
 					if(dpi.getDrugproductId().getConceptId() != null) {
 						storeWarning = new StoreWarning();
-						String outStr = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", null, consumableId, locationStr)[1] + "";
-						String inStr = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", null, consumableId, locationStr)[0] + "";
+						String outStr2 = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", null, consumableId, locationStr)[1] + "";
+						String inStr2 = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", null, consumableId, locationStr)[0] + "";
+						if(!outStr2.equals(null)) {
+							System.out.println("Type: " + outStr2.getClass() + " " + outStr2);
+							out = Integer.valueOf(outStr2);
+						}
 						
-						out = outStr != null ? Integer.valueOf(outStr) : 0;
-						in = inStr != null ? Integer.valueOf(inStr) : 0;
+						if(!inStr2.equals(null)) {
+							System.out.println("Type: " + inStr2.getClass() + " " + inStr2);
+							in = Integer.valueOf(inStr2);
+						}
+						
 						solde = in - out;
 						
 						storeWarning.setConsumed(out);
@@ -101,6 +104,8 @@ public class StoreSearchForm extends ParameterizableViewController {
 						storeWarning.setStore(solde);
 						
 						itemMap.put(dpi.getDrugproductId().getConceptId().getName().getName(), storeWarning);
+						consumableId = null;
+						drugId = null;
 						break;
 					}
 				}
@@ -114,13 +119,11 @@ public class StoreSearchForm extends ParameterizableViewController {
 						drugId = dpi.getDrugproductId().getDrugId().getDrugId() + "";
 						name = dpi.getDrugproductId().getDrugId().getName();
 					}
-					if(dpi.getDrugproductId().getConceptId() != null) {
-						consumableId = dpi.getDrugproductId().getConceptId().getConceptId() + "";
-						name = dpi.getDrugproductId().getConceptId().getName().getName();
-					}
 					storeWarning = new StoreWarning();
-					in = Integer.valueOf(service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, consumableId, locationStr)[0] + "");
-					out = Integer.valueOf(service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, consumableId, locationStr)[1] + "");
+					String inStr3 = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, consumableId, locationStr)[0] + "";
+					String outStr3 = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, consumableId, locationStr)[1] + "";
+					in = Integer.valueOf(inStr3 != null ? inStr3 : "0");
+					out = Integer.valueOf(outStr3 != null ? outStr3 : "0");
 					solde = in - out;
 					
 					storeWarning.setConsumed(out);
@@ -131,6 +134,8 @@ public class StoreSearchForm extends ParameterizableViewController {
 					storeWarning.setStore(solde);
 										
 					itemMap.put(name, storeWarning);
+					drugId = null;
+					consumableId = null;
 				}
 			} else {						
 				for(DrugProductInventory dpi : itemsInStore) {
@@ -138,10 +143,10 @@ public class StoreSearchForm extends ParameterizableViewController {
 					if(dpi.getDrugproductId().getDrugId() != null) {
 						if(dpi.getDrugproductId().getDrugId().getDrugId().equals(drugId)) {
 							storeWarning = new StoreWarning();
-							String inStr = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, null, locationStr)[0] + "";
-							String outStr = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, null, locationStr)[1] + "";
-							in = ((inStr != null) ? Integer.valueOf(inStr) : 0);
-							out = ((outStr != null) ? Integer.valueOf(outStr) : 0);
+							String inStr4 = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, null, locationStr)[0] + "";
+							String outStr4 = service.getSumEntreeSortieByFromToDrugLocation(null, new Date() + "", drugId, null, locationStr)[1] + "";
+							in = ((inStr4 != null) ? Integer.valueOf(inStr4) : 0);
+							out = ((outStr4 != null) ? Integer.valueOf(outStr4) : 0);
 							solde = in - out;
 							
 							storeWarning.setConsumed(out);
