@@ -257,9 +257,10 @@ public class DrugOrderPrescriptionController extends AbstractController {
 	 * @param patient
 	 *            the patient that is going to pharmacy services
 	 * @throws NumberFormatException
+	 * @throws ParseException 
 	 */
 	private void createPharmacyAppointment(HttpServletRequest request,
-			Patient patient, Encounter encounter) throws NumberFormatException {
+			Patient patient, Encounter encounter) throws NumberFormatException, ParseException {
 		
 		if (request.getParameter("appointmentId") != null
 				&& !request.getParameter("appointmentId").equals("")) {

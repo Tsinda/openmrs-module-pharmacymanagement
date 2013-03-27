@@ -30,6 +30,7 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mohappointment.model.Appointment;
+import org.openmrs.module.mohappointment.model.AppointmentState;
 import org.openmrs.module.mohappointment.model.Services;
 import org.openmrs.module.mohappointment.utils.AppointmentUtil;
 import org.openmrs.module.pharmacymanagement.ConsumableDispense;
@@ -768,9 +769,10 @@ public class Utils {
 	 * Creates waiting appointment in Pharmacy service
 	 * 
 	 * @param patient
+	 * @throws ParseException 
 	 */
 	public static void createWaitingPharmacyAppointment(Patient patient,
-			Encounter encounter) {
+			Encounter encounter) throws ParseException {
 		Appointment waitingAppointment = new Appointment();
 		Services service = AppointmentUtil.getServiceByConcept(Context
 				.getConceptService().getConcept(6711));
@@ -793,7 +795,9 @@ public class Utils {
 		if (encounter != null)
 			waitingAppointment.setEncounter(encounter);
 
-		AppointmentUtil.saveWaitingAppointment(waitingAppointment);
+		if (!AppointmentUtil.isPatientAlreadyWaitingThere(patient,
+				new AppointmentState(4, "WAITING"), service, new Date()))
+			AppointmentUtil.saveWaitingAppointment(waitingAppointment);
 
 	}
 
