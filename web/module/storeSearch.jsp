@@ -22,6 +22,7 @@
 var $ = jQuery.noConflict();
 	$(document).ready( function() {
 		$('#example').dataTable();
+		$('.box').hide();
 	});
 </script>
 <div class="box">

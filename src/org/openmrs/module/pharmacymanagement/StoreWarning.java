@@ -8,6 +8,18 @@ public class StoreWarning {
 	private String lotNo;
 	private String expirationDate;
 	
+	public StoreWarning() {
+	}
+	
+	public StoreWarning(String drugName, int consumed, int in, int store, String lotNo, String expirationDate) {
+		this.drugName = drugName;
+		this.consumed = consumed;
+		this.in = in;
+		this.store = store;
+		this.lotNo = lotNo;
+		this.expirationDate = expirationDate;
+	}
+	
 	/**
 	 * @return the drugName
 	 */

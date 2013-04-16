@@ -41,20 +41,15 @@ public class Test {
 	//
 	public static void main(String[] args) {
 
-		Map<Integer, String> map = new HashMap<Integer, String>();
-
-		map.put(2, "oranges");
-		map.put(1, "pears");
-		map.put(3, "three");
-		map.put(4, "bananas");
-		map.put(8, "bananas");
-		map.put(3, "crayons");
-
-//		SortedMap<Map.Entry<K, V>> entries = new TreeMap<Map.Entry<K, V>>(
-//				comparator);
-//		entries.addAll(map.entrySet());
-//		
-//		for(Map.Entry<Integer, String> : entries)
+		Object str = null;
+		int in = 0;
+		if(str != null) {
+			in = Integer.valueOf(str + "");
+			System.out.println(in);
+		} else {
+			System.out.println("not null");
+		}
+		
 			
 	}
 
