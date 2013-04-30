@@ -135,16 +135,31 @@
 
 		$dm('#create').click(function() {
 			$dm("#editingcreating").attr("value", "create");
+			var item = '';
+			$dm('#dname').change(function() {
+				$dm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/drugSolde.htm?drugId='+$dm("#dname").val(), function(data) {
+					if(data[0].solde == 0) {
+						item = 'No Such drug in store';
+						$dm('#soldeId').html(item).css('color','red');
+					} else {
+						item = 'Solde: ' + data[0].solde;
+						$dm('#soldeId').html(item);
+					}
+					
+					
+				});
+			});
 			$dm('#dname').chosen({no_results_text: "No results matched"});
 		});		
 		
 		$dm('#print_ordonance').click(function() {
 			var row = null;
 			var s = '';
+			var tableObject = null;
 			var columns = $dm('#example_do thead th').map(function() {
 				return $dm(this).text();
 			});		
-			var tableObject = $dm('#example_do tbody tr').map(function(i) {
+			tableObject = $dm('#example_do tbody tr').map(function(i) {
 				row = {};
 				$dm(this).find('td').each(function(i) {
 					var rowName = columns[i];
@@ -347,12 +362,15 @@
 	 -->
 	<tr>
 		<td><spring:message code="Drug Details" /></td>
-		<td><select name="drugs" id="dname" style="width:500px;">
+		<td>
+			<select name="drugs" id="dname" style="width:500px;">
 				<option value="">--Drug--</option>
 				<c:forEach items="${model.drugs}" var="drug">
 					<option value="${drug.drugId}">${drug.name}</option>
 				</c:forEach>
-		</select></td>
+			</select>
+		</td>
+		<td id="soldeId"></td>
 	</tr>
 	<tr>
 		<td><spring:message code="pharmacymanagement.frequency" /></td>

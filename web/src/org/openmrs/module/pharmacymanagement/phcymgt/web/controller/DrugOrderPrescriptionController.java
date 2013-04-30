@@ -268,9 +268,11 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					.getWaitingAppointmentById(Integer.valueOf(request
 							.getParameter("appointmentId")));
 			Utils.setConsultationAppointmentAsAttended(appointment);
+			
+			// Create Pharmacy waiting appointment here:
+			Utils.createWaitingPharmacyAppointment(patient, encounter);
 		}
 
-		// Create Pharmacy waiting appointment here:
-		Utils.createWaitingPharmacyAppointment(patient, encounter);
+		
 	}
 }

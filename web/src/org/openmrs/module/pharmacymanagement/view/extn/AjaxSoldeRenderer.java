@@ -1,10 +1,9 @@
-/**
- * Auto generated file comment
- */
 package org.openmrs.module.pharmacymanagement.view.extn;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,15 +13,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
+import org.openmrs.Location;
+import org.openmrs.Person;
+import org.openmrs.api.LocationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.web.servlet.view.AbstractView;
 
-/**
- *
- */
-public class AjaxViewRenderer extends AbstractView {
+public class AjaxSoldeRenderer extends AbstractView {
 	private static final Log log = LogFactory.getLog(AjaxViewRenderer.class);
 	protected String sourceKey = "source";
-	
+
 	@Override
 	protected void renderMergedOutputModel(Map map, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -39,33 +41,34 @@ public class AjaxViewRenderer extends AbstractView {
 		writer.write("[");
 
 		if (source != null) {
-			if (source instanceof Collection) {
-				Collection<?> collection = (Collection<?>) source;
-				Object[] items = collection.toArray();
-				for (int i = 0; i < items.length; i++) {
-					String id = null;
-					String name = null;
-					Object item = items[i];
-					if(item instanceof Drug) {
-						id = ((Drug) item).getDrugId() + "";
-						name = ((Drug) item).getName();
-					} 
-					if(item instanceof Concept) {
-						id = ((Concept) item).getConceptId()+ "";
-						name = ((Concept) item).getName().getName();
-					}
+			if (source instanceof Drug) {
+				Drug drug = (Drug) source;
+				int currSolde = 0;
+				// Object[] items = list.toArray();
+				DrugOrderService dos = Context
+						.getService(DrugOrderService.class);
+				LocationService locationService = Context.getLocationService();
+				Location dftLoc = null;
+				String locationStr = Context.getAuthenticatedUser()
+						.getUserProperties()
+						.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
 
-					if (i > 0)
-						writer.write(',');
-
-					writer.write("{\"id\":\"" + id + "\", \"name\":\""
-							+ name + "\"}");
+				try {
+					dftLoc = locationService.getLocation(Integer
+							.valueOf(locationStr));
+				} catch (Exception e) {
 				}
-			}
-		} else
-			writer.write("\"ERROR: Source object is null\"");
+				
+				currSolde = dos.getSoldeByToDrugLocation(new Date()
+						+ "", drug.getDrugId() + "", null,
+						dftLoc.getLocationId() + "");				
+				
+				writer.write("{\"solde\":\"" + currSolde + "\"}");
+			} else
+				writer.write("\"ERROR: Source object is null\"");
 
-		writer.write("]");
+			writer.write("]");
+		}
 	}
 
 	/**
@@ -82,4 +85,5 @@ public class AjaxViewRenderer extends AbstractView {
 	public void setSourceKey(String sourceKey) {
 		this.sourceKey = sourceKey;
 	}
+
 }

@@ -69,7 +69,8 @@
 				<prop key="module/@MODULE_ID@/pharmacyDrugDisp.htm">pharmacyDrugDispController</prop>
 				<prop key="module/@MODULE_ID@/return.form">storeReturnForm</prop>				
 				<prop key="module/@MODULE_ID@/lot.htm">lotNumbersController</prop>					
-				<prop key="module/@MODULE_ID@/json.htm">jSonHandler</prop>						
+				<prop key="module/@MODULE_ID@/json.htm">jSonHandler</prop>
+				<prop key="module/@MODULE_ID@/drugSolde.htm">drugOrderSoldeHandler</prop>
 				<prop key="module/@MODULE_ID@/printReturnStock.list">printReturnStock</prop>
 				<prop key="module/@MODULE_ID@/dopc.form">drugOrderPrescriptionController</prop>
 				<prop key="module/@MODULE_ID@/consumabledispensation.htm">consumableDispensationController</prop>
@@ -183,6 +184,15 @@
 			<ref bean="ajaxViewRenderer" />
 		</property>
 	</bean>
+	
+	<bean id="drugOrderSoldeHandler" class="@MODULE_PACKAGE@.phcymgt.web.controller.DrugOrderSoldeHandler" >
+		<property name="viewName">
+			<value>drugSolde.htm</value>
+		</property>		
+		<property name="drugSoldeViewRenderer">
+			<ref bean="ajaxSoldeRenderer" />
+		</property>
+	</bean>
 		
 	<bean id="conceptDrugHandler" class="@MODULE_PACKAGE@.phcymgt.web.controller.ConceptDrugHandler">
 		<property name="viewName">
@@ -206,5 +216,8 @@
 	
 	<!-- view -->
 	<bean id="ajaxViewRenderer" class="@MODULE_PACKAGE@.view.extn.AjaxViewRenderer" />
+	<bean id="ajaxSoldeRenderer" class="@MODULE_PACKAGE@.view.extn.AjaxSoldeRenderer" />
 	<!-- /view -->
+	
+	
 </beans>
