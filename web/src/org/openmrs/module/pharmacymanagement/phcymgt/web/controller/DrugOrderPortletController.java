@@ -109,6 +109,10 @@ public class DrugOrderPortletController extends PortletController {
 			map.put(dat1, ordList);
 		}
 		
+		if(request.getParameter("appointmentId")!=null){
+			model.put("appointmentId", request.getParameter("appointmentId"));
+		}
+		
 		model.put("map", map);
 		model.put("drugOrders", drugOrders);
 		model.put("reasonStoppedOptions", Utils

@@ -21,6 +21,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.mohappointment.model.Appointment;
+import org.openmrs.module.mohappointment.model.AppointmentState;
 import org.openmrs.module.mohappointment.utils.AppointmentUtil;
 import org.openmrs.module.pharmacymanagement.PharmacyConstants;
 import org.openmrs.module.pharmacymanagement.utils.Utils;
@@ -47,6 +48,8 @@ public class DrugOrderPrescriptionController extends AbstractController {
 			patientId = request.getParameter("patientId");
 			patient = Context.getPatientService().getPatient(
 					Integer.valueOf(patientId));
+			System.out.println("______ First check PATIENT ID is not null ______ <<<<< "+ patientId +" >>>> ___________");
+			
 		}
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -69,11 +72,24 @@ public class DrugOrderPrescriptionController extends AbstractController {
 			if (request.getParameter("editcreate").equals("create")) {
 				Integer appointmentId = null;
 
+				System.out.println("______ Before checking APPOINTMENT ID ______ <<<<< "+ appointmentId +" >>>> ___________");
 				// For appointment creation
 				if (request.getParameter("appointmentId") != null
-						&& !request.getParameter("appointmentId").equals(""))
+						&& !request.getParameter("appointmentId").equals("")){
 					appointmentId = Integer.parseInt(request
 							.getParameter("appointmentId"));
+
+					System.out.println("______ when checking if APPOINTMENT ID is not null ______ <<<<< "+ appointmentId +" >>>> ___________");
+					/**
+					 * _____________Setting Appointment as Attended here and
+					 * creating a pharmacy waiting one:
+					 */
+					createPharmacyAppointment(appointmentId, request, patient, null);
+
+					/**
+					 * __________________________________________________
+					 */
+				}
 
 				DrugOrder drugOrder = new DrugOrder();
 				Drug drug = conceptService.getDrug(Integer.valueOf(request
@@ -114,22 +130,11 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					try {
 						startDate = sdf.parse(startDateStr);
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					drugOrder.setStartDate(startDate);
 
 					orderService.saveOrder(drugOrder);
-
-					/**
-					 * _____________Setting Appointment as Attended here and
-					 * creating a pharmacy waiting one:
-					 */
-					createPharmacyAppointment(request, patient, null);
-
-					/**
-					 * __________________________________________________
-					 */
 
 					/*
 					 * To be uncommented whenever the commented lines are
@@ -147,6 +152,7 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
 							"You need to enter the start date!");
 				}
+
 			}
 
 		}
@@ -245,6 +251,9 @@ public class DrugOrderPrescriptionController extends AbstractController {
 				mav.addObject("msg", "An order has been stopped successfully!");
 			}
 		}
+		
+		System.out.println("______ when checking if PATIENT ID is not null ______ <<<<< "+ patientId +" >>>> ___________");
+		
 		return new ModelAndView(new RedirectView(
 				"../../patientDashboard.form?patientId=" + patientId));
 	}
@@ -257,22 +266,31 @@ public class DrugOrderPrescriptionController extends AbstractController {
 	 * @param patient
 	 *            the patient that is going to pharmacy services
 	 * @throws NumberFormatException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
-	private void createPharmacyAppointment(HttpServletRequest request,
-			Patient patient, Encounter encounter) throws NumberFormatException, ParseException {
-		
-		if (request.getParameter("appointmentId") != null
-				&& !request.getParameter("appointmentId").equals("")) {
+	private void createPharmacyAppointment(Integer appointmentId, HttpServletRequest request,
+			Patient patient, Encounter encounter) throws NumberFormatException,
+			ParseException {
+
+		if (appointmentId != null) {
+			
 			Appointment appointment = AppointmentUtil
 					.getWaitingAppointmentById(Integer.valueOf(request
 							.getParameter("appointmentId")));
 			Utils.setConsultationAppointmentAsAttended(appointment);
-			
+
 			// Create Pharmacy waiting appointment here:
+			System.out.println("______ Appointment ID ______ <<<<< "+ appointmentId +" >>>> ___________");
 			Utils.createWaitingPharmacyAppointment(patient, encounter);
 		}
-
 		
+		for (Appointment appointment : AppointmentUtil
+				.getAllWaitingAppointmentsByPatientAtService(patient,
+						new AppointmentState(4, "WAITING"), new Date(),
+						AppointmentUtil.getServiceByConcept(Context
+								.getConceptService().getConcept(8053)))) {
+
+			Utils.setConsultationAppointmentAsAttended(appointment);
+		}
 	}
 }
