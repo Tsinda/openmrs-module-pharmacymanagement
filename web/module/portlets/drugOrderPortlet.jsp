@@ -333,9 +333,10 @@
 </div>
 
 <div id="edit-dialog-content">
-<form method="post" action="module/@MODULE_ID@/dopc.form?patientId=${model.patientId}">
-<input type="hidden" name="orderId" id="editing" /> <input
-	type="hidden" name="editcreate" id="editingcreating" />
+<form method="get" action="module/@MODULE_ID@/dopc.form?patientId=${model.patientId}">
+<input type="hidden" name="orderId" id="editing" />
+<input type="hidden" name="editcreate" id="editingcreating" />
+<input type="hidden" name="appointmentId" value="" />
 <table>
 <!-- 
 	<tr class="toBRepl">		
