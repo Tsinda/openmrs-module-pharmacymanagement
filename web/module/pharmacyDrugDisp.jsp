@@ -40,8 +40,9 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td><openmrs:fieldGen type="org.openmrs.Patient"
-				formFieldName="patientId" val="${patient}" /></td>
+			<td>
+				<openmrs_tag:patientField formFieldName="patientId" initialValue="${patient.patientId}" linkUrl="${pageContext.request.contextPath}/admin/patients/patient.form" />
+			</td>
 			<td>
 				<select name="pharmacy" id="pharmacyId">
 					<option value="">-- select --</option>
@@ -82,6 +83,9 @@
 <div style="clear: both;"></div>
 </div>
 <script type="text/javascript">
+
+var $dsm = jQuery.noConflict();
+
 var pId=0;
 var pattId = 0;
 var cyId = 0;
@@ -153,7 +157,6 @@ var titleArray = new Array();
 titleArray.push("Drugs");
 titleArray.push("Quantity");
 
-var $dsm = jQuery.noConflict();
 $dsm(document).ready(function() {
 	serviceParam = "<c:out value="${param.serviceId}"/>";
 	patientParam = "<c:out value="${param.patientId}"/>";
