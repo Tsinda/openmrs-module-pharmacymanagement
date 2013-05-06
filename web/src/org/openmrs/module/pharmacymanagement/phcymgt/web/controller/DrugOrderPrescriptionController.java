@@ -41,18 +41,14 @@ public class DrugOrderPrescriptionController extends AbstractController {
 
 		HttpSession httpSession = request.getSession();
 		String qtyStr = null;
-		String patientId = null;
-		Patient patient = null;
-		if (request.getParameter("patientId") != null
-				&& !request.getParameter("patientId").equals("")) {
-			patientId = request.getParameter("patientId");
-			patient = Context.getPatientService().getPatient(
+		
+		/** This is created here, so that it can't be declared anywhere else... (KAMONYO) */
+		Integer appointmentId = null;
+		/** ... */
+		
+		String patientId = request.getParameter("patientId");
+		Patient patient = Context.getPatientService().getPatient(
 					Integer.valueOf(patientId));
-			System.out
-					.println("______ First check PATIENT ID is not null ______ <<<<< "
-							+ patientId + " >>>> ___________");
-
-		}
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		ConceptService conceptService = Context.getConceptService();
@@ -72,31 +68,22 @@ public class DrugOrderPrescriptionController extends AbstractController {
 				&& !request.getParameter("editcreate").equals("")
 				&& patient != null) {
 			if (request.getParameter("editcreate").equals("create")) {
-				Integer appointmentId = null;
 
-				System.out
-						.println("______ Before checking APPOINTMENT ID ______ <<<<< "
-								+ appointmentId + " >>>> ___________");
-				// For appointment creation
+				/** Creating an Pharmacy appointment if not exists (KAMONYO) */
+
 				if (request.getParameter("appointmentId") != null
 						&& !request.getParameter("appointmentId").equals("")) {
 					appointmentId = Integer.parseInt(request
 							.getParameter("appointmentId"));
 
-					System.out
-							.println("______ when checking if APPOINTMENT ID is not null ______ <<<<< "
-									+ appointmentId + " >>>> ___________");
 					/**
-					 * _____________Setting Appointment as Attended here and
+					 * Setting Appointment as Attended here and
 					 * creating a pharmacy waiting one:
 					 */
 					createPharmacyAppointment(appointmentId, request, patient,
 							null);
-
-					/**
-					 * __________________________________________________
-					 */
 				}
+				/** ... END of Appointment ... */
 
 				DrugOrder drugOrder = new DrugOrder();
 				Drug drug = conceptService.getDrug(Integer.valueOf(request
@@ -259,16 +246,13 @@ public class DrugOrderPrescriptionController extends AbstractController {
 			}
 		}
 
-		System.out
-				.println("______ when checking if PATIENT ID is not null ______ <<<<< "
-						+ patientId + " >>>> ___________");
-
 		return new ModelAndView(new RedirectView(
 				"../../patientDashboard.form?patientId=" + patientId));
 	}
 
 	/**
-	 * Auto generated method comment
+	 * Creates Pharmacy Waiting Appointment, and sets existing Consultation
+	 * waiting appointments as they are now no longer needed...
 	 * 
 	 * @param request
 	 *            HttpServletRequest parameter to be used
@@ -289,8 +273,6 @@ public class DrugOrderPrescriptionController extends AbstractController {
 			Utils.setConsultationAppointmentAsAttended(appointment);
 
 			// Create Pharmacy waiting appointment here:
-			System.out.println("______ Appointment ID ______ <<<<< "
-					+ appointmentId + " >>>> ___________");
 			Utils.createWaitingPharmacyAppointment(patient, encounter);
 		}
 

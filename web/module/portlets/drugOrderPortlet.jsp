@@ -333,10 +333,15 @@
 </div>
 
 <div id="edit-dialog-content">
-<form method="get" action="module/@MODULE_ID@/dopc.form?patientId=${model.patientId}">
+<form method="post" action="module/@MODULE_ID@/dopc.form">
 <input type="hidden" name="orderId" id="editing" />
 <input type="hidden" name="editcreate" id="editingcreating" />
-<input type="hidden" name="appointmentId" value="" />
+
+<!-- Just created these two parameters in order to get them as they are in the Controller (KAMONYO)-->
+<input type="hidden" name="appointmentId" value="${model.appointmentId}" />
+<input type="hidden" name="patientId" value="${model.patientId}" />
+<!-- End of this -->
+
 <table>
 <!-- 
 	<tr class="toBRepl">		

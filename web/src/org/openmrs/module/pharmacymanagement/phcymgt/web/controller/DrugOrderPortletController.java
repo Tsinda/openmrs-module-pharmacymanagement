@@ -65,10 +65,26 @@ public class DrugOrderPortletController extends PortletController {
 		Patient patient = null;
 		if (request.getParameter("patientId") != null
 				&& !request.getParameter("patientId").equals("")) {
+			
+			/** Sending the patient ID after checking it is not null... (KAMONYO) */
+			model.put("patientId", Integer.valueOf(request.getParameter("patientId")));
+			/** ... */
+			
 			patient = Context.getPatientService().getPatient(
 					Integer.valueOf(request.getParameter("patientId")));
 			person = Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("patientId")));
 		}
+		
+		/**
+		 * Checking whether the Appointment ID is not null at this level... (KAMONYO)
+		 */
+
+		if(request.getParameter("appointmentId")!=null)
+			if(!request.getParameter("appointmentId").equals("")){
+			model.put("appointmentId", request.getParameter("appointmentId"));
+		}
+		
+		/**	... */
 		
 		List<Obs> insuranceTypeObsList = obsService.getObservationsByPersonAndConcept(person, insuranceTypeConcept);
 		String insuranceType = insuranceTypeObsList.size() == 0 ? null : insuranceTypeObsList.get(insuranceTypeObsList.size() -1).getValueCoded().getName().getName();
@@ -109,10 +125,6 @@ public class DrugOrderPortletController extends PortletController {
 			map.put(dat1, ordList);
 		}
 		
-		if(request.getParameter("appointmentId")!=null){
-			model.put("appointmentId", request.getParameter("appointmentId"));
-		}
-		
 		model.put("map", map);
 		model.put("drugOrders", drugOrders);
 		model.put("reasonStoppedOptions", Utils
@@ -120,7 +132,10 @@ public class DrugOrderPortletController extends PortletController {
 		model.put("drugMap", drugMap);
 		model.put("medSet", concMedset);
 		model.put("drugs", drugs);
-		model.put("patientId", patient.getPatientId());
+		
+		/** Commented by KAMONYO because he used it above...(LINE: 70) */
+		//		model.put("patientId", patient.getPatientId());
+		
 		model.put("patient", patient);
 		model.put("provider", Context.getAuthenticatedUser());
 		model.put("drugsAtaTime", possibleFrequency[0]);
