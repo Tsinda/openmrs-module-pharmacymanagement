@@ -48,10 +48,10 @@ if (addEvent) {
 else {
 	makeCalendar();
 }
-
-function CompareDates(dateFormat)
+/**
+function CompareDates(dateFormat,invDateId)
 {
-    var str1 = document.getElementById("invDateId").value;
+    var str1 = document.getElementById(invDateId).value;
     var str2 = document.getElementById("nowId").value;
     var dt1 = null;
     var mon1 = null;
@@ -75,21 +75,24 @@ function CompareDates(dateFormat)
 	    yr2  = parseInt(str2.substring(6,10),10);
 	} else{
 		alert("Invalid date : "+dateFormat+": not supported !");
-		$("#invDateId").val("");
+		$dsm("#"+invDateId).val("");
 		return;
 	}
     var date1 = new Date(yr1, mon1, dt1);
     var date2 = new Date(yr2, mon2, dt2);
     
+    alert("date1: " + date1 + " date2: " + date2);
+    
     if(date2 < date1)
     {
-    	 $("#msgId").html("The date can't be in future");
-    	 $("#msgId").addClass("error");
-    	 $("#invDateId").val("");    	 
+    	 $dsm("#msgId").html("The date can't be in future");
+    	 $dsm("#msgId").addClass("error");
+    	 $dsm("#invDateId").val("");    	 
     }
     else
     {
-    	$("#msgId").html("");
-   	 	$("#msgId").removeClass("error");
+    	$dsm("#msgId").html("");
+   	 	$dsm("#msgId").removeClass("error");
     }
 } 
+**/

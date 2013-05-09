@@ -213,6 +213,7 @@ function fromLocPharmaReturn(baseName, displayArray, valueArray, classAttr) {
 }
 
 /** a function which helps in validation to avoid that user input a future date **/
+
 function CompareDates(dateFormat)
 {
 	var dt1 = null;
@@ -235,14 +236,14 @@ function CompareDates(dateFormat)
 	if(dateFormat=='dd/mm/yyyy' || dateFormat=='jj/mm/aaaa') { 
 		str2 = nowDay + "/" + nowMonth + "/" + nowYear;
 	    dt1  = parseInt(str1.substring(0,2),10);
-	    mon1 = parseInt(str1.substring(3,5),10);
+	    mon1 = parseInt(str1.substring(3,5),10) - 1;
 	    yr1  = parseInt(str1.substring(6,10),10);
 	    dt2  = parseInt(nowDay);
 	    mon2 = parseInt(nowMonth);
 	    yr2  = parseInt(nowYear);
 	} else if(dateFormat=='mm/dd/yyyy' || dateFormat=='mm/jj/aaaa') {
 		str2 = nowMonth + "/" + nowDay + "/" +  nowYear;
-	    mon1  = parseInt(str1.substring(0,2),10);
+	    mon1  = parseInt(str1.substring(0,2),10) - 1;
 	    dt1 = parseInt(str1.substring(3,5),10);
 	    yr1  = parseInt(str1.substring(6,10),10);
 	    mon2  = parseInt(nowMonth);
@@ -254,8 +255,7 @@ function CompareDates(dateFormat)
 		return;
 	}
     var date1 = new Date(yr1, mon1, dt1);
-    var date2 = new Date(yr2, mon2, dt2);
-    if(date2 < date1)
+    if(now < date1)
     {
     	 $dsm("#msgErrorId").html("The date can't be in future");
     	 $dsm("#msgErrorId").addClass("error");

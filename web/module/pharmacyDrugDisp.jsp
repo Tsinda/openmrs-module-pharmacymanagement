@@ -8,6 +8,7 @@
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/demo_page.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/demo_table.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/jquery.dataTables.js" />
+<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/calendar.js" />
 
 <script type="text/javascript">
 
