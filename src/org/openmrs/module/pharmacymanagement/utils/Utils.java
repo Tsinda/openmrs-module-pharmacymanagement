@@ -805,4 +805,85 @@ public class Utils {
 	public static void setPharmacyAppointmentAsAttended(Appointment appointment) {
 		AppointmentUtil.saveAttendedAppointment(appointment);
 	}
+	
+	public static DrugProduct getDrugStoreProductByDrugId(int drugId) {
+		DrugOrderService service = Context.getService(DrugOrderService.class);
+		Collection<DrugProduct> drugProducts = service.getAllProducts();
+		DrugProduct drugProduct = null;
+		for(DrugProduct dp : drugProducts) {
+			if(dp.getDrugId() != null && dp.getIsDelivered() == true && dp.getCmddrugId().getLocationId() != null) {
+				if(dp.getDrugId().getDrugId() == drugId) {
+					drugProduct = dp;
+					break;
+				}
+			}
+		}
+		return drugProduct;
+	}
+	
+	/**
+	 * returns expiredDrugs number depending on the parameter dates entered.
+	 * @param startDate
+	 * @param endDate
+	 * @param location
+	 * @param drugId
+	 * @return
+	 */
+	public static Integer getExpiredDrugByDatesAndLocation(Date startDate, Date endDate, Location location, int drugId) {
+		DrugOrderService service = Context.getService(DrugOrderService.class);
+		Collection<DrugProduct> drugProducts = service.getAllProducts();
+		int expiredDrugs = 0;
+		for(DrugProduct dp : drugProducts) {
+			if(dp.getCmddrugId().getLocationId() != null) {
+				if(dp.getCmddrugId().getLocationId().getLocationId() == location.getLocationId()) {
+					if(dp.getDrugId() != null) {
+						if(drugId == dp.getDrugId().getDrugId()) {
+							if(compareDates(startDate, dp.getExpiryDate(), endDate)) {
+								expiredDrugs = service.getCurrSolde(dp.getDrugId().getDrugId()
+										+ "", null, location.getLocationId()
+										+ "", dp.getExpiryDate() + "", dp.getLotNo(), null);
+							}
+						}
+					}
+				}
+			}
+		}
+		return expiredDrugs;
+	}
+	
+	/**
+	 * compares if dates occurred before or after the event
+	 * @param startDate
+	 * @param toCompare
+	 * @param endDate
+	 * @return
+	 */
+	public static boolean compareDates(Date startDate, Date toCompare, Date endDate) {
+        boolean before = false;
+		//checking if date1 comes before date2
+        if (toCompare.after(startDate) && toCompare.before(endDate)) {
+        	before = true;
+        }
+        return before;
+    }
+	
+	public static Map<String, Integer> getDamagedLostDrugs(int drugId, Date date) {
+		DrugOrderService service = Context.getService(DrugOrderService.class);
+		List<ProductReturnStore> prsList = service.getReturnStockByDate(date);
+		
+		Map<String, Integer> damagedLostDrugMap = new HashMap<String, Integer>();
+		
+		for(ProductReturnStore prs : prsList) {
+			if(drugId == prs.getDrugproductId().getDrugId().getDrugId()) {
+				if(prs.getObservation().contains("damaged")) {
+					damagedLostDrugMap.put("damaged", prs.getRetQnty());
+				}
+				if(prs.getObservation().contains("lost")) {
+					damagedLostDrugMap.put("lost", prs.getRetQnty());
+				}
+			}
+		
+		}
+		return damagedLostDrugMap;
+	}
 }
