@@ -253,10 +253,12 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 									/**
 									 * ________Here is the Appointment Stuff
 									 */
-									if(request.getParameter("appointmentId")!=null)
+									if(request.getParameter("appointmentId")!=null) {
 										Utils.setPharmacyAppointmentAsAttended(
 												AppointmentUtil.getWaitingAppointmentById(
 														Integer.parseInt(request.getParameter("appointmentId"))));
+										mav.addObject("appointmentId", request.getParameter("appointmentId"));
+									}
 								
 
 								} else {

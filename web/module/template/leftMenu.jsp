@@ -1,7 +1,6 @@
-<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/calendar.js" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.js" />
-<openmrs:htmlInclude
-	file="/moduleResources/pharmacymanagement/jquery.simplemodal.js" />
+<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/calendar.js" />
+<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.simplemodal.js" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/basic.js" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/basic.css" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/validator.js" />
@@ -13,6 +12,8 @@
 	file="/moduleResources/pharmacymanagement/jquery.dataTables.js" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.tabs.js" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.tabs.css" />
+
+<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/create_dynamic_field.js" />
 
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.js" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.treeview.js" />

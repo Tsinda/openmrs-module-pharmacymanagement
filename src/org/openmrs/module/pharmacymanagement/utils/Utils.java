@@ -37,6 +37,7 @@ import org.openmrs.module.pharmacymanagement.ConsumableDispense;
 import org.openmrs.module.pharmacymanagement.DrugOrderPrescription;
 import org.openmrs.module.pharmacymanagement.DrugProduct;
 import org.openmrs.module.pharmacymanagement.DrugProductInventory;
+import org.openmrs.module.pharmacymanagement.Pharmacy;
 import org.openmrs.module.pharmacymanagement.PharmacyInventory;
 import org.openmrs.module.pharmacymanagement.ProductReturnStore;
 import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
@@ -804,5 +805,4 @@ public class Utils {
 	public static void setPharmacyAppointmentAsAttended(Appointment appointment) {
 		AppointmentUtil.saveAttendedAppointment(appointment);
 	}
-
 }
