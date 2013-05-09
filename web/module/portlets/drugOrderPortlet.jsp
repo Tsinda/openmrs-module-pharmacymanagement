@@ -143,7 +143,7 @@
 						$dm('#soldeId').html(item).css('color','red');
 					} else {
 						item = 'Solde: ' + data[0].solde;
-						$dm('#soldeId').html(item).css('color','red');
+						$dm('#soldeId').html(item).css('color','black');
 					}
 					
 					
