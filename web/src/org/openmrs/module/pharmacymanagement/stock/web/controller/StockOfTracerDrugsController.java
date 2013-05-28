@@ -2,20 +2,14 @@ package org.openmrs.module.pharmacymanagement.stock.web.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.classic.Session;
-import org.openmrs.Drug;
 import org.openmrs.Location;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.pharmacymanagement.HMISStockOfTracerDrugs;
 import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
