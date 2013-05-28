@@ -71,19 +71,21 @@ public class DrugOrderPrescriptionController extends AbstractController {
 
 				/** Creating an Pharmacy appointment if not exists (KAMONYO) */
 
-				if (request.getParameter("appointmentId") != null
-						&& !request.getParameter("appointmentId").equals("")) {
-					appointmentId = Integer.parseInt(request
-							.getParameter("appointmentId"));
-
-					/**
-					 * Setting Appointment as Attended here and
-					 * creating a pharmacy waiting one:
-					 */
-					createPharmacyAppointment(appointmentId, request, patient,
-							null);
-				}
+//				if (request.getParameter("appointmentId") != null
+//						&& !request.getParameter("appointmentId").equals("")) {
+//					appointmentId = Integer.parseInt(request
+//							.getParameter("appointmentId"));
+//
+//					/**
+//					 * Setting Appointment as Attended here and
+//					 * creating a pharmacy waiting one:
+//					 */
+//					createPharmacyAppointment(appointmentId, request, patient,
+//							null);
+//				}
 				/** ... END of Appointment ... */
+				
+				Utils.createWaitingPharmacyAppointment(patient, null);
 
 				DrugOrder drugOrder = new DrugOrder();
 				Drug drug = conceptService.getDrug(Integer.valueOf(request
@@ -273,7 +275,7 @@ public class DrugOrderPrescriptionController extends AbstractController {
 			Utils.setConsultationAppointmentAsAttended(appointment);
 
 			// Create Pharmacy waiting appointment here:
-			Utils.createWaitingPharmacyAppointment(patient, encounter);
+//			Utils.createWaitingPharmacyAppointment(patient, encounter);
 		}
 
 		for (Appointment appointment : AppointmentUtil
