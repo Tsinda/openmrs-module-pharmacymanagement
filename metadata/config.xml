@@ -17,7 +17,7 @@
 	<require_version>1.2.0.3400</require_version>	
 	
 	<require_modules>
-       <require_module version="0.0.7">org.openmrs.module.mohappointment</require_module>
+       <require_module version="0.0.8">org.openmrs.module.mohappointment</require_module>
 	</require_modules>
 	
 	<!-- AOP
