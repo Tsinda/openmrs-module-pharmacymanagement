@@ -15,6 +15,7 @@
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/dataentrystyle.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/chosen.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/chosen.jquery.min.js" />
+<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/create_dynamic_field.js" />
 
 <script type="text/javascript">
 	var $dm = jQuery.noConflict();
@@ -407,8 +408,8 @@
 	
 	<tr>
 		<td><spring:message code="pharmacymanagement.startDate" /></td>
-		<td><input id="dstartDate" type="text" name="startdate"
-			onfocus="showCalendar(this)" class="date" size="11" /> (dd/mm/yyyy)</td>
+		<td><input id="dstartDate" type="text" name="startdate" onfocus="showCalendar(this)" onchange="CompareDates('<openmrs:datePattern />', 'dstartDate');" class="date" size="11" />(dd/mm/yyyy)
+		<span id="msgId" style="width"></span></td>
 	</tr>
 	
 	<tr>

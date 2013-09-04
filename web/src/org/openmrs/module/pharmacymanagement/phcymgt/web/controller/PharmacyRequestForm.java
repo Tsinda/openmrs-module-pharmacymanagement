@@ -37,8 +37,7 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
 public class PharmacyRequestForm extends ParameterizableViewController {
 	@SuppressWarnings("unused")
 	private Log log = LogFactory.getLog(this.getClass());
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {

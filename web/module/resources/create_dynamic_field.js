@@ -20,11 +20,13 @@ function addOptionsToSelect(selectElement, displayArray, valueArray) {
 		selectElement.append($dsm(document.createElement("option")).attr("value",
 				valueArray[j]).text(displayArray[j]));
 	}
+
+	$dsm('#select_' + 1).chosen({no_results_text: "No results matched"});
 }
 
 function createNakedOptionSelect(nameValue, displayArray, valueArray, classAttr) {
 	var selectElement = $dsm(document.createElement("select")).attr("id",
-			fieldGroupCount).attr("class", classAttr).attr("name", nameValue);
+			"select_" + fieldGroupCount).attr("class", classAttr).attr("name", nameValue);
 	addOptionsToSelect(selectElement, displayArray, valueArray);
 	var tableRow = $dsm(document.createElement("tr")).append(
 			$dsm(document.createElement("td"))).append(
@@ -213,37 +215,32 @@ function fromLocPharmaReturn(baseName, displayArray, valueArray, classAttr) {
 }
 
 /** a function which helps in validation to avoid that user input a future date **/
-
-function CompareDates(dateFormat)
+function CompareDates(dateFormat, tagId)
 {
 	var dt1 = null;
     var mon1 = null;
     var yr1 = null;
     var str2 = null;
     
-	var str1 = document.getElementById("encDateId").value;
+	var str1 = document.getElementById(tagId).value;
     var now  = new Date();
     var nowDay = now.getDate().toString().length == 1 ? '0'+now.getDate() : now.getDate();
     var month = now.getMonth()+1;
     var nowMonth = month.toString().length == 1 ? '0' + month : month;
     var nowYear = now.getYear()+1900;
     
-    //var str2 = nowDay + "/" + nowMonth + "/" + nowYear;
-    
-    //alert("str1: -" + str1 + "- str2: -" + str2 + "-");
-    
     
 	if(dateFormat=='dd/mm/yyyy' || dateFormat=='jj/mm/aaaa') { 
 		str2 = nowDay + "/" + nowMonth + "/" + nowYear;
 	    dt1  = parseInt(str1.substring(0,2),10);
-	    mon1 = parseInt(str1.substring(3,5),10) - 1;
+	    mon1 = parseInt(str1.substring(3,5),10);
 	    yr1  = parseInt(str1.substring(6,10),10);
 	    dt2  = parseInt(nowDay);
 	    mon2 = parseInt(nowMonth);
 	    yr2  = parseInt(nowYear);
 	} else if(dateFormat=='mm/dd/yyyy' || dateFormat=='mm/jj/aaaa') {
 		str2 = nowMonth + "/" + nowDay + "/" +  nowYear;
-	    mon1  = parseInt(str1.substring(0,2),10) - 1;
+		mon1  = parseInt(str1.substring(0,2),10);
 	    dt1 = parseInt(str1.substring(3,5),10);
 	    yr1  = parseInt(str1.substring(6,10),10);
 	    mon2  = parseInt(nowMonth);
@@ -251,20 +248,22 @@ function CompareDates(dateFormat)
 	    yr2  = parseInt(nowYear);
 	} else{
 		alert("Invalid date : "+dateFormat+": not supported !");
-		$dsm("#encDateId").val("");
+		$dm("#"+tagId).val("");
 		return;
 	}
+	var month1 = mon1 - 1;
+	var month2 = mon2 - 1;
     var date1 = new Date(yr1, mon1, dt1);
-    if(now < date1)
+    var date2 = new Date(nowYear, nowMonth, nowDay);
+    if(date2 < date1)
     {
-    	 $dsm("#msgErrorId").html("The date can't be in future");
-    	 $dsm("#msgErrorId").addClass("error");
-    	 $dsm("#msgErrorId").css({'font-size':'10px'});
-    	 $dsm("#encDateId").val("");    	 
+    	 $dm("#msgId").html("The date can't be in future");
+    	 $dm("#msgId").addClass("error");
+    	 $dm("#"+tagId).val("");    	 
     }
     else
     {
-    	$dsm("#msgErrorId").html("");
-   	 	$dsm("#msgErrorId").removeClass("error");
+    	$dm("#msgId").html("");
+   	 	$dm("#msgId").removeClass("error");
     }
 } 
