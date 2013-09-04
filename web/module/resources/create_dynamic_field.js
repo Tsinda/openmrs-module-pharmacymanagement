@@ -20,13 +20,11 @@ function addOptionsToSelect(selectElement, displayArray, valueArray) {
 		selectElement.append($dsm(document.createElement("option")).attr("value",
 				valueArray[j]).text(displayArray[j]));
 	}
-
-	$dsm('#select_' + 1).chosen({no_results_text: "No results matched"});
 }
 
 function createNakedOptionSelect(nameValue, displayArray, valueArray, classAttr) {
 	var selectElement = $dsm(document.createElement("select")).attr("id",
-			"select_" + fieldGroupCount).attr("class", classAttr).attr("name", nameValue);
+			fieldGroupCount).attr("class", classAttr).attr("name", nameValue);
 	addOptionsToSelect(selectElement, displayArray, valueArray);
 	var tableRow = $dsm(document.createElement("tr")).append(
 			$dsm(document.createElement("td"))).append(
