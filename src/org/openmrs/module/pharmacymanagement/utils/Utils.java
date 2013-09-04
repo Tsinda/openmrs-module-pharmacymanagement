@@ -703,7 +703,12 @@ public class Utils {
 						.compareTo(
 								((ConceptAnswer) obj2).getAnswerConcept()
 										.getName().getName().toLowerCase());
-
+			else if(obj1 instanceof DrugProduct && obj2 instanceof DrugProduct) {
+				String str1 = ((DrugProduct) obj1).getConceptId() != null ? ((DrugProduct) obj1).getConceptId().getName().getName().toLowerCase() : ((DrugProduct) obj1).getDrugId().getName().toLowerCase();
+				String str2 = ((DrugProduct) obj2).getConceptId() != null ? ((DrugProduct) obj2).getConceptId().getName().getName().toLowerCase() : ((DrugProduct) obj2).getDrugId().getName().toLowerCase();
+				
+				compareInt = str1.toLowerCase().compareTo(str2);
+			}
 			return compareInt;
 		}
 	};
@@ -749,7 +754,7 @@ public class Utils {
 		return sortedConsumable;
 	}
 
-	public static List<Drug> getDrugs(List<Drug> drugs) {
+	public static List<Drug> sortDrugs(List<Drug> drugs) {
 		List<Drug> sortedDrugs = new ArrayList<Drug>();
 
 		for (Drug drug : drugs)
@@ -759,6 +764,18 @@ public class Utils {
 		Collections.sort(sortedDrugs, OPENMRS_OBJECT_COMPARATOR);
 
 		return sortedDrugs;
+	}
+	
+	public static List<DrugProduct> sortDrugProducts(List<DrugProduct> drugproducts) {
+		List<DrugProduct> sortedDrugProducts = new ArrayList<DrugProduct>();
+		
+		for(DrugProduct drugproduct : drugproducts)
+			sortedDrugProducts.add(drugproduct);
+		
+		// Sorting DrugProduct by Name
+		Collections.sort(sortedDrugProducts, OPENMRS_OBJECT_COMPARATOR);
+		
+		return sortedDrugProducts;				
 	}
 
 	public static void setConsultationAppointmentAsAttended(

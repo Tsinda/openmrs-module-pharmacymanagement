@@ -52,7 +52,7 @@ public class ConceptDrugHandler extends ParameterizableViewController {
 			concept = conceptService.getConcept(Integer.valueOf(request
 					.getParameter("drugConcept")));
 			drugs = conceptService.getDrugsByConcept(concept);
-			List<Drug> drugList = Utils.getDrugs(drugs);
+			List<Drug> drugList = Utils.sortDrugs(drugs);
 			model.put("source", drugList);
 			return new ModelAndView(viewRenderer, model);
 		}

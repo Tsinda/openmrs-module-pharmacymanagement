@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.Drug;
 import org.openmrs.Location;
 import org.openmrs.api.ConceptService;
@@ -27,6 +28,7 @@ import org.openmrs.module.pharmacymanagement.CmdDrug;
 import org.openmrs.module.pharmacymanagement.DrugProduct;
 import org.openmrs.module.pharmacymanagement.Pharmacy;
 import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
+import org.openmrs.module.pharmacymanagement.utils.Utils;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
@@ -270,12 +272,15 @@ public class PharmacyRequestForm extends ParameterizableViewController {
 
 		}
 		
+		List<DrugProduct> sortedDrug = Utils.sortDrugProducts(dpSet);
+		List<DrugProduct> sortedConsumable = Utils.sortDrugProducts(consumableSet);
+		
 		mav.addObject("pharmacyList", pharmacyList);
 		mav.addObject("pharmacies", pharmacies);
 		mav.addObject("locations", locations);
 		mav.addObject("dftLoc", dftLoc);
-		mav.addObject("dpSet", dpSet);
-		mav.addObject("consumableSet", consumableSet);
+		mav.addObject("dpSet", sortedDrug);
+		mav.addObject("consumableSet", sortedConsumable);
 		mav.setViewName(getViewName());
 		return mav;
 	}
