@@ -89,31 +89,30 @@ titleArray.push("Quantity");
 serviceParam = "<c:out value="${param.serviceId}"/>";
 patientParam = "<c:out value="${param.patientId}"/>";
 
-$dsm(document).ready(function() {	
-	var serviceId = $dsm('#pharmacyId').val();
-		
-		if(appointmentId != null && patientId != null) {
-			var phcyId = $dsm("#pharmacyId").val();
-			if(patientId.length > 0) {
-				$dsm("#drugs").empty().html("<center><img src='${pageContext.request.contextPath}/images/loading.gif' /></center>");
-				$dsm("#drugs").load("patOrders.list?patientId="+patientId+"&pharmacyId="+phcyId+" #ordersId");
-				$dsm("#pharmaRpt").load("drugOrder.list?patientId="+patientId+" #dt_example", function() {
-					$dsm('#example').dataTable();
-				});
-			}	
-		} else {
-			$dsm('#pharmacyId').change(function() {
-				var patId = $dsm("input[name='patientId']").val();
-				var phcyId = $dsm("#pharmacyId").val();
-				if(patId.length > 0) {
-					$dsm("#drugs").empty().html("<center><img src='${pageContext.request.contextPath}/images/loading.gif' /></center>");
-					$dsm("#drugs").load("patOrders.list?patientId="+patId+"&pharmacyId="+phcyId+" #ordersId");
-					$dsm("#pharmaRpt").load("drugOrder.list?patientId="+patId+" #dt_example", function() {
-						$dsm('#example').dataTable();
-					});
-				}
-			});
-		}
+$dsm(document).ready(function() {
+    var serviceId = $dsm('#pharmacyId').val();
+    
+    $dsm('#pharmacyId').change(function() {
+            var patId = $dsm("input[name='patientId']").val();
+            var phcyId = $dsm("#pharmacyId").val();
+            if(patId.length > 0) {
+                    $dsm("#drugs").empty().html("<center><img src='${pageContext.request.contextPath}/images/loading.gif' /></center>");
+                    $dsm("#drugs").load("patOrders.list?patientId="+patId+"&pharmacyId="+phcyId+" #ordersId");
+                    $dsm("#pharmaRpt").load("drugOrder.list?patientId="+patId+" #dt_example", function() {
+                            $dsm('#example').dataTable();
+                    });
+            }
+    });
+    if(appointmentId != null && patientId != null) {
+            var phcyId = $dsm("#pharmacyId").val();
+            if(patientId.length > 0) {
+                    $dsm("#drugs").empty().html("<center><img src='${pageContext.request.contextPath}/images/loading.gif' /></center>");
+                    $dsm("#drugs").load("patOrders.list?patientId="+patientId+"&pharmacyId="+phcyId+" #ordersId");
+                    $dsm("#pharmaRpt").load("drugOrder.list?patientId="+patientId+" #dt_example", function() {
+                            $dsm('#example').dataTable();
+                    });
+            }
+    }
 });
 
 </script>
