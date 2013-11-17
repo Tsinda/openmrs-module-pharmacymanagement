@@ -80,12 +80,49 @@
 				    });
 							
 					$dsm("#adddrugid").click(function(){
+						var drugIdAttr = null;
+						var drugId = null
+						var fromId = $dsm('#fromId').val();
 						createDrug("drugs",drugsArray,drugsIdArray,"dynamicDrug");
 						$dsm("#hiddenfield").attr("value", fieldGroupCount);
+						$dsm('.dynamicDrug').change(function() {
+							drugIdAttr = $dsm(this).attr('id');
+							drugId = $dsm('#'+drugIdAttr).val();
+
+							$dsm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/drugSolde.htm?drugId='+drugId+'&fromId='+fromId, function(data) {
+								var item = '';
+								if(data[0].solde == 0) {
+									item = data[0].solde;
+									$dsm('#soldeId_' + drugIdAttr).html(item).css('color','red');
+								} else {
+									item = data[0].solde;
+									$dsm('#soldeId_' + drugIdAttr).html(item).css('color','black');
+								}
+							});
+						});
 					});
 								
 					$dsm("#addconsumableid").click(function() {
+						var consumableIdAttr = null;
+						var consumableId = null
+						var fromId = $dsm('#fromId').val();
 						createConsumable("consumable",consArray,consIdArray,"dynamicConsumable");
+						$dsm('.dynamicConsumable').change(function() {
+							consumableIdAttr = $dsm(this).attr('id');
+							consumableId = $dsm('#' + consumableIdAttr).val();
+
+							$dsm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/drugSolde.htm?consumableId='+consumableId+'&fromId='+fromId, function(data) {
+								var item = '';
+								if(data[0].solde == 0) {
+									item = data[0].solde;
+									$dsm('#soldeId_' + consumableIdAttr).html(item).css('color','red');
+								} else {
+									item = data[0].solde;
+									$dsm('#soldeId_' + consumableIdAttr).html(item).css('color','black');
+								}
+							});
+							
+						})
 					});
 						
 					$dsm('#drugstore').salidate({
@@ -112,7 +149,7 @@
 		<tr>
 			<td><spring:message code="pharmacymanagement.from" /></td>
 			<td>
-				<input type="hidden" name="fosaName" value="${dftLoc.locationId}" />
+				<input type="hidden" name="fosaName" id="fromId" value="${dftLoc.locationId}" />
 				<input type="text" name="fosaNameTxt" value="${dftLoc.name}" readonly="readonly" size="${fn:length(dftLoc.name) + 5}"/>
 			</td>
 		</tr>
@@ -150,6 +187,7 @@
 	<table width="100%">
 		<tr align="center">
 			<td class="designation"><spring:message code="pharmacymanagement.designation" /></td>
+			<td class="solde"><spring:message code="Solde" /></td>
 			<td class="qr"><spring:message code="pharmacymanagement.qntyReq" /></td>
 			<td class="del">&nbsp;</td>
 		</tr>
@@ -163,6 +201,7 @@
 	<table width="100%">
 		<tr align="center">
 			<td class="designation"><spring:message code="pharmacymanagement.designation" /></td>
+			<td class="solde"><spring:message code="Solde" /></td>
 			<td class="qr"><spring:message code="pharmacymanagement.qntyReq" /></td>
 			<td class="del">&nbsp;</td>
 		</tr>

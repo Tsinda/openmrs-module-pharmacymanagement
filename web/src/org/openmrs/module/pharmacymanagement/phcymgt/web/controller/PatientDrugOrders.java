@@ -75,14 +75,14 @@ public class PatientDrugOrders extends ParameterizableViewController {
 			patientIdStr = request.getParameter("patientId");
 
 			patient = Context.getPatientService().getPatient(
-					Integer.valueOf(patientIdStr));
+					Integer.valueOf(patientIdStr));			
 		}
 
 		if (patient != null && request.getParameter("pharmacyId") != null
 				&& !request.getParameter("pharmacyId").equals("")) {
 
 			drugOrders = Context.getOrderService().getDrugOrdersByPatient(
-					patient);
+					patient);		
 
 			pharmacy = service.getPharmacyById(Integer.valueOf(request
 					.getParameter("pharmacyId")));
@@ -108,6 +108,7 @@ public class PatientDrugOrders extends ParameterizableViewController {
 					dld.setDrug(drug);
 					Map<String, String> dpMap = new HashMap<String, String>();
 					lotNos = Utils.getLotsExpDp(null, drOr.getDrug().getDrugId()+"", null, pharmacy.getPharmacyId()+"");
+					
 					
 					/**
 					 * TO DO
@@ -136,6 +137,11 @@ public class PatientDrugOrders extends ParameterizableViewController {
 				}
 				drugIdss.add(drOr.getDrug().getDrugId());
 			}
+
+			List<Obs> patientObs = Context.getObsService().getObservationsByPerson(Context.getPersonService().getPerson(Integer.valueOf(patientIdStr)));
+			mav.addObject("patientObs", patientObs);
+			mav.addObject("locale", Context.getLocale());
+			System.out.println("Patient observation: " + patientObs);
 
 			mav.addObject("patient", patient);
 		}

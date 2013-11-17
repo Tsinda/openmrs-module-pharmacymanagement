@@ -189,7 +189,7 @@
 		<property name="viewName">
 			<value>drugSolde.htm</value>
 		</property>		
-		<property name="drugSoldeViewRenderer">
+		<property name="itemSoldeViewRenderer">
 			<ref bean="ajaxSoldeRenderer" />
 		</property>
 	</bean>

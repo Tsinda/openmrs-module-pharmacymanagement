@@ -62,9 +62,7 @@ function mdd(){
 	var object = document.getElementsByName("patientId");
 	if(object.length > 0) {
 		ddd();
-	}
-	else 
-		{
+	} else	{
 		setTimeout(mdd,500);
 	}
 }
@@ -97,12 +95,16 @@ $dsm(document).ready(function() {
             var phcyId = $dsm("#pharmacyId").val();
             if(patId.length > 0) {
                     $dsm("#drugs").empty().html("<center><img src='${pageContext.request.contextPath}/images/loading.gif' /></center>");
-                    $dsm("#drugs").load("patOrders.list?patientId="+patId+"&pharmacyId="+phcyId+" #ordersId");
-                    $dsm("#pharmaRpt").load("drugOrder.list?patientId="+patId+" #dt_example", function() {
+                   	$dsm("#drugs").load("patOrders.list?patientId="+patId+"&pharmacyId="+phcyId+" #ordersId", function() {
+                    	var loadedWeight = $dsm(".obsValue").text();
+                    	$dsm("#weightId").val(loadedWeight);
+                   	});
+                   	$dsm("#pharmaRpt").load("drugOrder.list?patientId="+patId+" #dt_example", function() {
                             $dsm('#example').dataTable();
-                    });
+                   	});
             }
     });
+    
     if(appointmentId != null && patientId != null) {
             var phcyId = $dsm("#pharmacyId").val();
             if(patientId.length > 0) {
@@ -155,13 +157,10 @@ $dsm(document).ready(function() {
 						<option value="${phcy.pharmacyId}" ${phcy.pharmacyId eq 13 ? 'selected="selected"' : ''}>${phcy.name}</option>
 					</c:forEach>
 				</select></td>
-			<td><input type="text" name="encDate" id="encDateId"
-			onchange="CompareDates('<openmrs:datePattern />');"
-			onfocus="showCalendar(this)" class="date" size="11" /><br /><span id="msgErrorId"></span></td>			
-			<td><input type="text" name="weight" size="5" value="${obsWeight.valueNumeric}" /></td>
+			<td><input type="text" name="encDate" id="encDateId" onchange="CompareDates('<openmrs:datePattern />');" onfocus="showCalendar(this)" class="date" size="11" /><br /><span id="msgErrorId"></span></td>			
+			<td><input type="text" name="weight" size="5" value="${obsWeight.valueNumeric}" id="weightId" /></td>
 			<!-- <td><input type="text" name="remainingDrug" size="4" /></td> -->
-			<td><openmrs_tag:dateField formFieldName="nvDate"
-				startValue="${date}" /></td>
+			<td><openmrs_tag:dateField formFieldName="nvDate" startValue="${date}" /></td>
 		</tr>
 		<tr>
 			<td colspan="8">

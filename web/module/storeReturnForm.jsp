@@ -71,14 +71,19 @@ $(document).ready(function() {
 	$("#toId").hide();	
 	$("#lotId").attr("disabled", "disabled");
 	$('#drugId').change(function() {
-		var drToId = $('#fromId').val();
+		
+		var drFromId = $('#fromId').val();
+		var retVar = $("input[name=retType]:checked").val();
+		
 		$("#lotId").attr("disabled", "");
 		$("#qtyId").val("");
 		$("#expDateId").val("");
-		if(drToId == dftLocName) {
-			$("#qtyId").attr("disabled", "disabled");
+		
+		if(retVar == 'internal') {
+            fillOptions('drugId', 'lotId', '');
+		} else if(retVar == 'external' && drFromId == dftLocId) {
+			fillOptions('drugId', 'lotId', '');
 		}
-		fillOptions('drugId', 'lotId', ''); 
 	});	
 
 	$("#showStockId").click(function() {
@@ -238,6 +243,9 @@ $(document).ready(function() {
 				}
 				$("#toReplace").html('<input type="text" name="lot" id="lotId" size="11" value="" />');
 				$("#expDateId").val("").attr("disabled", "");
+				$('#expDateId').focus(function() {
+					showCalendar(this);
+				});
 				$("#qtyId").val("").attr("disabled", "");
 			} else {
 				$("#toReplace").html('<select name="lot" id="lotId"><option value="">-- select --</option></select>');
@@ -286,21 +294,25 @@ function fillOptions(drugId, lotId, c) {
 				}
 			}				
 		});
-	$("select#lotId").html(items);
-	
-	$("#lotId").change(function() {
-		var lotVal = $('#lotId').val();
-		var arr = new Array();
-		arr = lotVal.split("_");
-		if(arr.length > 1) {
-			$("#expDateId").val(arr[0]);
-			$("#dpId").val(arr[1]);
-			$("#qtyId").attr("disabled", "");
-		} else {
-			//$("#expDateId").val("");
-			//$("#qtyId").attr("disabled", "");
+		
+		$("select#lotId").html(items);
+
+	    // the input field is not a select
+		if($('#lotId').is("select")) {			
+			$("#lotId").change(function() {
+				var lotVal = $('#lotId').val();
+				var arr = new Array();
+				arr = lotVal.split("_");
+				if(arr.length > 1) {
+					$("#expDateId").val(arr[0]);
+					$("#dpId").val(arr[1]);
+					$("#qtyId").attr("disabled", "");
+				} else {
+					//$("#expDateId").val("");
+					//$("#qtyId").attr("disabled", "");
+				}
+			});
 		}
-	});
 	});
 }
 
@@ -437,8 +449,14 @@ function populateLocations() {
 	</tr>
 	<tr>
 		<td valign="top">Observation</td>
-		<td colspan="6"><textarea rows="3" cols="43" name="observation"
-			id="obsId"></textarea></td>
+		<td colspan="6">
+			<select name="observation" id="obsId">
+				<option value="">--Select--</option>
+				<c:forEach items="${adjustmentReasons}" var="adjustmentReason">
+					<option value="${adjustmentReason.answerConcept.name.name}">${adjustmentReason.answerConcept.name.name}</option>			
+				</c:forEach>
+			</select>
+		</td>
 	</tr>
 	<tr>
 		<td><input id="formSubmitId" type="submit" value="Add"

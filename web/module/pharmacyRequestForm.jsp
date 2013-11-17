@@ -79,12 +79,51 @@ var dftLocationId = "<c:out value="${dftLoc.locationId}"/>"
 			    });
 			    	
 				$dsm("#adddrugid").click(function(){
+					var drugIdAttr = null;
+					var drugId = null
 					createDrug("drugs",drugsArray,drugsIdArray,"dynamicDrug");
 					$dsm("#hiddenfield").attr("value", fieldGroupCount);
+					
+					$dsm('.dynamicDrug').change(function() {
+						var pharmacyId = $dsm('#pharmacyId').val();
+						drugProductIdAttr = $dsm(this).attr('id');
+						drugProductId = $dsm('#'+drugProductIdAttr).val();
+
+						$dsm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/drugSolde.htm?drugProductId='+drugProductId+'&pharmacyId='+pharmacyId, function(data) {
+							var item = '';
+							if(data[0].solde == 0) {
+								item = data[0].solde;
+								$dsm('#soldeId_' + drugProductIdAttr).html(item).css('color','red');
+							} else {
+								item = data[0].solde;
+								$dsm('#soldeId_' + drugProductIdAttr).html(item).css('color','black');
+							}
+						});
+					});
 				});
 							
 				$dsm("#addconsumableid").click(function() {
+					var consumableIdAttr = null;
+					var consumableId = null
 					createConsumable("consumable",consArray,consIdArray,"dynamicConsumable");
+					
+					$dsm('.dynamicConsumable').change(function() {
+						var pharmacyId = $dsm('#pharmacyId').val();
+						drugProductConsIdAttr = $dsm(this).attr('id');
+						drugProductConsId = $dsm('#' + drugProductConsIdAttr).val();
+
+						$dsm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/drugSolde.htm?drugProductConsId='+drugProductConsId+'&pharmacyId='+pharmacyId, function(data) {
+							var item = '';
+							if(data[0].solde == 0) {
+								item = data[0].solde;
+								$dsm('#soldeId_' + drugProductConsIdAttr).html(item).css('color','red');
+							} else {
+								item = data[0].solde;
+								$dsm('#soldeId_' + drugProductConsIdAttr).html(item).css('color','black');
+							}
+						});
+						
+					})
 				});
 				
 				$dsm('#drugstore').salidate({
@@ -111,7 +150,7 @@ var dftLocationId = "<c:out value="${dftLoc.locationId}"/>"
 		<td><spring:message code="pharmacymanagement.from" /></td>
 		<td><input id="destin" type="hidden" name="destination" /> 
 		
-		<select name="pharmacy">
+		<select name="pharmacy" id="pharmacyId">
 			<option value="">-- select --</option>
 			<c:forEach items="${pharmacyList}" var="pharmacy">
 				<option value="${pharmacy.pharmacyId}">${pharmacy.name}</option>
@@ -151,6 +190,7 @@ var dftLocationId = "<c:out value="${dftLoc.locationId}"/>"
 	<table width="100%">
 		<tr align="center">
 			<td class="designation"><spring:message code="pharmacymanagement.designation" /></td>
+			<td class="solde"><spring:message code="Solde" /></td>
 			<td class="qr"><spring:message code="pharmacymanagement.qntyReq" /></td>
 			<td class="del">&nbsp;</td>
 		</tr>
@@ -164,6 +204,7 @@ var dftLocationId = "<c:out value="${dftLoc.locationId}"/>"
 	<table width="100%">
 		<tr align="center">
 			<td class="designation"><spring:message code="pharmacymanagement.designation" /></td>
+			<td class="solde"><spring:message code="Solde" /></td>
 			<td class="qr"><spring:message code="pharmacymanagement.qntyReq" /></td>
 			<td class="del">&nbsp;</td>
 		</tr>

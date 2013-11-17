@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,9 @@ public class PharmacyRequestForm extends ParameterizableViewController {
 		Collection<Pharmacy> pharmacies = serviceDrug.getAllPharmacies();
 		
 		List<Location> locations = locationService.getAllLocations();
+		
+		Map<Integer, DrugProduct> drugMap = new HashMap<Integer, DrugProduct>();
+		Map<Integer, DrugProduct> consumableMap = new HashMap<Integer, DrugProduct>();
 
 		Collection<DrugProduct> dpList = serviceDrug.getAllProducts();
 		Collection<DrugProduct> dpList1 = new ArrayList<DrugProduct>();
@@ -270,10 +274,23 @@ public class PharmacyRequestForm extends ParameterizableViewController {
 				}
 			}
 
+		}	
+		
+		
+		for(DrugProduct drugproduct : dpSet) {
+			drugMap.put(drugproduct.getDrugId().getDrugId(), drugproduct);
 		}
 		
-		List<DrugProduct> sortedDrug = Utils.sortDrugProducts(dpSet);
-		List<DrugProduct> sortedConsumable = Utils.sortDrugProducts(consumableSet);
+//		Map<Integer, DrugProduct> sortedDrugMap = Utils.SortDrugMapValues(drugMap);
+		
+		for(DrugProduct drugproduct : consumableSet) {
+			consumableMap.put(drugproduct.getConceptId().getConceptId(), drugproduct);
+		}
+//		Map<Integer, DrugProduct> sortedConsumableMap = Utils.SortConsumableMapValues(drugMap);
+		
+		
+		Collection<DrugProduct> sortedDrug = Utils.sortDrugProducts(drugMap.values());
+		Collection<DrugProduct> sortedConsumable = Utils.sortDrugProducts(consumableMap.values());
 		
 		mav.addObject("pharmacyList", pharmacyList);
 		mav.addObject("pharmacies", pharmacies);

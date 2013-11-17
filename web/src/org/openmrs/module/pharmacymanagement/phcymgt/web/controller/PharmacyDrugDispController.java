@@ -157,10 +157,13 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 			EncounterType encounterType = encounterService
 					.getEncounterType(Utils
 							.getGP("pharmacymanagement.pharmacyEncounter"));
-
-			Obs weightObs = Utils.createObservation(encDate, dftLoc, patient,
-					weightConcept, weight, 1);
-			obsList.add(weightObs);
+			List<Obs> observations = Context.getObsService().getObservationsByPersonAndConcept(Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("patientId"))), Context.getConceptService().getConcept(5089));
+			
+			if(observations.size() == 0) {
+				Obs weightObs = Utils.createObservation(encDate, dftLoc, patient,
+						weightConcept, weight, 1);
+				obsList.add(weightObs);
+			}			
 			
 			if(request.getParameter("nvDate") != null && !request.getParameter("nvDate").equals("")) {
 				nvDateStr = request.getParameter("nvDate");
@@ -171,9 +174,11 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 			
 			if(request.getParameter("pharmacy") != null && !request.getParameter("pharmacy").equals(""))
 				pharmacyIdStr = request.getParameter("pharmacy");
-
-			encounter = Utils.createEncounter(encDate, user, dftLoc, patient,
-					encounterType, obsList);
+			
+			if(obsList.size() == 0)
+				encounter = Utils.createEncounter(encDate, user, dftLoc, patient,
+						encounterType, obsList);
+			
 			if (fieldNames.size() != 0) {
 				for (String str : fieldNames) {
 					if (str.contains("drug_")) {
@@ -209,7 +214,8 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 								dop.setDate(encDate);
 								dop.setQuantity(quantity);
 								dop.setPatient(patient);
-								dop.setUser(user);
+								dop.setUser(user);							
+								
 								dop.setDrugproductId(drugProduct);
 
 								// saving the the pharmacy inventory
@@ -221,7 +227,7 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 									//auto expire the regimen to remove from the list which appears when dispensing what have been prescribed
 									drugOrder.setAutoExpireDate(encDate);
 									
-									if (count == 1) {
+									if (count == 1 && obsList.size() == 0) {
 										encounterService
 												.saveEncounter(encounter);
 									}

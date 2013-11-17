@@ -52,7 +52,7 @@ public class DrugOrderView extends ParameterizableViewController {
 		Collection<DrugOrderPrescription> dopList = null;
 		Patient patient = null;
 		List<Adherance> adheranceList = new ArrayList<Adherance>();
-		List<ProductReturnStore> returnStoreList = null;
+		List<ProductReturnStore> returnStoreList = new ArrayList<ProductReturnStore>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		DrugOrderService service = Context.getService(DrugOrderService.class);
 
@@ -62,7 +62,14 @@ public class DrugOrderView extends ParameterizableViewController {
 				if (request.getParameter("retDate") != null
 						&& !request.getParameter("retDate").equals("")) {
 					Date date = sdf.parse(request.getParameter("retDate"));
-					returnStoreList = service.getReturnStockByDate(date);
+					List<ProductReturnStore> lentListProduct = service.getReturnStockByDate(date, "Lend");
+					List<ProductReturnStore> borrowedListProduct = service.getReturnStockByDate(date, "Borrow");
+					
+					returnStoreList.addAll(lentListProduct);
+					returnStoreList.addAll(borrowedListProduct);
+					
+					System.out.println("Lend: " + lentListProduct.size() + " Borrow: " + borrowedListProduct.size() + " return: " + returnStoreList.size());
+					
 					mav.addObject("returnStoreList", returnStoreList);
 				}
 			}

@@ -10,6 +10,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -296,15 +299,15 @@ public class Utils {
 	}
 
 	/**
-	 * gets drugs that have been returned to other facilities
+	 * gets drugs that were lent to other facilities
 	 * 
 	 * @param date
 	 * @param drugProduct
-	 * @return the sum of what has been return on the date
+	 * @return the sum of what has been returned on the date
 	 * @throws ParseException
 	 */
 	@SuppressWarnings("deprecation")
-	public static Integer getReturnedProductDuringTheMonth(Date date,
+	public static Integer getLentDrugsDuringTheMonth(Date date,
 			DrugProduct drugProduct) throws ParseException {
 		int sum = 0;
 		Date dateCheck = null;
@@ -319,15 +322,52 @@ public class Utils {
 			dateStr = i + "/" + month + "/" + year;
 			dateCheck = sdf.parse(dateStr);
 			List<ProductReturnStore> rss = service
-					.getReturnStockByDate(dateCheck);
+					.getReturnStockByDate(dateCheck, "Lend");
+			
 			if (rss != null)
 				for (ProductReturnStore rs : rss) {
-					if (rs.getDrugproductId().getDrugproductId() == drugProduct
-							.getDrugproductId()) {
+					if (rs.getDrugproductId().getDrugId() == drugProduct.getDrugId()) {
 						sum += rs.getRetQnty();
 					}
 				}
 		}
+		System.out.println("Sum: Lent *******************************************************************************: " + sum); 
+		return sum;
+	}
+	
+	/**
+	 * gets drugs that were borrowed from other facilities
+	 * 
+	 * @param date
+	 * @param drugProduct
+	 * @return the sum of what has been returned on the date
+	 * @throws ParseException
+	 */
+	@SuppressWarnings("deprecation")
+	public static Integer getBorrowedDrugsDuringTheMonth(Date date,
+			DrugProduct drugProduct) throws ParseException {
+		int sum = 0;
+		Date dateCheck = null;
+		String dateStr = null;
+		DrugOrderService service = Context.getService(DrugOrderService.class);
+		int month = date.getMonth() + 1;
+		int gregMonth = date.getMonth();
+		int year = date.getYear() + 1900;
+		int lastDayOfMonth = getLastDayOfMonth(year, gregMonth);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		for (int i = 1; i <= lastDayOfMonth; i++) {
+			dateStr = i + "/" + month + "/" + year;
+			dateCheck = sdf.parse(dateStr);
+			List<ProductReturnStore> rss = service
+					.getReturnStockByDate(dateCheck, "Borrow");
+			if (rss != null)
+				for (ProductReturnStore rs : rss) {
+					if (rs.getDrugproductId().getDrugId() == drugProduct.getDrugId()) {
+						sum += rs.getRetQnty();
+					}
+				}
+		}
+		System.out.println("Sum: Borrowed *******************************************************************************: " + sum);
 		return sum;
 	}
 
@@ -428,7 +468,7 @@ public class Utils {
 	}
 
 	/**
-	 * Gets lot numbers and expiration date of a product
+	 * Gets lot numbers and expiration date of a product in dispensing
 	 * 
 	 * @param drugId
 	 * @param conceptId
@@ -473,7 +513,7 @@ public class Utils {
 	}
 
 	/**
-	 * Gets lot numbers and expiration date of a product
+	 * Gets lot numbers and expiration date of a product in distribution
 	 * 
 	 * @param drugId
 	 * @param conceptId
@@ -581,19 +621,17 @@ public class Utils {
 			Collection<PharmacyInventory> piList = service
 					.getAllPharmacyInventory();
 			for (PharmacyInventory pi : piList) {
-				if (pi.getDrugproductId().getCmddrugId().getPharmacy()
-						.getPharmacyId() == Integer.valueOf(pharmacyId)) {
-					if (drugId != null
-							&& pi.getDrugproductId().getDrugId() != null) {
-						if (pi.getDrugproductId().getDrugId().getDrugId()
-								.toString().equals(drugId)) {
-							dpSet.add(pi.getDrugproductId());
-						}
-					} else if (conceptId != null) {
-						if (conceptId.equals(pi.getDrugproductId()
-								.getConceptId().getConceptId()
-								+ "")) {
-							dpSet.add(pi.getDrugproductId());
+				if (pi.getDrugproductId().getCmddrugId() != null) {
+					if (pi.getDrugproductId().getCmddrugId().getPharmacy().getPharmacyId() == Integer.valueOf(pharmacyId)) {
+						if (drugId != null && pi.getDrugproductId().getDrugId() != null) {
+							if (pi.getDrugproductId().getDrugId().getDrugId()
+									.toString().equals(drugId)) {
+								dpSet.add(pi.getDrugproductId());
+							}
+						} else if (conceptId != null) {
+							if (conceptId.equals(pi.getDrugproductId().getConceptId().getConceptId() + "")) {
+								dpSet.add(pi.getDrugproductId());
+							}
 						}
 					}
 				}
@@ -604,7 +642,7 @@ public class Utils {
 
 	/**
 	 * configures the Dispensed to be dynamic, if there is no dispensing in the
-	 * current month, the go back until where you had dispensing
+	 * current month, then go back months ago until where you had dispensing
 	 * 
 	 * @param goBackXMonth
 	 * @param to
@@ -721,11 +759,39 @@ public class Utils {
 					.compareTo(obj2.getValue().toLowerCase());
 		}
 	};
+	
+	private static Comparator<Map.Entry<Integer, DrugProduct>> consumableComparator = new Comparator<Map.Entry<Integer, DrugProduct>>() {
+		public int compare(Map.Entry<Integer, DrugProduct> obj1,
+				Map.Entry<Integer, DrugProduct> obj2) {
+			return obj1.getValue().getConceptId().getName().getName().toLowerCase().compareTo(obj2.getValue().getConceptId().getName().getName().toLowerCase());
+		}
+	};
+	
+	private static Comparator<Map.Entry<Integer, DrugProduct>> drugComparator = new Comparator<Map.Entry<Integer, DrugProduct>>() {
+		public int compare(Map.Entry<Integer, DrugProduct> obj1,
+				Map.Entry<Integer, DrugProduct> obj2) {
+			return obj1.getValue().getDrugId().getName().toLowerCase().compareTo(obj2.getValue().getDrugId().getName().toLowerCase());
+		}
+	};
+	
+	
 
 	public static SortedSet<Map.Entry<Integer, String>> SortMapValues(
 			Map<Integer, String> map) {
 		SortedSet<Map.Entry<Integer, String>> entries = new TreeSet<Map.Entry<Integer, String>>(
 				comparator);
+		entries.addAll(map.entrySet());
+		return entries;
+	}
+	
+	public static SortedSet<Map.Entry<Integer, DrugProduct>> SortDrugMapValues(Map<Integer, DrugProduct> map) {
+		SortedSet<Map.Entry<Integer, DrugProduct>> entries = new TreeSet<Map.Entry<Integer, DrugProduct>>(drugComparator);
+		entries.addAll(map.entrySet());
+		return entries;
+	}
+	
+	public static SortedSet<Map.Entry<Integer, DrugProduct>> SortConsumableMapValues(Map<Integer, DrugProduct> map) {
+		SortedSet<Map.Entry<Integer, DrugProduct>> entries = new TreeSet<Map.Entry<Integer, DrugProduct>>(consumableComparator);
 		entries.addAll(map.entrySet());
 		return entries;
 	}
@@ -766,7 +832,7 @@ public class Utils {
 		return sortedDrugs;
 	}
 	
-	public static List<DrugProduct> sortDrugProducts(List<DrugProduct> drugproducts) {
+	public static Collection<DrugProduct> sortDrugProducts(Collection<DrugProduct> drugproducts) {
 		List<DrugProduct> sortedDrugProducts = new ArrayList<DrugProduct>();
 		
 		for(DrugProduct drugproduct : drugproducts)
@@ -884,7 +950,7 @@ public class Utils {
         return before;
     }
 	
-	public static Map<String, Integer> getDamagedLostDrugs(int drugId, Date date) {
+	/*public static Map<String, Integer> getDamagedLostDrugs(int drugId, Date date) {
 		DrugOrderService service = Context.getService(DrugOrderService.class);
 		List<ProductReturnStore> prsList = service.getReturnStockByDate(date);
 		
@@ -902,5 +968,31 @@ public class Utils {
 		
 		}
 		return damagedLostDrugMap;
+	}*/
+	
+	/**
+	 * to sort a map by its value
+	 * 
+	public static Map sortByComparator(Map unsortMap) {
+		 
+		List list = new LinkedList(unsortMap.entrySet());
+ 
+		// sort list based on comparator
+		Collections.sort(list, new Comparator() {
+			public int compare(Object o1, Object o2) {
+				return ((Comparable) ((Map.Entry) (o1)).getValue())
+                                       .compareTo(((Map.Entry) (o2)).getValue());
+			}
+		});
+ 
+		// put sorted list into map again
+                //LinkedHashMap make sure order in which keys were inserted
+		Map sortedMap = new LinkedHashMap();
+		for (Iterator it = list.iterator(); it.hasNext();) {
+			Map.Entry entry = (Map.Entry) it.next();
+			sortedMap.put(entry.getKey(), entry.getValue());
+		}
+		return sortedMap;
 	}
+	**/
 }

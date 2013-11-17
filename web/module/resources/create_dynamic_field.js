@@ -53,7 +53,8 @@ function createDrug(baseName, displayArray, valueArray, classAttr) {
 	// adding row fields
 	table.append($dsm(document.createElement("tr")).attr("align", "center")
 			.append($dsm(document.createElement("td")).attr("width", "70%").append(optionSelectRow))
-			.append($dsm(document.createElement("td")).attr("width", "20%").append(amountReqInputElement))
+			.append($dsm(document.createElement("span")).attr("width", "10%").attr("id", "soldeId_"+fieldGroupCount))
+			.append($dsm(document.createElement("td")).attr("width", "10%").append(amountReqInputElement))
 			.append($dsm(document.createElement("td")).attr("width", "10%").append(deleteButton)));
 
 	// add the line separator between tables
@@ -71,25 +72,22 @@ function createDrug(baseName, displayArray, valueArray, classAttr) {
 
 function createConsumable(baseName, displayArray, valueArray, classAttr) {
 	// the containing table
-	var table = $dsm(document.createElement("table")).attr("id",
-			baseName + "tableid_" + ++fieldGroupCount).attr("class", "consumable_tables").attr("width", "100%");
+	var table = $dsm(document.createElement("table")).attr("id", baseName + "tableid_" + ++fieldGroupCount).attr("class", "consumable_tables").attr("width", "100%");
 
 	// designation selector
-	var optionSelectRow = createNakedOptionSelect("consumable_" + fieldGroupCount,
-			displayArray, valueArray, classAttr);
+	var optionSelectRow = createNakedOptionSelect("consumable_" + fieldGroupCount, displayArray, valueArray, classAttr);
 
 	// amount requisitioned
-	var amountReqInputElement = $dsm(document.createElement("input")).attr("type",
-			"text").attr("name", "consneeded_" + fieldGroupCount).attr("size",
-			"3");	
+	var amountReqInputElement = $dsm(document.createElement("input")).attr("type", "text").attr("name", "consneeded_" + fieldGroupCount).attr("size", "3");	
 
 	// delete button
 	var deleteButton = createDeleteButton(baseName);
 		
 	// adding row fields
 	table.append($dsm(document.createElement("tr")).attr("align", "center")
-			.append($dsm(document.createElement("td")).attr("width", "50%").append(optionSelectRow))
-			.append($dsm(document.createElement("td")).attr("width", "20%").append(amountReqInputElement))
+			.append($dsm(document.createElement("td")).attr("width", "70%").append(optionSelectRow))
+			.append($dsm(document.createElement("span")).attr("width", "10%").attr("id", "soldeId_"+fieldGroupCount))
+			.append($dsm(document.createElement("td")).attr("width", "10%").append(amountReqInputElement))
 			.append($dsm(document.createElement("td")).attr("width", "10%").append(deleteButton)));
 
 	// add the line separator between tables

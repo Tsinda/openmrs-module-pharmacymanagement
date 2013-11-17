@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.openmrs.Concept;
 import org.openmrs.Drug;
+import org.openmrs.module.pharmacymanagement.DrugProduct;
 
 public class Test {
 
@@ -22,43 +25,41 @@ public class Test {
 	 * @throws ParseException
 	 */
 
-	// public int compare(Map.Entry<K,V> entry1, Map.Entry<K,V> entry2)
-	// {
-	// // assuming there are no null values
-	// return entry1.getValue().compareTo(entry2.getValue());
-	// }
-	//
-	// public int compare(Map.Entry<K,V> entry1, Map.Entry<K,V> entry2)
-	// {
-	// // assuming there are no null keys or values
-	// int diff = entry1.getValue().compareTo(entry2.getValue());
-	// if (diff == 0)
-	// {
-	// diff = entry1.getKey().compareTo(entry2.getKey());
-	// }
-	// return diff;
-	// }
-	//
+	public static HashMap<String, DrugProduct> sortHashMap(HashMap<String, DrugProduct> input){
+	    Map<String, DrugProduct> tempMap = new HashMap<String, DrugProduct>();
+	    for (String wsState : input.keySet()){
+	        tempMap.put(wsState,input.get(wsState));
+	    }
+
+	    List<String> mapKeys = new ArrayList<String>(tempMap.keySet());
+	    List<DrugProduct> mapValues = new ArrayList<DrugProduct>(tempMap.values());
+	    HashMap<String, DrugProduct> sortedMap = new LinkedHashMap<String, DrugProduct>();
+	    TreeSet<DrugProduct> sortedSet = new TreeSet<DrugProduct>(mapValues);
+	    Object[] sortedArray = sortedSet.toArray();
+	    int size = sortedArray.length;
+	    for (int i=0; i<size; i++){
+	        sortedMap.put(mapKeys.get(mapValues.indexOf(sortedArray[i])), 
+	                      (DrugProduct)sortedArray[i]);
+	    }
+	    return sortedMap;
+	}
+	
 	public static void main(String[] args) {
 
-		Object str = null;
-		int in = 0;
-		if(str != null) {
-			in = Integer.valueOf(str + "");
-			System.out.println(in);
-		} else {
-			System.out.println("not null");
-		}
+		HashMap<String, Double> unSorted = new HashMap<String, Double>();
+		unSorted.put("Bristol", 23.45);
+		unSorted.put("London", 345.122);
+		unSorted.put("Manchester", 12.3);
+		unSorted.put("Edinburgh", 11.4); 
 		
+		HashMap<String, Double> sorted = new HashMap<String, Double>();
+//		sorted = sortHashMap(unSorted);
+		
+		for (String cityName : sorted.keySet()){
+		    System.out.println(cityName + " " + sorted.get(cityName));
+		}
 			
 	}
 
-//	private static Comparator<Map.Entry<K, V>> comparator = new Comparator<Map.Entry<K, V>>() {
-//		public int compare(Map.Entry<K, V> obj1, Map.Entry<K, V> obj2) {
-//			// do comparing on values first, keys second
-//			return obj1.getValue().toLowerCase()
-//					.compareTo(obj2.getValue().toLowerCase());
-//		}
-//	};
 
 }

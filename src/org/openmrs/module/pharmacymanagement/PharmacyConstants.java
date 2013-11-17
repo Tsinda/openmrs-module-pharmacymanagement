@@ -21,5 +21,5 @@ public class PharmacyConstants {
 	public static final int RETURN_VISIT_DATE = 5096;
 	public static final int RWANDA_INSURANCE_TYPE = 6740;
 	public static final int RWANDA_INSURANCE_NUMBER = 6741;
-	
+	public static final int ADJUSTMENT_REASON = 11033;	
 }

@@ -196,8 +196,8 @@ $(document).ready( function() {
     <td class="simple">${consommation.value.qntPremJour}&nbsp;</td>
    <td class="simpleSpan">${consommation.value.qntRecuMens}&nbsp;</td>
    <td class="simple">${consommation.value.qntConsomMens}&nbsp;</td>
-    <td class="simple">${consommation.value.returnedProduct}</td>
-    <td class="simple">-</td>
+    <td class="simple">${consommation.value.lentProduct}</td>
+    <td class="simple">${consommation.value.borrowedProduct}</td>
     <td class="simple">${consommation.value.qntRestMens}&nbsp;</td>
     <td class="simple">${consommation.value.stockOut}</td>
     <td class="simple">${consommation.value.adjustMonthlyConsumption}</td>
@@ -233,8 +233,8 @@ $(document).ready( function() {
     <td class="simple">${consommation.value.qntPremJour}&nbsp;</td>
    <td class="simpleSpan">${consommation.value.qntRecuMens}&nbsp;</td>
    <td class="simple">${consommation.value.qntConsomMens}&nbsp;</td>
-    <td class="simple">${consommation.value.returnedProduct}</td>
-    <td class="simple">-</td>
+    <td class="simple">${consommation.value.lentProduct}&nbsp;</td>
+    <td class="simple">${consommation.value.borrowedProduct}&nbsp;</td>
     <td class="simple">${consommation.value.qntRestMens}&nbsp;</td>
     <td class="simple">${consommation.value.stockOut}</td>
     <td class="simple">${consommation.value.adjustMonthlyConsumption}</td>

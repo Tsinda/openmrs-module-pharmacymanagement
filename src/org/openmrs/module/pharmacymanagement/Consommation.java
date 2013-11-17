@@ -28,8 +28,8 @@ public class Consommation {
 	private int adjustMonthlyConsumption;
 	private int maxQnty;
 	private int qntyToOrder;
-	private int returnedProduct;
-	private int adjustedProduct;
+	private int lentProduct;
+	private int borrowedProduct;
 	
 	public DrugProduct getDrugProduct() {
 		return drugProduct;
@@ -218,27 +218,27 @@ public class Consommation {
 		this.qntyToOrder = qntyToOrder;
 	}
 	/**
-	 * @return the returnedProduct
+	 * @return the lentProduct
 	 */
-	public int getReturnedProduct() {
-		return returnedProduct;
+	public int getLentProduct() {
+		return lentProduct;
 	}
 	/**
-	 * @param returnedProduct the returnedProduct to set
+	 * @param lentProduct the returnedProduct to set
 	 */
-	public void setReturnedProduct(int returnedProduct) {
-		this.returnedProduct = returnedProduct;
+	public void setLentProduct(int lentProduct) {
+		this.lentProduct = lentProduct;
 	}
 	/**
 	 * @return the adjustedProduct
 	 */
-	public int getAdjustedProduct() {
-		return adjustedProduct;
+	public int getBorrowedProduct() {
+		return borrowedProduct;
 	}
 	/**
-	 * @param adjustedProduct the adjustedProduct to set
+	 * @param borrowedProduct the borrowedProduct to set
 	 */
-	public void setAdjustedProduct(int adjustedProduct) {
-		this.adjustedProduct = adjustedProduct;
+	public void setborrowedProduct(int borrowedProduct) {
+		this.borrowedProduct = borrowedProduct;
 	}
 }

@@ -425,12 +425,13 @@ public interface DrugOrderDAO {
 	public ProductReturnStore getReturnStockById(int arsId);
 	
 	/**
-	 * returns <code>ProductReturnStore</code> by passing the <code>String</code> date
+	 * returns <code>ProductReturnStore</code> by passing the <code>Java.Util</code> date and <code>String</code> observation
 	 * 
 	 * @param date
+	 * @param observation
 	 * @return
 	 */
-	public List<ProductReturnStore> getReturnStockByDate(Date date);
+	public List<ProductReturnStore> getReturnStockByDate(Date date, String observation);
 	
 	/**
 	 * returns <code>ProductReturnStore</code> by passing the <code>DrugProduct</code> dp

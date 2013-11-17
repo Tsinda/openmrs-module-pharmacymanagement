@@ -96,6 +96,11 @@
 		<property>@MODULE_ID@.possibleFrequency</property>
 		<defaultValue>4,5,30</defaultValue> 
 		<description>The first is for the drugs that a patient can take at once, the second is times per day and the last is days</description>
+	</globalProperty>	
+	<globalProperty>
+		<property>@MODULE_ID@.monthToDrugExpiration</property>
+		<defaultValue>6</defaultValue>
+		<description>The month to alert before the drug or consumable expires</description>
 	</globalProperty>
 	
 	

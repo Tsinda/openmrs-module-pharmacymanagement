@@ -324,8 +324,8 @@ public class DrugOrderServiceImpl implements DrugOrderService {
 	}
 
 	@Override
-	public List<ProductReturnStore> getReturnStockByDate(Date date) {
-		return drugOrderDAO.getReturnStockByDate(date);
+	public List<ProductReturnStore> getReturnStockByDate(Date date, String observation) {
+		return drugOrderDAO.getReturnStockByDate(date, observation);
 	}
 	
 	@Override

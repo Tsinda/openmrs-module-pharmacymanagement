@@ -13,6 +13,7 @@ import org.hibernate.criterion.Restrictions;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.pharmacymanagement.ProductReturnStore;
 import org.openmrs.module.pharmacymanagement.CmdDrug;
 import org.openmrs.module.pharmacymanagement.ConsumableDispense;
@@ -226,7 +227,8 @@ public class DrugOrderDAOImpl implements DrugOrderDAO {
 							+ " pars ON dp.drugproduct_id = pars.drugproduct_id WHERE 1 = 1 ");
 			sb.append(" AND (cd.location_id = '" + locationId
 					+ "' OR p.location_id = '" + locationId
-					+ "' OR pars.destination = '" + locationId + "') ");
+					+ "' OR pars.destination = '" + locationId
+					+ "' OR pars.origin_location = '" + locationId + "') ");
 		}
 
 		if (drugId != null && !drugId.equals(""))
@@ -288,7 +290,8 @@ public class DrugOrderDAOImpl implements DrugOrderDAO {
 		if (locationId != null && !locationId.equals(""))
 			sb.append(" AND (cd.location_id = '" + locationId
 					+ "' OR p.location_id ='" + locationId
-					+ "' OR ars.destination = '" + locationId + "') ");
+					+ "' OR ars.destination ='" + locationId
+					+ "' OR ars.origin_location = '" + locationId + "') ");
 
 		sb.append(" ORDER BY dpi.inventory_id;");
 
@@ -548,7 +551,7 @@ public class DrugOrderDAOImpl implements DrugOrderDAO {
 	public List<DrugProduct> getProductListAboutToExpiry() {
 		String queryStr = "SELECT dp.* FROM "
 				+ PharmacyConstants.DRUG_PRODUCT
-				+ " dp WHERE dp.expiry_date <= date_add(curdate(), interval 2 month) AND dp.expiry_date >= date_add(curdate(), interval 0 day) GROUP BY dp.lot_no;";
+				+ " dp WHERE dp.expiry_date <= date_add(curdate(), interval "+ Context.getAdministrationService().getGlobalProperty("pharmacymanagement.monthToDrugExpiration") +" month) AND dp.expiry_date >= date_add(curdate(), interval 0 day) GROUP BY dp.lot_no;";
 		Session session = sessionFactory.getCurrentSession();
 		List<DrugProduct> dpList = session.createSQLQuery(queryStr).addEntity(
 				"dp", DrugProduct.class).list();
@@ -944,10 +947,11 @@ public class DrugOrderDAOImpl implements DrugOrderDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ProductReturnStore> getReturnStockByDate(Date date) {
+	public List<ProductReturnStore> getReturnStockByDate(Date date, String observation) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(
 				ProductReturnStore.class);
 		criteria.add(Restrictions.eq("retDate", date));
+		criteria.add(Restrictions.eq("observation", observation));
 		return criteria.list();
 	}
 

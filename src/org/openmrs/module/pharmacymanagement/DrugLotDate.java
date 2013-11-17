@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
+import org.openmrs.Obs;
 
 /**
  *
@@ -15,6 +16,7 @@ public class DrugLotDate {
 	private Drug drug;
 	private Map<String, String> dpMap;
 	private DrugOrder drugOrder;
+	private Obs weight;
 	
 	/**
 	 * @return the dpMap
@@ -51,5 +53,18 @@ public class DrugLotDate {
 	 */
 	public void setDrugOrder(DrugOrder drugOrder) {
 		this.drugOrder = drugOrder;
-	}	
+	}
+	/**
+	 * @return the weight
+	 */
+	public Obs getWeight() {
+		return weight;
+	}
+	/**
+	 * @param weight the weight to set
+	 */
+	public void setWeight(Obs weight) {
+		this.weight = weight;
+	}
+	
 }

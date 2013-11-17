@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.Drug;
 import org.openmrs.Location;
 import org.openmrs.User;
@@ -25,6 +26,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.pharmacymanagement.DrugProduct;
 import org.openmrs.module.pharmacymanagement.DrugProductInventory;
 import org.openmrs.module.pharmacymanagement.Pharmacy;
+import org.openmrs.module.pharmacymanagement.PharmacyConstants;
 import org.openmrs.module.pharmacymanagement.PharmacyInventory;
 import org.openmrs.module.pharmacymanagement.ProductReturnStore;
 import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
@@ -63,10 +65,15 @@ public class StoreReturnForm extends ParameterizableViewController {
 		String expDateStr = null;
 		String lot = null;
 		String to = "";
+		String from = "";
 		boolean isUpdate = false;
 
 		String locationStr = Context.getAuthenticatedUser().getUserProperties()
 				.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
+		
+		Collection<ConceptAnswer> adjustmentReasons = conceptService.getConcept(PharmacyConstants.ADJUSTMENT_REASON).getAnswers();
+		mav.addObject("adjustmentReasons", adjustmentReasons);
+		
 
 		try {
 			dftLoc = locationService.getLocation(Integer.valueOf(locationStr));
@@ -90,17 +97,28 @@ public class StoreReturnForm extends ParameterizableViewController {
 			}
 		}
 
-		if (request.getParameter("to") != null
-				&& !request.getParameter("to").equals(""))
+		if (request.getParameter("to") != null && !request.getParameter("to").equals("")
+				&& request.getParameter("from") != null && !request.getParameter("from").equals("")) {
 			to = request.getParameter("to");
+			from = request.getParameter("from");
+		}
 		
-		if (request.getParameter("lot") != null
-				&& !request.getParameter("lot").equals("")) {
+		if (request.getParameter("lot") != null && !request.getParameter("lot").equals("")
+				&& request.getParameter("retType") != null && !request.getParameter("retType").equals("") ) {
+			String returnType = request.getParameter("retType");
 			String[] lotArr = request.getParameter("lot").split("_");
 			if(lotArr.length > 1) {
-				expDateStr = lotArr[0];
-				expDate = sdf.parse(expDateStr);				
-				lot = service.getDrugProductById(Integer.valueOf(lotArr[1].toString())).getLotNo();
+				if(((returnType.equals("external") && from.equals(locationStr))) || returnType.equals("internal")) {
+					expDateStr = lotArr[0];
+					expDate = sdf.parse(expDateStr);
+					lot = service.getDrugProductById(Integer.valueOf(lotArr[1].toString())).getLotNo();
+				}				
+			}
+			
+			if(returnType.equals("external") && !from.equals(locationStr) && request.getParameter("expDate") != null) {
+				expDateStr = request.getParameter("expDate");
+				expDate = sdf.parse(expDateStr);
+				lot = request.getParameter("lot");
 			}
 		}
 
@@ -164,7 +182,7 @@ public class StoreReturnForm extends ParameterizableViewController {
 			}
 		}
 		/**
-		 * In case you want to update uncomment the following codes
+		 * In case you want to update the form, uncomment the following codes
 		 */
 //		if (request.getParameter("ars") != null
 //				&& !request.getParameter("ars").equals("")) {

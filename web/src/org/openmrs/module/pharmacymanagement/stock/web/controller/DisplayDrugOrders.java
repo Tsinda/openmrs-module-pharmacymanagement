@@ -65,7 +65,8 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 		DrugProduct prodFromLot = null;
 		Object obQntyRec = null;
 		Object obQntyConsomMens = null;
-		int retProd = 0;
+		int lentProd = 0;
+		int borrowedProd = 0;
 		DrugProduct dpStockout = null;
 
 		Collection<ConceptAnswer> consumers = null;
@@ -294,18 +295,21 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 			for (DrugProduct dp : drugProducts) {
 				Consommation drugReq = new Consommation();
 				Consommation consReq = new Consommation();
-				retProd = Utils.getReturnedProductDuringTheMonth(cmddrug
+				lentProd = Utils.getLentDrugsDuringTheMonth(cmddrug
 						.getMonthPeriod(), dp);
+				borrowedProd = Utils.getBorrowedDrugsDuringTheMonth(cmddrug.getMonthPeriod(), dp);
 
 				if (dp.getDrugId() != null) {
-					drugReq.setReturnedProduct(retProd);
+					drugReq.setLentProduct(lentProd);
+					drugReq.setborrowedProduct(borrowedProd);
 					drugReq.setDrugName(dp.getDrugId().getName());
 					drugReq.setDrugId(dp.getDrugId().getDrugId() + "");
 					drugReq.setConditUnitaire(dp.getDrugId().getUnits() + "");
 					if (dp.getExpiryDate() != null)
 						drugReq.setExpirationDate(dp.getExpiryDate());
 				} else {
-					consReq.setReturnedProduct(0);
+					consReq.setLentProduct(0);
+					consReq.setborrowedProduct(0);
 					consReq.setDrugName(dp.getConceptId().getName().getName());
 					consReq.setConceptId(dp.getConceptId().getConceptId() + "");
 					consReq.setConditUnitaire("");
@@ -324,10 +328,6 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 					// } catch (NullPointerException npe) {
 					// }
 
-					/**
-					 * TO DO check on line 338 and see why it is returnin an
-					 * error of index out of bound
-					 */
 					List<Pharmacy> pharmaList = service
 							.getPharmacyByLocation(dftLoc);
 					String pharmaStr = "";

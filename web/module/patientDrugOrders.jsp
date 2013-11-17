@@ -1,16 +1,22 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
+
 <div id="ordersId">
+
+<openmrs:globalProperty key="concept.weight" var="weightConceptId" />
+<div id="loadedWeightId" style="visibility: hidden;"><openmrs_tag:mostRecentObs observations="${patientObs}" concept="${weightConceptId}" showUnits="false" locale="${locale}" showDate="false" /></div>
+
 <table class="return">
 <c:if test="${!empty dlds}">
 	<thead>
 		<tr>
 			<th width="30%"><spring:message code="pharmacymanagement.designation" /></th>
 			<th width="20%">Orderer</th>
-			<th width="10%"><spring:message code="pharmacymanagement.qntyReq" /></th>
-			<th width="10%">Frequency</th>
-			<th width="30%">Lot No / Solde (Expiration Date)</th>
+			<th width="5%"><spring:message code="pharmacymanagement.qntyReq" /></th>
+			<th width="5%">Frequency</th>
+			<th width="20%">Instruction</th>
+			<th width="20%">Lot No / Solde (Expiration Date)</th>
 		</tr>
 	</thead>
 </c:if>
@@ -20,12 +26,14 @@
 				<tr>
 					<td width="30%">${num.count}. ${dld.drugOrder.drug.name}</td>
 					<td width="20%">${dld.drugOrder.orderer.person.familyName} ${dld.drugOrder.orderer.person.givenName}</td>
-					<td width="10%">
+					<td width="5%">
+						<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="${weightConceptId}" showUnits="true" locale="${model.locale}" showDate="false" />					
 						<input type="hidden" name="do_${num.count}" value="${dld.drugOrder.orderId}" />
 						<input type="text" name="drug_${num.count}_${dld.drugOrder.drug.drugId}" value="${dld.drugOrder.quantity}" size="5" />
 					</td>
-					<td width="10%"><input type="text" value="${dld.drugOrder.frequency}" size="6" /></td>
-					<td width="30%">
+					<td width="5%"><input type="text" value="${dld.drugOrder.frequency}" size="6" /></td>
+					<td width="20%">${dld.drugOrder.instructions}</td>
+					<td width="20%">
 						<select name="dp_${num.count}" id="dpId_${num.count}" class="dpClass">							
 							<option value=""><center>---</center></option>
 							<c:forEach items="${dld.dpMap}" var="dp">
@@ -35,7 +43,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td colspan="5"><hr /></td>
+					<td colspan="6"><hr /></td>
 				</tr>
 			</c:forEach>
 		</c:if>
@@ -47,6 +55,7 @@
 	</tbody>
 </table>
 </div>
+
 <div id="lots">
 <c:if test="${!empty lots}">
 	<select name="prodFromLot" id="selectLotId">
