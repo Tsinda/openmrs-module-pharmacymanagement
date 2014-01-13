@@ -46,40 +46,46 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		String dispConf = Context.getAdministrationService().getGlobalProperty(
-				"pharmacymanagement.periodDispense");
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		LocationService locationService = Context.getLocationService();
-		ConceptService conceptService = Context.getConceptService();
-		List<Drug> drugs = conceptService.getAllDrugs();
-		List<Location> locations;
-		int total = 0;
-		int total1 = 0;
-		Date invDate = null;
-		DrugOrderService service;
-		int currSolde, currentSolde = 0;
-		Map<String, Consommation> drugMap = new HashMap<String, Consommation>();
-		Map<String, Consommation> consommationMap = new HashMap<String, Consommation>();
+		
 		HttpSession httpSession = request.getSession();
 		ModelAndView mav = new ModelAndView();
+		
+		LocationService locationService = Context.getLocationService();
+		ConceptService conceptService = Context.getConceptService();
+		DrugOrderService service = Context.getService(DrugOrderService.class);
+		
+		
+		String dispConf = Context.getAdministrationService().getGlobalProperty(
+				"pharmacymanagement.periodDispense");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");		
+		
+		int total = 0, total1 = 0, currSolde, currentSolde = 0, lentProd = 0, borrowedProd = 0;		
+		
+		List<Drug> drugs = conceptService.getAllDrugs();
+		List<Location> locations = locationService.getAllLocations();
+		Map<String, Consommation> drugMap = new HashMap<String, Consommation>();
+		Map<String, Consommation> consommationMap = new HashMap<String, Consommation>();
+
+		Collection<ConceptAnswer> consumables = null;
+		List<ConceptAnswer> consumableList = null;		
+		
 		DrugProduct prodFromLot = null;
 		Object obQntyRec = null;
 		Object obQntyConsomMens = null;
-		int lentProd = 0;
-		int borrowedProd = 0;
 		DrugProduct dpStockout = null;
+		Location dftLoc = null;
+		Date invDate = null;
+		String noLot = null;
 
-		Collection<ConceptAnswer> consumers = null;
-		List<ConceptAnswer> consumerList = null;
+		
 		try {
-			consumers = conceptService.getConcept(7988).getAnswers();
-			consumerList = new ArrayList<ConceptAnswer>(consumers);
-
+			consumables = conceptService.getConcept(7988).getAnswers();
+			consumableList = new ArrayList<ConceptAnswer>(consumables);
 		} catch (NullPointerException npe) {
 			mav.addObject("msg", "No consumable in the system");
 		}
 
-		Location dftLoc = null;
+		
 		String locationStr = Context.getAuthenticatedUser().getUserProperties()
 				.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
 
@@ -89,44 +95,31 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 		} catch (Exception e) {
 			mav.addObject("msg", "pharmacymanagement.missingDftLoc");
 		}
+		
 
-		locations = locationService.getAllLocations();
-
-		service = Context.getService(DrugOrderService.class);
-
-		if (request.getParameter("qntAcc") != null) {
+		if (request.getParameter("givenQnty") != null && !request.getParameter("givenQnty").equals("")
+				&& request.getParameter("pharmacyProduct") != null && !request.getParameter("givenQnty").equals("")
+				&& request.getParameter("orderId") != null && !request.getParameter("orderId").equals("")
+				&& request.getParameter("noLotStock") != null && !request.getParameter("givenQnty").equals("")
+				&& request.getParameter("expDate") != null && !request.getParameter("expDate").equals("")) {
 
 			DrugProductInventory dpi = new DrugProductInventory();
 			DrugProductInventory dpiCurrSortie = new DrugProductInventory();
 
-			int prodId = Integer.valueOf(request.getParameter("ordre")
-					.toString());
+			int prodId = Integer.valueOf(request.getParameter("pharmacyProduct").toString());
 			int orderId = Integer.valueOf(request.getParameter("orderId"));
-			int qntAcc = Integer.parseInt(request.getParameter("qntAcc"));
-			String noLot = null;
+			int givenQnty = Integer.parseInt(request.getParameter("givenQnty"));
 
 			DrugProduct dp = service.getDrugProductById(prodId);
 
-			if (request.getParameter("noLotStock") != null
-					&& !request.getParameter("noLotStock").equals(""))
-				noLot = request.getParameter("noLotStock");
-
-			String strDate = null;
-			String dateStr = null;
-			if (request.getParameter("expDate") != null
-					&& !request.getParameter("expDate").equals("")) {
-				strDate = request.getParameter("expDate");
-				String[] strDateArr = strDate.split("/");
-				dateStr = strDateArr[2] + "-" + strDateArr[1] + "-"
-						+ strDateArr[0];
-			}
-
-			if (request.getParameter("prodFromLot") != null
-					&& !request.getParameter("prodFromLot").equals("")) {
-				prodFromLot = service.getDrugProductById(Integer
-						.valueOf(request.getParameter("prodFromLot")));
-				noLot = prodFromLot.getLotNo();
-			}
+			noLot = request.getParameter("noLotStock");
+			
+			String strDate = request.getParameter("expDate");
+			String[] strDateArr = strDate.split("/");
+			String dateStr = strDateArr[2] + "-" + strDateArr[1] + "-" + strDateArr[0];
+			
+			noLot = dp.getLotNo();
+		
 
 			CmdDrug cmddrug = service.getCmdDrugById(orderId);
 
@@ -166,7 +159,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 				}
 			}
 
-			if (qntAcc <= dp.getQntyReq()) {
+			if (givenQnty <= dp.getQntyReq()) {
 				if (request.getParameter("invDate") != null
 						&& !request.getParameter("invDate").equals("")) {
 					String inventoryDateStr = request.getParameter("invDate");
@@ -187,17 +180,17 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 				// when operating on the level of the main store
 				if (lcation != null) {
 					if (locations.contains(lcation)) {
-						dpi.setEntree(qntAcc);
+						dpi.setEntree(givenQnty);
 						dpi.setIsStore(true);
-						total = currSolde + qntAcc;
+						total = currSolde + givenQnty;
 					}
 					if (cmddrug.getDestination().getLocationId() == dftLoc
 							.getLocationId()
 							&& cmddrug.getLocationId().getLocationId() != null) {
 						dpiCurrSortie.setInventoryDate(invDate);
-						dpiCurrSortie.setSortie(qntAcc);
+						dpiCurrSortie.setSortie(givenQnty);
 						dpiCurrSortie.setIsStore(true);
-						total1 = currentSolde - qntAcc;
+						total1 = currentSolde - givenQnty;
 
 					}
 				} else {
@@ -215,16 +208,16 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 								+ "", cmddrug.getPharmacy().getPharmacyId()
 								+ "", dateStr, noLot, null);
 
-					dpi.setSortie(qntAcc);
+					dpi.setSortie(givenQnty);
 					dpi.setIsStore(true);
-					total = currSolde - qntAcc;
-					int solde = qntAcc + currStat;
+					total = currSolde - givenQnty;
+					int solde = givenQnty + currStat;
 
 					// saving in the pharmacy inventory table
 					if (solde >= 0 && dp.getCmddrugId().getPharmacy() != null) {
 						PharmacyInventory pi = new PharmacyInventory();
 						pi.setDate(invDate);
-						pi.setEntree(qntAcc);
+						pi.setEntree(givenQnty);
 						pi.setSortie(0);
 						pi.setDrugproductId(dp);
 						pi.setSolde(solde);
@@ -235,7 +228,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 				}
 
 				if (total >= 0) {
-					dp.setDeliveredQnty(qntAcc);
+					dp.setDeliveredQnty(givenQnty);
 					dp.setLotNo(noLot);
 					if (strDate != null) {
 						Date date = sdf.parse(strDate);
@@ -249,8 +242,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 					dpi.setSolde(total);
 					service.saveDrugProduct(dp);
 					service.saveInventory(dpi);
-					mav.addObject("msg",
-							"The order has been updated successfully");
+					mav.addObject("msg", "The order has been updated successfully");
 
 				} else if (total1 >= 0
 						&& cmddrug.getDestination().getLocationId() == dftLoc
@@ -271,8 +263,9 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 
 		}
 
-		// displaying orders
+		// displaying a particular order
 		if (request.getParameter("orderId") != null) {
+			
 			int id = Integer.parseInt(request.getParameter("orderId"));
 			CmdDrug cmddrug = service.getCmdDrugById(id);
 			String from = cmddrug.getMonthPeriod() + "";
@@ -284,8 +277,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 			String toString = year + "-" + month + "-" + lastDay;
 
 			mav.addObject("cmdDrug", cmddrug);
-			Collection<DrugProduct> drugProducts = service
-					.getDrugProductByCmdDrugId(cmddrug);
+			Collection<DrugProduct> drugProducts = service.getDrugProductByCmdDrugId(cmddrug);
 
 			if (isFalseIn(drugProducts)) {
 				cmddrug.setIsAchieved(true);
@@ -293,11 +285,17 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 			}
 
 			for (DrugProduct dp : drugProducts) {
+				
 				Consommation drugReq = new Consommation();
 				Consommation consReq = new Consommation();
-				lentProd = Utils.getLentDrugsDuringTheMonth(cmddrug
-						.getMonthPeriod(), dp);
+				log.info("Start getLentDrugsDuringTheMonth(): " + new Date());
+				lentProd = Utils.getLentDrugsDuringTheMonth(cmddrug.getMonthPeriod(), dp);
+				log.info("End getLentDrugsDuringTheMonth(): " + new Date());
+				
+
+				log.info("Start getBorrowedDrugsDuringTheMonth(): " + new Date());
 				borrowedProd = Utils.getBorrowedDrugsDuringTheMonth(cmddrug.getMonthPeriod(), dp);
+				log.info("End getBorrowedDrugsDuringTheMonth(): " + new Date());
 
 				if (dp.getDrugId() != null) {
 					drugReq.setLentProduct(lentProd);
@@ -322,15 +320,9 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						dpStockout = dp;
 					}
 
-					// String pharmacyId = null;
-					// try {
-					// pharmacyId = cmddrug.getPharmacy().getPharmacyId() + "";
-					// } catch (NullPointerException npe) {
-					// }
-
-					List<Pharmacy> pharmaList = service
-							.getPharmacyByLocation(dftLoc);
+					List<Pharmacy> pharmaList = service.getPharmacyByLocation(dftLoc);
 					String pharmaStr = "";
+					
 					for (int i = 0; i < pharmaList.size(); i++) {
 						pharmaStr += pharmaList.get(i).getPharmacyId();
 						if (i != (pharmaList.size() - 1)) {
@@ -339,8 +331,8 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 					}
 
 					if (dp.getDrugId() != null) {
-						String fromStr = Utils.DispensingConfig(Integer
-								.valueOf(dispConf), toString);
+						String fromStr = Utils.DispensingConfig(Integer.valueOf(dispConf), toString);
+						
 						log.info("Start Quantity Consumed Mensually: "
 								+ new Date());
 						obQntyConsomMens = service.getReceivedDispensedDrug(
@@ -380,10 +372,11 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						c = Integer.parseInt(drugReq.getQntConsomMens() + "");
 					else
 						c = Integer.parseInt(consReq.getQntConsomMens() + "");
-
-					int f = Utils.stockOut(dpStockout, year, month, dftLoc
-							.getLocationId()
-							+ "");
+				
+					log.info("Start f: " + new Date());
+					int f = Utils.stockOut(dpStockout, year, month, dftLoc.getLocationId() + "");
+					log.info("Start f: " + new Date());
+					
 					int g = 0;
 					try {
 						g = (c * 30) / (30 - f);
@@ -392,40 +385,39 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 					}
 					int h = 2 * g;
 					int i = h - e;
+					
 					if (dp.getDrugId() != null) {
-						log.info("Start Solde: " + new Date());
-						drugReq.setQntPremJour(service
-								.getSoldeByFromDrugLocation(from, dp
+						log.info("Start Solde 1st day: " + new Date());
+						drugReq.setQntPremJour(service.getSoldeByFromDrugLocation(from, dp
 										.getDrugId().getDrugId()
 										+ "", null, cmddrug.getLocationId()
 										.getLocationId()
 										+ ""));
-						log.info("End Solde: " + new Date());
+						log.info("End Solde 1st day: " + new Date());
 						drugReq.setQntRestMens(e);
 					} else {
-						log.info("Start Solde: " + new Date());
+						log.info("Start Solde cons 1st day : " + new Date());
 						consReq.setQntPremJour(service
 								.getSoldeByFromDrugLocation(from, null, dp
 										.getConceptId().getConceptId()
 										+ "", cmddrug.getLocationId()
 										.getLocationId()
 										+ ""));
-						log.info("End Solde: " + new Date());
+						log.info("End Solde cons 1st day: " + new Date());
 						consReq.setQntRestMens(e);
 					}
 
 					if (dp.getDrugId() != null) {
-						log.info("Start Quantity Received Mensually: "
-								+ new Date());
-						obQntyRec = service
-								.getSumEntreeSortieByFromToDrugLocation(from,
+						
+						log.info("Start Quantity Received Mensually: " + new Date());
+						obQntyRec = service.getSumEntreeSortieByFromToDrugLocation(from,
 										toString, dp.getDrugId().getDrugId()
 												+ "", null, cmddrug
 												.getLocationId()
 												.getLocationId()
 												+ "")[0];
-						log.info("End Quantity Received Mensually: "
-								+ new Date());
+						log.info("End Quantity Received Mensually: " + new Date());
+						
 						if (obQntyRec != null)
 							drugReq.setQntRecuMens(obQntyRec);
 						else
@@ -441,28 +433,23 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						drugReq.setMaxQnty(h);
 						drugReq.setQntyToOrder(i);
 					} else {
-						log.info("Start Quantity Received Mensually: "
-								+ new Date());
-						obQntyRec = service
-								.getSumEntreeSortieByFromToDrugLocation(from,
+						log.info("Start Quantity Received Mensually Cons: " + new Date());
+						obQntyRec = service.getSumEntreeSortieByFromToDrugLocation(from,
 										toString, null, dp.getConceptId()
 												.getConceptId()
 												+ "", cmddrug.getLocationId()
 												.getLocationId()
 												+ "")[0];
-						log.info("End Quantity Received Mensually: "
-								+ new Date());
-						if (obQntyRec != null)
-							consReq.setQntRecuMens(obQntyRec);
-						else
-							consReq.setQntRecuMens(0);
+						log.info("End Quantity Received Mensually Cons: " + new Date());
+						
+//						if (obQntyRec != null)
+							consReq.setQntRecuMens(obQntyRec != null ? obQntyRec : 0);
+//						else
+//							consReq.setQntRecuMens(0);
 
-						consReq.setLocationId(cmddrug.getLocationId()
-								.getLocationId());
+						consReq.setLocationId(cmddrug.getLocationId().getLocationId());
 						consReq.setDrugProduct(dp);
-
-						consReq.setStockOut(Utils.stockOut(dpStockout, year,
-								month, dftLoc.getLocationId() + ""));
+						consReq.setStockOut(Utils.stockOut(dpStockout, year, month, dftLoc.getLocationId() + ""));
 						consReq.setAdjustMonthlyConsumption(g);
 						consReq.setMaxQnty(h);
 						consReq.setQntyToOrder(i);
@@ -474,10 +461,8 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						dpStockout = dp;
 					}
 					if (dp.getDrugId() != null) {
-						String fromStr = Utils.DispensingConfig(Integer
-								.valueOf(dispConf), toString);
-						log.info("Start Quantity Received Mensually: "
-								+ new Date());
+						String fromStr = Utils.DispensingConfig(Integer.valueOf(dispConf), toString);
+						log.info("Start Quantity Received Mensually: " + new Date());
 						obQntyConsomMens = service.getReceivedDispensedDrug(
 								fromStr, toString, dp.getDrugId().getDrugId()
 										+ "", cmddrug.getPharmacy()
@@ -530,8 +515,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 					int i = h - e;
 					if (dp.getDrugId() != null) {
 						log.info("Start Quantite Premiere Jour: "+new Date());
-						drugReq.setQntPremJour(service
-								.getPharmacySoldeFirstDayOfWeek(from, dp
+						drugReq.setQntPremJour(service.getPharmacySoldeFirstDayOfWeek(from, dp
 										.getDrugId().getDrugId()
 										+ "", null, dp.getCmddrugId()
 										.getPharmacy().getPharmacyId()
@@ -541,8 +525,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						drugReq.setQntRestMens(e);
 					} else {
 						log.info("Start Quantite Premiere Jour: "+new Date());
-						consReq.setQntPremJour(service
-								.getPharmacySoldeFirstDayOfWeek(from, null, dp
+						consReq.setQntPremJour(service.getPharmacySoldeFirstDayOfWeek(from, null, dp
 										.getConceptId().getConceptId()
 										+ "", dp.getCmddrugId().getPharmacy()
 										.getPharmacyId()
@@ -589,11 +572,9 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						else
 							consReq.setQntRecuMens(0);
 
-						consReq.setLocationId(cmddrug.getPharmacy()
-								.getLocationId().getLocationId());
+						consReq.setLocationId(cmddrug.getPharmacy().getLocationId().getLocationId());
 						consReq.setDrugProduct(dp);
-						consReq.setStockOut(Utils.stockOut(dpStockout, year,
-								month, dftLoc.getLocationId() + ""));
+						consReq.setStockOut(Utils.stockOut(dpStockout, year, month, dftLoc.getLocationId() + ""));
 						consReq.setAdjustMonthlyConsumption(g);
 						consReq.setMaxQnty(h);
 						consReq.setQntyToOrder(i);
@@ -650,13 +631,13 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 				locIdName += ",";
 		}
 		try {
-			for (int k = 0; k < consumerList.size(); k++) {
-				consIdName += consumerList.get(k).getAnswerConcept()
+			for (int k = 0; k < consumableList.size(); k++) {
+				consIdName += consumableList.get(k).getAnswerConcept()
 						.getConceptId()
 						+ "_"
-						+ consumerList.get(k).getAnswerConcept().getName()
+						+ consumableList.get(k).getAnswerConcept().getName()
 								.getName();
-				if (consumerList.size() != (k + 1))
+				if (consumableList.size() != (k + 1))
 					consIdName += ",";
 
 				mav.addObject("consumerList", consIdName);
