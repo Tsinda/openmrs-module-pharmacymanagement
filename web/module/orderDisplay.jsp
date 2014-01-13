@@ -18,7 +18,7 @@ $(document).ready( function() {
 	$(".basic").click(
 			function() {
 				var target = this.id;
-				$("#ordre").attr("value", target);
+				$("#pharmacyProductId").attr("value", target);
 				<c:if test="${cmdDrug.locationId.locationId != dftLoc.locationId}">
 					$("#lotNoId").empty().html('Loading...');
 					$("#lotNoId").load("patOrders.list?drugproductId="+target+" #lots");
@@ -277,7 +277,7 @@ $(document).ready( function() {
 <!-- update order modal -->
 <div id="basic-modal-content">
 <form method="post" action="order.list?orderId=${cmdDrug.cmddrugId}" >
-<input type="hidden" id="ordre"  name="ordre" size="5" />
+<input type="hidden" id="pharmacyProductId"  name="pharmacyProduct" size="5" />
 <input type="hidden" name="pharmacyId" value="${cmdDrug.pharmacy.pharmacyId}" id="pharmacyId" />
 <table>
 	<tr>
@@ -289,7 +289,7 @@ $(document).ready( function() {
 	
 	<tr>
 		<td><spring:message code="pharmacymanagement.givenQnty" /></td>
-		<td><input type="text" name="qntAcc" size="5" /></td>
+		<td><input type="text" name="givenQnty" size="5" /></td>
 	</tr>
 	
 	<tr>
