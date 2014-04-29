@@ -2,7 +2,7 @@
 <!-- ********************************************************* -->
 <!-- * Pharmacy Management and Dispensing                   ** -->
 <!-- **	                                                    ** -->
-<!-- ** @author DUSABE Eric                                 ** -->
+<!-- ** @author MOH		                                    ** -->
 <!-- ** @version 0.0.1                                      ** -->
 <!-- ********************************************************* -->
 <project name="pharmacymanagement" default="package-module">

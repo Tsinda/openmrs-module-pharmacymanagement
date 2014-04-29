@@ -263,28 +263,28 @@ public class DrugOrderPrescriptionController extends AbstractController {
 	 * @throws NumberFormatException
 	 * @throws ParseException
 	 */
-	private void createPharmacyAppointment(Integer appointmentId,
-			HttpServletRequest request, Patient patient, Encounter encounter)
-			throws NumberFormatException, ParseException {
-
-		if (appointmentId != null) {
-
-			Appointment appointment = AppointmentUtil
-					.getWaitingAppointmentById(Integer.valueOf(request
-							.getParameter("appointmentId")));
-			Utils.setConsultationAppointmentAsAttended(appointment);
-
-			// Create Pharmacy waiting appointment here:
-//			Utils.createWaitingPharmacyAppointment(patient, encounter);
-		}
-
-		for (Appointment appointment : AppointmentUtil
-				.getAllWaitingAppointmentsByPatientAtService(patient,
-						new AppointmentState(4, "WAITING"), new Date(),
-						AppointmentUtil.getServiceByConcept(Context
-								.getConceptService().getConcept(8053)))) {
-
-			Utils.setConsultationAppointmentAsAttended(appointment);
-		}
-	}
+//	private void createPharmacyAppointment(Integer appointmentId,
+//			HttpServletRequest request, Patient patient, Encounter encounter)
+//			throws NumberFormatException, ParseException {
+//
+//		if (appointmentId != null) {
+//
+//			Appointment appointment = AppointmentUtil
+//					.getWaitingAppointmentById(Integer.valueOf(request
+//							.getParameter("appointmentId")));
+//			Utils.setConsultationAppointmentAsAttended(appointment);
+//
+//			// Create Pharmacy waiting appointment here:
+////			Utils.createWaitingPharmacyAppointment(patient, encounter);
+//		}
+//
+//		for (Appointment appointment : AppointmentUtil
+//				.getAllWaitingAppointmentsByPatientAtService(patient,
+//						new AppointmentState(4, "WAITING"), new Date(),
+//						AppointmentUtil.getServiceByConcept(Context
+//								.getConceptService().getConcept(8053)))) {
+//
+//			Utils.setConsultationAppointmentAsAttended(appointment);
+//		}
+//	}
 }

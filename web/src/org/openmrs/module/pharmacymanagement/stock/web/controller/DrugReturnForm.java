@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.Drug;
 import org.openmrs.Location;
@@ -37,7 +38,7 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
 /**
  *
  */
-public class StoreReturnForm extends ParameterizableViewController {
+public class DrugReturnForm extends ParameterizableViewController {
 	@SuppressWarnings("unused")
 	private Log log = LogFactory.getLog(this.getClass());
 
@@ -47,7 +48,7 @@ public class StoreReturnForm extends ParameterizableViewController {
 		ModelAndView mav = new ModelAndView();
 		LocationService locationService = Context.getLocationService();
 		ConceptService conceptService = Context.getConceptService();
-		Location dftLoc = null;
+		Location dftLoc = null, origin = null, destination = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		ProductReturnStore ars = null;
 		DrugProductInventory dpi = null;
@@ -57,15 +58,11 @@ public class StoreReturnForm extends ParameterizableViewController {
 		Collection<Pharmacy> pharmacies = null;
 		DrugOrderService service = Context.getService(DrugOrderService.class);
 		Pharmacy pharmacy = null;
-		Location origin = null;
-		Location destination = null;
 		List<Drug> drugs = conceptService.getAllDrugs();
 		Drug drug = null;
+		Concept consumable = null;
 		Date expDate = null;
-		String expDateStr = null;
-		String lot = null;
-		String to = "";
-		String from = "";
+		String expDateStr = null, lot = null, to = "", from = "";
 		boolean isUpdate = false;
 
 		String locationStr = Context.getAuthenticatedUser().getUserProperties()
@@ -80,74 +77,74 @@ public class StoreReturnForm extends ParameterizableViewController {
 			pharmacies = service.getAllPharmacies();
 		} catch (Exception e) {
 			mav.addObject("msg", "pharmacymanagement.missingDftLoc");
-		}
-
-		if (request.getParameter("drug") != null
-				&& !request.getParameter("drug").equals(""))
-			drug = conceptService.getDrug(Integer.valueOf(request
-					.getParameter("drug")));
-
-		if (request.getParameter("lot") != null
-				&& !request.getParameter("lot").equals("")) {
-			String[] lotArr = request.getParameter("lot").split("_");
-			if(lotArr.length > 1) {
-				
-			} else {
-				lot = request.getParameter("lot");
-			}
-		}
+		}		
 
 		if (request.getParameter("to") != null && !request.getParameter("to").equals("")
 				&& request.getParameter("from") != null && !request.getParameter("from").equals("")) {
 			to = request.getParameter("to");
 			from = request.getParameter("from");
 		}
+
+		if (request.getParameter("drug") != null
+				&& !request.getParameter("drug").equals(""))
+			drug = conceptService.getDrug(Integer.valueOf(request
+					.getParameter("drug")));
 		
-		if (request.getParameter("lot") != null && !request.getParameter("lot").equals("")
-				&& request.getParameter("retType") != null && !request.getParameter("retType").equals("") ) {
-			String returnType = request.getParameter("retType");
+		if (request.getParameter("consumable") != null
+				&& !request.getParameter("consumable").equals(""))
+			consumable = conceptService.getConcept(Integer.valueOf(request
+					.getParameter("consumable")));
+		
+		if (request.getParameter("lot") != null && !request.getParameter("lot").equals("")) {
 			String[] lotArr = request.getParameter("lot").split("_");
-			if(lotArr.length > 1) {
-				if(((returnType.equals("external") && from.equals(locationStr))) || returnType.equals("internal")) {
-					expDateStr = lotArr[0];
+			if (request.getParameter("retType") != null && !request.getParameter("retType").equals("") ) {
+				String returnType = request.getParameter("retType");
+				if(lotArr.length > 1) {
+					System.out.println("Expiration Date: " + lotArr[0] + " ************************************************");
+					if((returnType.equals("external") && from.equals(locationStr)) || returnType.equals("internal")) {
+						System.out.println("return type is external or internal and from is the default location: " + locationStr + " ************************************************");
+						expDateStr = lotArr[0];
+						expDate = sdf.parse(expDateStr);
+						lot = service.getDrugProductById(Integer.valueOf(lotArr[1].toString())).getLotNo();
+					}		
+				} else {
+					lot = request.getParameter("lot");
+				}
+							
+				if(returnType.equals("external") && !from.equals(locationStr) && request.getParameter("expDate") != null) {
+					System.out.println("return type is external and from is not the default location: " + locationStr + " ************************************************");
+					expDateStr = request.getParameter("expDate");
 					expDate = sdf.parse(expDateStr);
-					lot = service.getDrugProductById(Integer.valueOf(lotArr[1].toString())).getLotNo();
-				}				
+					lot = request.getParameter("lot");
+				}
 			}
 			
-			if(returnType.equals("external") && !from.equals(locationStr) && request.getParameter("expDate") != null) {
-				expDateStr = request.getParameter("expDate");
-				expDate = sdf.parse(expDateStr);
-				lot = request.getParameter("lot");
-			}
+			
 		}
 
 		Map<Integer, String> storeDrugMap = new HashMap<Integer, String>();
 		Map<Integer, String> pharmaDrugMap = new HashMap<Integer, String>();
-		List<DrugProduct> drugProducts = (List<DrugProduct>) service
-				.getAllProducts();
-		List<DrugProduct> drugProducts1 = new ArrayList<DrugProduct>();
+		Map<Integer, String> pharmaConsumableMap = new HashMap<Integer, String>();
+		List<DrugProduct> pharmacyProducts = (List<DrugProduct>) service.getAllProducts();
+		List<DrugProduct> dispensingProducts = new ArrayList<DrugProduct>();
 
-		for (DrugProduct dps : drugProducts) {
-			try {
-				if (dps.getCmddrugId().getPharmacy() != null) {
-					drugProducts1.add(dps);
+		for (DrugProduct dps : pharmacyProducts) {
+			if(dps.getCmddrugId() != null) {
+				if(dps.getCmddrugId().getPharmacy() != null) {
+					dispensingProducts.add(dps);
 				}
-			} catch (NullPointerException npe) {
 			}
 		}
 
-		for (DrugProduct drPr : drugProducts1) {
+		for (DrugProduct drPr : dispensingProducts) {
 			if (!to.equals(locationStr)) {
 				if (drPr.getDrugId() != null) {
 					if (service.getCurrSolde(drPr.getDrugId().getDrugId() + "",
-							null, dftLoc.getLocationId() + "", drPr
-									.getExpiryDate()
-									+ "", drPr.getLotNo(), drPr.getCmddrugId()
-									.getCmddrugId()
-									+ "") > 0)
-						storeDrugMap.put(drPr.getDrugId().getDrugId(), drPr
-								.getDrugId().getName());
+							null, dftLoc.getLocationId() + "",
+							drPr.getExpiryDate() + "", drPr.getLotNo(), drPr
+									.getCmddrugId().getCmddrugId() + "") > 0)
+						
+						storeDrugMap.put(drPr.getDrugId().getDrugId(), drPr.getDrugId().getName());
 
 					if (drPr.getCmddrugId().getPharmacy() != null
 							&& service.getCurrSoldeDisp(drPr.getDrugId()
@@ -176,7 +173,7 @@ public class StoreReturnForm extends ParameterizableViewController {
 									.getPharmacyId()
 									+ "", drPr.getExpiryDate() + "", drPr
 									.getLotNo(), null) > 0)
-						pharmaDrugMap.put(drPr.getConceptId().getConceptId(),
+						pharmaConsumableMap.put(drPr.getConceptId().getConceptId(),
 								drPr.getConceptId().getName().getName());
 				}
 			}
@@ -207,22 +204,37 @@ public class StoreReturnForm extends ParameterizableViewController {
 			dpi = new DrugProductInventory();
 			pi = new PharmacyInventory();
 			dp = new DrugProduct();
-		}
-
+		}		
+		
 		if (request.getParameter("returnDate") != null
-				&& !request.getParameter("returnDate").equals("")) {
+				&& !request.getParameter("returnDate").equals("")
+				&& request.getParameter("qtyRet") != null
+				&& !request.getParameter("qtyRet").equals("")
+				&& request.getParameter("observation") != null
+				&& !request.getParameter("observation").equals("")
+				&& request.getParameter("retType") != null
+				&& !request.getParameter("retType").equals("")
+				&& request.getParameter("productType") != null
+				&& !request.getParameter("productType").equals("")) {
+			
+			//expDate = service.getDrugProductById(Integer.valueOf(request.getParameter("dp"))).getExpiryDate();
+			
+			System.out.println("Return date: *************************: " + request.getParameter("returnDate"));
+			System.out.println("qtyRet: *************************: " + request.getParameter("qtyRet"));
+			System.out.println("observation: *************************: " + request.getParameter("observation"));
+			System.out.println("retType: *************************: " + request.getParameter("retType"));
+			System.out.println("productType: *************************: " + request.getParameter("productType"));
+			System.out.println("Expiration Date: **********************: " + expDateStr);
+			
 			Date date = sdf.parse(request.getParameter("returnDate"));
 			ars.setRetDate(date);
 			ars.setReturnedBy(user);
 
-			int retQty = 0;
-			if (request.getParameter("qtyRet") != null
-					&& !request.getParameter("qtyRet").equals("")) {
-				retQty = Integer.valueOf(request.getParameter("qtyRet"));
-				ars.setRetQnty(retQty);
-			} 
+			int retQty = Integer.valueOf(request.getParameter("qtyRet"));
+			ars.setRetQnty(retQty);
 			String[] arr = expDateStr.split("/");
 			String expireStr = arr[2] + "-" + arr[1] + "-" + arr[0];
+			
 			int currSolde = 0;
 			if (drug != null) {
 				if(isUpdate) {
@@ -234,102 +246,101 @@ public class StoreReturnForm extends ParameterizableViewController {
 			}
 			
 			int solde = 0;
-
+			
 			dp.setDeliveredQnty(retQty);
 			dp.setDrugId(drug);
 			dp.setExpiryDate(expDate);
 			dp.setLotNo(lot);
 			dp.setIsDelivered(true);
 			dp.setStoreQnty(0);
-			service.saveDrugProduct(dp);
-			ars.setDrugproductId(dp);
-
-			if (request.getParameter("observation") != null
-					&& !request.getParameter("observation").equals(""))
+			
+			if (request.getParameter("retType").equals("internal")) {
+				solde = currSolde + retQty;				
+				
+				if(solde >= 0)
+					service.saveDrugProduct(dp);
+				
+				ars.setDrugproductId(dp);
 				ars.setObservation(request.getParameter("observation"));
 
-			dpi.setInventoryDate(date);
-			dpi.setIsStore(true);
-			dpi.setDrugproductId(dp);
-			
+				dpi.setInventoryDate(date);
+				dpi.setIsStore(true);
+				dpi.setDrugproductId(dp);
+				
+				String pharmacyStr = from;
+				pharmacy = service.getPharmacyById(Integer
+						.valueOf(pharmacyStr));
+				origin = pharmacy.getLocationId();
 
-			if (request.getParameter("retType") != null
-					&& !request.getParameter("retType").equals("")) {
-				if (request.getParameter("retType").equals("internal")) {
-					String pharmacyStr = request.getParameter("from");
-					pharmacy = service.getPharmacyById(Integer
-							.valueOf(pharmacyStr));
-					origin = pharmacy.getLocationId();
+				ars.setOriginPharmacy(pharmacy);
 
-					ars.setOriginPharmacy(pharmacy);
+				destination = locationService.getLocation(Integer
+						.valueOf(to));
+				ars.setDestination(destination);
 
-					destination = locationService.getLocation(Integer
-							.valueOf(request.getParameter("to")));
-					ars.setDestination(destination);
+				// add the returned drug from the dispensing pharmacy into
+				// store.
+				dpi.setEntree(retQty);
+				dpi.setSortie(0);
 
-					// add the returned drug from the dispensing pharmacy into
-					// store.
+				// Subtracting into the dispensing pharmacy
+				pi.setDate(date);
+				pi.setDrugproductId(dp);
+				pi.setEntree(0);
+				pi.setSortie(retQty);
+				int currSoldeDisp = 0;
+
+
+				if(isUpdate) {
+					currSoldeDisp = service.getCurrSoldeDisp(drug.getDrugId()
+							+ "", null, pharmacyStr, expireStr
+							, dp.getLotNo(), 1+"");
+				} else {
+					currSoldeDisp = service.getCurrSoldeDisp(drug.getDrugId()
+							+ "", null, pharmacyStr, expireStr
+							, dp.getLotNo(), null);
+				}
+				
+				int pharmaSolde = currSoldeDisp - retQty;
+				if (pharmaSolde >= 0) {
+					pi.setSolde(pharmaSolde);
+					service.savePharmacyInventory(pi);
+					ars.setPhInventory(pi);
+				}
+
+			} else {
+				
+				origin = locationService.getLocation(Integer
+						.valueOf(from));
+				destination = locationService.getLocation(Integer
+						.valueOf(to));
+				
+				if (origin.getLocationId() == dftLoc.getLocationId()) {
+					// Subtracting into the main store
+					dpi.setEntree(0);
+					dpi.setSortie(retQty);
+					solde = currSolde - retQty;
+				} else if (destination.getLocationId() == dftLoc
+						.getLocationId()) {
+					// adding to the main store
 					dpi.setEntree(retQty);
 					dpi.setSortie(0);
 					solde = currSolde + retQty;
-
-					// Subtracting into the dispensing pharmacy
-					pi.setDate(date);
-					pi.setDrugproductId(dp);
-					pi.setEntree(0);
-					pi.setSortie(retQty);
-					int currSoldeDisp = 0;
-					if (dp.getDrugId() != null) {
-						if(isUpdate) {
-							currSoldeDisp = service.getCurrSoldeDisp(drug.getDrugId()
-									+ "", null, pharmacyStr, expireStr
-									, dp.getLotNo(), 1+"");
-						} else {
-							currSoldeDisp = service.getCurrSoldeDisp(drug.getDrugId()
-									+ "", null, pharmacyStr, expireStr
-									, dp.getLotNo(), null);
-						}
-					}
-					else {
-						if(isUpdate)
-							currSoldeDisp = service.getCurrSoldeDisp(null, dp
-									.getConceptId().getConceptId()
-									+ "", pharmacyStr, null, null, null);
-						else
-							currSoldeDisp = service.getCurrSoldeDisp(null, dp
-									.getConceptId().getConceptId()
-									+ "", pharmacyStr, null, null, null);
-					}
-					
-					int pharmaSolde = currSoldeDisp - retQty;
-					if (pharmaSolde >= 0) {
-						pi.setSolde(pharmaSolde);
-						service.savePharmacyInventory(pi);
-						ars.setPhInventory(pi);
-					}
-
-				} else {
-					origin = locationService.getLocation(Integer
-							.valueOf(request.getParameter("from")));
-					ars.setOriginLocation(origin);
-
-					destination = locationService.getLocation(Integer
-							.valueOf(request.getParameter("to")));
-					ars.setDestination(destination);
-
-					if (origin.getLocationId() == dftLoc.getLocationId()) {
-						// Subtracting into the main store
-						dpi.setEntree(0);
-						dpi.setSortie(retQty);
-						solde = currSolde - retQty;
-					} else if (destination.getLocationId() == dftLoc
-							.getLocationId()) {
-						// adding to the main store
-						dpi.setEntree(retQty);
-						dpi.setSortie(0);
-						solde = currSolde + retQty;
-					}
 				}
+				
+				if(solde >= 0)
+					service.saveDrugProduct(dp);
+				
+				ars.setDrugproductId(dp);
+				ars.setObservation(request.getParameter("observation"));
+
+				dpi.setInventoryDate(date);
+				dpi.setIsStore(true);
+				dpi.setDrugproductId(dp);
+				
+				
+				ars.setOriginLocation(origin);				
+				ars.setDestination(destination);			
 			}
 
 			if (solde >= 0) {

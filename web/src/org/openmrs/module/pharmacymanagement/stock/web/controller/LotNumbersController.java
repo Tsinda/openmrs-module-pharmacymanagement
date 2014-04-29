@@ -44,16 +44,27 @@ public class LotNumbersController implements Controller {
 
 		if (request.getParameter("drugId") != null
 				&& !request.getParameter("drugId").equals("")) {
-			List<Object[]> obj = null;
-			if(request.getParameter("drugId") != null)
-				obj = service.getLotNumbersExpirationDates(request
+			List<Object[]> obj = service.getLotNumbersExpirationDates(request
 					.getParameter("drugId"), null, dftLoc.getLocationId().toString(),
 					null);
 			
-			av = new AjaxView();
-			
+			av = new AjaxView();			
 			dpLot.put(1, obj);
-		}			
+			return new ModelAndView(av,dpLot);
+		}		
+		
+		if (request.getParameter("consumableId") != null
+				&& !request.getParameter("consumableId").equals("")) {
+			List<Object[]> obj = service.getLotNumbersExpirationDates(null, request
+					.getParameter("consumableId"), dftLoc.getLocationId().toString(),
+					null);
+			
+			av = new AjaxView();			
+			dpLot.put(1, obj);
+			return new ModelAndView(av,dpLot);
+		}	
+		
+		
 		return new ModelAndView(av,dpLot);
 	}
 }

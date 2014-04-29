@@ -67,7 +67,8 @@
 				<prop key="module/@MODULE_ID@/home.htm">drugStoreMgt</prop>
 				<prop key="module/@MODULE_ID@/patOrders.list">patientDrugOrders</prop>
 				<prop key="module/@MODULE_ID@/pharmacyDrugDisp.htm">pharmacyDrugDispController</prop>
-				<prop key="module/@MODULE_ID@/return.form">storeReturnForm</prop>				
+				<prop key="module/@MODULE_ID@/return.form">drugReturnForm</prop>
+				<prop key="module/@MODULE_ID@/consumableReturn.form">consumableReturnForm</prop>				
 				<prop key="module/@MODULE_ID@/lot.htm">lotNumbersController</prop>					
 				<prop key="module/@MODULE_ID@/json.htm">jSonHandler</prop>
 				<prop key="module/@MODULE_ID@/drugSolde.htm">drugOrderSoldeHandler</prop>
@@ -158,9 +159,11 @@
 		<property name="viewName" value="module/@MODULE_ID@/printReturnStock" />
 	</bean>
 	
-	<bean id="storeReturnForm" class="@MODULE_PACKAGE@.stock.web.controller.StoreReturnForm">
+	<bean id="drugReturnForm" class="@MODULE_PACKAGE@.stock.web.controller.DrugReturnForm">
 		<property name="viewName" value="module/@MODULE_ID@/storeReturnForm" />
 	</bean>
+	
+	<bean id="consumableReturnForm" class="@MODULE_PACKAGE@.stock.web.controller.ConsumableReturnForm" />
 	
 	<bean id="consumableDispensationController" class="@MODULE_PACKAGE@.phcymgt.web.controller.ConsumableDispensationController">
 		<property name="viewName" value="module/@MODULE_ID@/consumableDispensation" />

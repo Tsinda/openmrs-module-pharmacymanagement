@@ -25,6 +25,7 @@ public class JSonHandler extends ParameterizableViewController {
 
 	protected AjaxViewRenderer viewRenderer;
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -33,10 +34,11 @@ public class JSonHandler extends ParameterizableViewController {
 		Map<String, List<?>> model = new HashMap<String, List<?>>();
 		List<Drug> drugs = new ArrayList<Drug>();
 		List<Concept> concepts = new ArrayList<Concept>();
+		List<Concept> consumables = new ArrayList<Concept>();
 		
 		LocationService ls = Context.getLocationService();
 		Pharmacy pharmacy = null;
-		String retType = null;
+		String retType = null, productType = null;
 		Location dftLoc = null;
 		DrugOrderService dos = Context.getService(DrugOrderService.class);
 		String locationStr = Context.getAuthenticatedUser().getUserProperties()
@@ -46,7 +48,9 @@ public class JSonHandler extends ParameterizableViewController {
 				.getAllProducts();
 		List<DrugProduct> drugProducts1 = new ArrayList<DrugProduct>();
 		Map<Integer, Drug> storeDrugMap = new HashMap<Integer, Drug>();
+		Map<Integer, Concept> storeConsumableMap = new HashMap<Integer, Concept>();
 		Map<Integer, DrugProduct> pharmaDrugMap = new HashMap<Integer, DrugProduct>();
+		Map<Integer, DrugProduct> pharmaConsumableMap = new HashMap<Integer, DrugProduct>();
 		Map<Integer, DrugProduct> pharmaConceptMap = new HashMap<Integer, DrugProduct>();
 
 		try {
@@ -119,27 +123,68 @@ public class JSonHandler extends ParameterizableViewController {
 									drPr);
 						}
 					}
+				} else {
+					if (dos.getCurrSolde(null, drPr.getConceptId().getConceptId() + "",
+							dftLoc.getLocationId() + "", drPr
+									.getExpiryDate()
+									+ "", drPr.getLotNo(), null) > 0)
+						storeConsumableMap.put(drPr.getConceptId().getConceptId(), drPr
+								.getConceptId());
+					if (drPr.getCmddrugId() != null) {
+						if (drPr.getCmddrugId().getPharmacy() != null
+								&& dos.getCurrSoldeDisp(null, drPr.getConceptId()
+										.getConceptId()
+										+ "", drPr.getCmddrugId()
+										.getPharmacy().getPharmacyId()
+										+ "", drPr.getExpiryDate() + "", drPr
+										.getLotNo(), null) > 0) {
+							pharmaConsumableMap.put(drPr.getConceptId().getConceptId(),
+									drPr);
+						}
+					}
 				}
 			}
 			retType = request.getParameter("retType");
+			productType = request.getParameter("productType");
 			if (retType.equals("internal")) {
 				pharmacy = dos.getPharmacyById(Integer.valueOf(request
 						.getParameter("fromId")));
-				for (Map.Entry entry : pharmaDrugMap.entrySet()) {
-					if (pharmacy.equals(((DrugProduct) entry.getValue())
-							.getCmddrugId().getPharmacy())) {
-						drugs.add(((DrugProduct) entry.getValue()).getDrugId());
-					}
+				if(productType.equals("drug")) {
+					for (Map.Entry entry : pharmaDrugMap.entrySet()) {
+						if (pharmacy.equals(((DrugProduct) entry.getValue())
+								.getCmddrugId().getPharmacy())) {
+							drugs.add(((DrugProduct) entry.getValue()).getDrugId());
+						}
+					}					
+					
+					model.put("source", drugs);
+					return new ModelAndView(viewRenderer, model);
+				} else {
+					for (Map.Entry entry : pharmaConsumableMap.entrySet()) {
+						if (pharmacy.equals(((DrugProduct) entry.getValue())
+								.getCmddrugId().getPharmacy())) {
+							consumables.add(((DrugProduct) entry.getValue()).getConceptId());
+						}
+					}					
+					
+					model.put("source", consumables);
+					return new ModelAndView(viewRenderer, model);
 				}
-				model.put("source", drugs);
-				return new ModelAndView(viewRenderer, model);
 
 			} else {
-				for (Map.Entry entry : storeDrugMap.entrySet()) {
-					drugs.add((Drug) entry.getValue());
+				if(productType.equals("drug")) {
+					for (Map.Entry entry : storeDrugMap.entrySet()) {
+						drugs.add((Drug) entry.getValue());
+					}
+					model.put("source", drugs);
+					return new ModelAndView(viewRenderer, model);
+				} else {
+					for (Map.Entry entry : storeConsumableMap.entrySet()) {
+						consumables.add((Concept) entry.getValue());
+					}
+					model.put("source", consumables);
+					return new ModelAndView(viewRenderer, model);
 				}
-				model.put("source", drugs);
-				return new ModelAndView(viewRenderer, model);
 			}
 		}
 		return new ModelAndView(getViewName(), model);
