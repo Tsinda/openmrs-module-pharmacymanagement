@@ -181,6 +181,16 @@ public class PatientDrugOrders extends ParameterizableViewController {
 					}
 				}
 			}
+
+			for(Object[] itemDesc : lots) {
+				if(drugproduct.getDrugId() != null) {
+					if(service.getCurrSolde(drugproduct.getDrugId().getDrugId() + "", null, dftLoc.getLocationId() + "", itemDesc[1].toString(), itemDesc[0].toString(), null) == 0)
+						lots.remove(itemDesc);
+				} else {
+					if(service.getCurrSolde(null, drugproduct.getConceptId().getConceptId() + "", dftLoc.getLocationId() + "", itemDesc[1].toString(), itemDesc[0].toString(), null) == 0)
+						lots.remove(itemDesc);
+				}
+			}
 			mav.addObject("lots", lots);
 		}
 

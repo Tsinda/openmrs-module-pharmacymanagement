@@ -10,6 +10,7 @@ import java.util.List;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.Drug;
 import org.openmrs.module.pharmacymanagement.ProductReturnStore;
 import org.openmrs.module.pharmacymanagement.CmdDrug;
 import org.openmrs.module.pharmacymanagement.ConsumableDispense;
@@ -326,6 +327,11 @@ public class DrugOrderServiceImpl implements DrugOrderService {
 	@Override
 	public List<ProductReturnStore> getReturnStockByDate(Date date, String observation) {
 		return drugOrderDAO.getReturnStockByDate(date, observation);
+	}
+
+	@Override
+	public Integer getReturnedItemsByDates(Date startDate, Date endDate, Drug drug, String observation) {
+		return drugOrderDAO.getReturnedItemsByDates(startDate, endDate, drug, observation);
 	}
 	
 	@Override

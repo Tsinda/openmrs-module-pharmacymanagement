@@ -285,6 +285,8 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 			}
 
 			for (DrugProduct dp : drugProducts) {
+
+				log.info("Start loop ************************************************************************************: "+new Date());
 				
 				Consommation drugReq = new Consommation();
 				Consommation consReq = new Consommation();
@@ -359,14 +361,15 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 								+ "");
 						log.info("End Physical Count: " + new Date());
 					} else {
-						log.info("Start Physical Count: " + new Date());
+						log.info("Start Physical Count cons: " + new Date());
 						e = service.getSoldeByToDrugLocation(toString, null, dp
 								.getConceptId().getConceptId()
 								+ "", cmddrug.getLocationId().getLocationId()
 								+ "");
-						log.info("End Physical Count: " + new Date());
+						log.info("End Physical Count cons: " + new Date());
 					}
 
+					log.info("Start logic: "+new Date());
 					int c = 0;
 					if (dp.getDrugId() != null)
 						c = Integer.parseInt(drugReq.getQntConsomMens() + "");
@@ -386,6 +389,8 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 					int h = 2 * g;
 					int i = h - e;
 					
+					log.info("End logic: "+new Date());
+
 					if (dp.getDrugId() != null) {
 						log.info("Start Solde 1st day: " + new Date());
 						drugReq.setQntPremJour(service.getSoldeByFromDrugLocation(from, dp
@@ -396,14 +401,14 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						log.info("End Solde 1st day: " + new Date());
 						drugReq.setQntRestMens(e);
 					} else {
-						log.info("Start Solde cons 1st day : " + new Date());
+						log.info("Start Solde cons 1st day cons : " + new Date());
 						consReq.setQntPremJour(service
 								.getSoldeByFromDrugLocation(from, null, dp
 										.getConceptId().getConceptId()
 										+ "", cmddrug.getLocationId()
 										.getLocationId()
 										+ ""));
-						log.info("End Solde cons 1st day: " + new Date());
+						log.info("End Solde cons 1st day cons : " + new Date());
 						consReq.setQntRestMens(e);
 					}
 
@@ -462,13 +467,13 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 					}
 					if (dp.getDrugId() != null) {
 						String fromStr = Utils.DispensingConfig(Integer.valueOf(dispConf), toString);
-						log.info("Start Quantity Received Mensually: " + new Date());
+						log.info("Start Quantity Received Mensually pharma: " + new Date());
 						obQntyConsomMens = service.getReceivedDispensedDrug(
 								fromStr, toString, dp.getDrugId().getDrugId()
 										+ "", cmddrug.getPharmacy()
 										.getPharmacyId()
 										+ "")[1];
-						log.info("End Quantity Received Mensually: "+new Date());
+						log.info("End Quantity Received Mensually pharma: "+new Date());
 						
 						if (obQntyConsomMens != null)
 							drugReq.setQntConsomMens(obQntyConsomMens);
@@ -481,30 +486,33 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 					int e = 0;
 					int c = 0;
 					if (dp.getDrugId() != null) {
-						log.info("Start Physical Count: "+new Date());
+						log.info("Start Physical Count pharma: "+new Date());
 						e = service.getPharmacySoldeLastDayOfWeek(toString, dp
 								.getDrugId().getDrugId()
 								+ "", null, dp.getCmddrugId().getPharmacy()
 								.getPharmacyId()
 								+ "");
-						log.info("Start Physical Count: "+new Date());
+						log.info("End Physical Count pharma: "+new Date());
 						c = Integer.parseInt(drugReq.getQntConsomMens()
 								.toString());
 					} else {
-						log.info("Start Physical Count: "+new Date());
+						log.info("Start Physical Count pharma cons: "+new Date());
 						e = service.getPharmacySoldeLastDayOfWeek(toString,
 								null, dp.getConceptId().getConceptId() + "", dp
 										.getCmddrugId().getPharmacy()
 										.getPharmacyId()
 										+ "");
-						log.info("End Physical Count: "+new Date());
+						log.info("End Physical Count pharma cons: "+new Date());
 						c = Integer.parseInt(consReq.getQntConsomMens()
 								.toString());
 					}
-
+					log.info("Start Logic: " + new Date());
+					log.info("Start Stock out: " + new Date());
 					int f = Utils.stockOut(dpStockout, year, month, dftLoc
 							.getLocationId()
-							+ "");
+							+ "");					
+					log.info("End Stock out: " + new Date());
+					
 					int g = 0;
 					try {
 						g = (c * 30) / (30 - f);
@@ -513,36 +521,37 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 					}
 					int h = 2 * g;
 					int i = h - e;
+					log.info("End Logic: " + new Date());
 					if (dp.getDrugId() != null) {
-						log.info("Start Quantite Premiere Jour: "+new Date());
+						log.info("Start Quantite Premiere Jour pharma: "+new Date());
 						drugReq.setQntPremJour(service.getPharmacySoldeFirstDayOfWeek(from, dp
 										.getDrugId().getDrugId()
 										+ "", null, dp.getCmddrugId()
 										.getPharmacy().getPharmacyId()
 										+ ""));
-						log.info("End Quantite Premiere Jour: "+new Date());
+						log.info("End Quantite Premiere Jour pharma: "+new Date());
 						
 						drugReq.setQntRestMens(e);
 					} else {
-						log.info("Start Quantite Premiere Jour: "+new Date());
+						log.info("Start Quantite Premiere Jour pharma cons: "+new Date());
 						consReq.setQntPremJour(service.getPharmacySoldeFirstDayOfWeek(from, null, dp
 										.getConceptId().getConceptId()
 										+ "", dp.getCmddrugId().getPharmacy()
 										.getPharmacyId()
 										+ ""));
-						log.info("End Quantite Premiere Jour: "+new Date());
+						log.info("End Quantite Premiere Jour pharma cons: "+new Date());
 						consReq.setQntRestMens(e);
 					}
 
 					if (dp.getDrugId() != null) {
-						log.info("Start Quantite Recu Mensuelle: "+new Date());
+						log.info("Start Quantite Recu Mensuelle pharma: "+new Date());
 						obQntyRec = service.getReceivedDispensedDrug(from,
 								toString,
 								dp.getDrugId().getDrugId().toString(), dp
 										.getCmddrugId().getPharmacy()
 										.getPharmacyId()
 										+ "")[0];
-						log.info("End Quantite Recu Mensuelle: "+new Date());
+						log.info("End Quantite Recu Mensuelle pharma: "+new Date());
 
 						if (obQntyRec != null)
 							drugReq.setQntRecuMens(obQntyRec);
@@ -558,14 +567,14 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						drugReq.setMaxQnty(h);
 						drugReq.setQntyToOrder(i);
 					} else {
-						log.info("Start Quantite Recu Mensuelle: "+new Date());
+						log.info("Start Quantite Recu Mensuelle pharma cons: "+new Date());
 						obQntyRec = service.getReceivedDispensedDrug(from,
 								toString,
 								dp.getConceptId().getConceptId() + "", dp
 										.getCmddrugId().getPharmacy()
 										.getPharmacyId()
 										+ "")[0];
-						log.info("End Quantite Recu Mensuelle: "+new Date());
+						log.info("End Quantite Recu Mensuelle pharma cons: "+new Date());
 
 						if (obQntyRec != null)
 							consReq.setQntRecuMens(obQntyRec);
@@ -607,6 +616,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						consommationMap.put(key, consReq);
 					}
 				}
+				log.info("End loop ************************************************************************************: "+new Date());
 			}
 		}
 
@@ -624,12 +634,14 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 				if (drugs.size() != (i + 1))
 					drugIdName += ",";
 			}
+
 		for (int j = 0; j < locations.size(); j++) {
 			locIdName += locations.get(j).getLocationId() + "_"
 					+ locations.get(j).getName();
 			if (locations.size() != (j + 1))
 				locIdName += ",";
 		}
+
 		try {
 			for (int k = 0; k < consumableList.size(); k++) {
 				consIdName += consumableList.get(k).getAnswerConcept()

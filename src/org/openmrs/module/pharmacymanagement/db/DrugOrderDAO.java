@@ -7,6 +7,7 @@ import java.util.List;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.Drug;
 import org.openmrs.module.pharmacymanagement.ProductReturnStore;
 import org.openmrs.module.pharmacymanagement.CmdDrug;
 import org.openmrs.module.pharmacymanagement.ConsumableDispense;
@@ -425,11 +426,22 @@ public interface DrugOrderDAO {
 	public ProductReturnStore getReturnStockById(int arsId);
 	
 	/**
+	 * returns sum by passing the <code>Java.Util.Date</code>  and <code>String</code> observation
+	 * 
+	 * @param startDate
+	 * @param endDate
+	 * @param drug
+	 * @param observation
+	 * @return 
+	 */
+	public Integer getReturnedItemsByDates (Date startDate, Date endDate, Drug drug, String observation);
+	
+	/**
 	 * returns <code>ProductReturnStore</code> by passing the <code>Java.Util</code> date and <code>String</code> observation
 	 * 
-	 * @param date
-	 * @param observation
-	 * @return
+	 * @param startDate
+	 * @param endDate
+	 * @return a list of <code>ProductReturnStore</code>
 	 */
 	public List<ProductReturnStore> getReturnStockByDate(Date date, String observation);
 	

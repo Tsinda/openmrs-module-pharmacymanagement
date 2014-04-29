@@ -13,6 +13,7 @@ import org.hibernate.criterion.Restrictions;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.Drug;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.pharmacymanagement.ProductReturnStore;
 import org.openmrs.module.pharmacymanagement.CmdDrug;
@@ -103,8 +104,9 @@ public class DrugOrderDAOImpl implements DrugOrderDAO {
 	public Collection<DrugProduct> getDrugProductByCmdDrugId(CmdDrug cmddrug) {
 		Session session = getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(DrugProduct.class)
-				.createCriteria("cmddrugId").add(
-						Restrictions.idEq(cmddrug.getCmddrugId()));
+				.createCriteria("cmddrugId")
+				.add(Restrictions.idEq(cmddrug.getCmddrugId()));
+				
 		Collection<DrugProduct> drugproducts = criteria.list();
 		return drugproducts;
 	}
@@ -898,7 +900,7 @@ public class DrugOrderDAOImpl implements DrugOrderDAO {
 		StringBuffer sb = new StringBuffer();
 
 		sb
-				.append(" SELECT DISTINCT dp.lot_no, dp.expiry_date, dp.drugproduct_id FROM pharmacymanagement_drug_product dp LEFT JOIN "
+				.append(" SELECT dp.lot_no, dp.expiry_date, dp.drugproduct_id FROM pharmacymanagement_drug_product dp LEFT JOIN "
 						+ "(SELECT cd.cmddrug_id from pharmacymanagement_cmd_drug cd  WHERE ");
 
 		if (locationId != null && !locationId.equals(""))
@@ -921,7 +923,7 @@ public class DrugOrderDAOImpl implements DrugOrderDAO {
 			sb.append(" dp.concept_id = '" + conceptId + "' ");
 
 		sb
-				.append(" AND dp.lot_no IS NOT NULL AND dp.cmddrug_id IS NOT NULL GROUP BY dp.lot_no; ");
+				.append(" AND dp.lot_no IS NOT NULL AND dp.cmddrug_id IS NOT NULL GROUP BY dp.lot_no, dp.expiry_date; ");
 
 		Session session = sessionFactory.getCurrentSession();
 
@@ -952,7 +954,44 @@ public class DrugOrderDAOImpl implements DrugOrderDAO {
 				ProductReturnStore.class);
 		criteria.add(Restrictions.eq("retDate", date));
 		criteria.add(Restrictions.eq("observation", observation));
+
 		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Integer getReturnedItemsByDates(Date startDate, Date endDate, Drug drug, String observation) {
+
+		StringBuffer sb = new StringBuffer();
+		int sum = 0;
+
+		sb.append(" SELECT SUM(ars.ret_qnty) FROM "
+				+ PharmacyConstants.ARV_RETURN_STORE + " ars WHERE 1 = 1 ");
+
+		if (startDate != null && !startDate.equals(""))
+			sb.append(" AND ars.ret_date >= '" + startDate + "' ");
+
+		if (endDate != null && !endDate.equals(""))
+			sb.append(" AND ars.ret_date <= '" + startDate + "' ");
+
+		if (drug != null)
+			sb.append(" AND ars.drugproduct_id = '" + drug.getDrugId() + "' ");
+
+		if (observation != null && !observation.equals(""))
+			sb.append(" AND ars.observation = '" + observation + "' ");
+
+		sb.append(";");
+
+		Session session = sessionFactory.getCurrentSession();
+
+		Query query = session.createSQLQuery(sb.toString());
+
+		List<Object> list = query.list();
+		if (list.size() > 0 && list.get(0) != null) {
+			sum = Integer.valueOf(list.get(0).toString());
+		}
+
+		return sum;
 	}
 
 	@SuppressWarnings("unchecked")

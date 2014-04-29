@@ -222,8 +222,10 @@ public class Utils {
 		int month1 = month - 1;
 		int daysOfMonth = getLastDayOfMonth(year, month1);
 		int count = 0;
-		for (int i = 1; i <= daysOfMonth; i++) {
-			String date = year + "" + month1 + "" + i;
+		int i = 1;
+		String date = "";
+		for (i = 1; i <= daysOfMonth; i++) {
+			date = year + "" + month1 + "" + i;
 			if (dp.getDrugId() != null) {
 				if (emptyDays(date, dp.getDrugId().getDrugId() + "", null,
 						locationId))
@@ -310,29 +312,34 @@ public class Utils {
 	public static Integer getLentDrugsDuringTheMonth(Date date,
 			DrugProduct drugProduct) throws ParseException {
 		int sum = 0;
-		Date dateCheck = null;
-		String dateStr = null;
+		Date startDate = null;
+		Date endDate = null;
 		DrugOrderService service = Context.getService(DrugOrderService.class);
 		int month = date.getMonth() + 1;
 		int gregMonth = date.getMonth();
 		int year = date.getYear() + 1900;
 		int lastDayOfMonth = getLastDayOfMonth(year, gregMonth);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		for (int i = 1; i <= lastDayOfMonth; i++) {
-			dateStr = i + "/" + month + "/" + year;
-			dateCheck = sdf.parse(dateStr);
-			List<ProductReturnStore> rss = service
-					.getReturnStockByDate(dateCheck, "Lend");
+		// for (int i = 1; i <= lastDayOfMonth; i++) {
+		// 	dateStr = i + "/" + month + "/" + year;
+		// 	dateCheck = sdf.parse(dateStr);
+		// 	List<ProductReturnStore> rss = service
+		// 			.getReturnStockByDate(dateCheck, "Lend");
 			
-			if (rss != null)
-				for (ProductReturnStore rs : rss) {
-					if (rs.getDrugproductId().getDrugId() == drugProduct.getDrugId()) {
-						sum += rs.getRetQnty();
-					}
-				}
-		}
-		System.out.println("Sum: Lent *******************************************************************************: " + sum); 
-		return sum;
+		// 	if (rss != null)
+		// 		for (ProductReturnStore rs : rss) {
+		// 			if (rs.getDrugproductId().getDrugId() == drugProduct.getDrugId()) {
+		// 				sum += rs.getRetQnty();
+		// 			}
+		// 		}
+		// }
+		// System.out.println("Sum: Lent *******************************************************************************: " + sum); 
+		
+		startDate = sdf.parse("01/" + month + "/" + year);
+		endDate = sdf.parse(lastDayOfMonth + "/" + month + "/" + year);
+
+
+		return service.getReturnedItemsByDates(startDate, endDate, drugProduct.getDrugId(), "Returned");
 	}
 	
 	/**
@@ -347,28 +354,33 @@ public class Utils {
 	public static Integer getBorrowedDrugsDuringTheMonth(Date date,
 			DrugProduct drugProduct) throws ParseException {
 		int sum = 0;
-		Date dateCheck = null;
-		String dateStr = null;
+		Date startDate = null;
+		Date endDate = null;
 		DrugOrderService service = Context.getService(DrugOrderService.class);
 		int month = date.getMonth() + 1;
 		int gregMonth = date.getMonth();
 		int year = date.getYear() + 1900;
 		int lastDayOfMonth = getLastDayOfMonth(year, gregMonth);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		for (int i = 1; i <= lastDayOfMonth; i++) {
-			dateStr = i + "/" + month + "/" + year;
-			dateCheck = sdf.parse(dateStr);
-			List<ProductReturnStore> rss = service
-					.getReturnStockByDate(dateCheck, "Borrow");
-			if (rss != null)
-				for (ProductReturnStore rs : rss) {
-					if (rs.getDrugproductId().getDrugId() == drugProduct.getDrugId()) {
-						sum += rs.getRetQnty();
-					}
-				}
-		}
-		System.out.println("Sum: Borrowed *******************************************************************************: " + sum);
-		return sum;
+		// for (int i = 1; i <= lastDayOfMonth; i++) {
+		// 	dateStr = i + "/" + month + "/" + year;
+		// 	dateCheck = sdf.parse(dateStr);
+		// 	List<ProductReturnStore> rss = service
+		// 			.getReturnStockByDate(dateCheck, "Borrow");
+		// 	if (rss != null)
+		// 		for (ProductReturnStore rs : rss) {
+		// 			if (rs.getDrugproductId().getDrugId() == drugProduct.getDrugId()) {
+		// 				sum += rs.getRetQnty();
+		// 			}
+		// 		}
+		// }
+		// System.out.println("Sum: Borrowed *******************************************************************************: " + sum);
+		// return sum;
+		startDate = sdf.parse("01/" + month + "/" + year);
+		endDate = sdf.parse(lastDayOfMonth + "/" + month + "/" + year);
+
+
+		return service.getReturnedItemsByDates(startDate, endDate, drugProduct.getDrugId(), "Returned");//"Returned");
 	}
 
 	/**
