@@ -311,6 +311,7 @@ public class Utils {
 	@SuppressWarnings("deprecation")
 	public static Integer getLentDrugsDuringTheMonth(Date date,
 			DrugProduct drugProduct) throws ParseException {
+		Drug drug = drugProduct.getDrugId();
 		int sum = 0;
 		Date startDate = null;
 		Date endDate = null;
@@ -319,27 +320,28 @@ public class Utils {
 		int gregMonth = date.getMonth();
 		int year = date.getYear() + 1900;
 		int lastDayOfMonth = getLastDayOfMonth(year, gregMonth);
+		List<ProductReturnStore> rss = new ArrayList();
+
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		// for (int i = 1; i <= lastDayOfMonth; i++) {
-		// 	dateStr = i + "/" + month + "/" + year;
-		// 	dateCheck = sdf.parse(dateStr);
-		// 	List<ProductReturnStore> rss = service
-		// 			.getReturnStockByDate(dateCheck, "Lend");
+		for (int i = 1; i <= lastDayOfMonth; i++) {
+			dateStr = i + "/" + month + "/" + year;
+			dateCheck = sdf.parse(dateStr);
+			// rss = service.getReturnStockByDate(dateCheck, "Lend");
 			
-		// 	if (rss != null)
-		// 		for (ProductReturnStore rs : rss) {
-		// 			if (rs.getDrugproductId().getDrugId() == drugProduct.getDrugId()) {
-		// 				sum += rs.getRetQnty();
-		// 			}
-		// 		}
-		// }
-		// System.out.println("Sum: Lent *******************************************************************************: " + sum); 
+			if (service.getReturnStockByDate(dateCheck, "Lend") != null)
+				for (ProductReturnStore rs : service.getReturnStockByDate(dateCheck, "Lend")) {
+					if (rs.getDrugproductId().getDrugId() == drug) {
+						sum += rs.getRetQnty();
+					}
+				}
+		}
+		System.out.println("Sum: Lent *******************************************************************************: " + sum); 
 		
 		startDate = sdf.parse("01/" + month + "/" + year);
 		endDate = sdf.parse(lastDayOfMonth + "/" + month + "/" + year);
 
 
-		return service.getReturnedItemsByDates(startDate, endDate, drugProduct.getDrugId(), "Returned");
+		return service.getReturnedItemsByDates(startDate, endDate, drug, "Returned");
 	}
 	
 	/**

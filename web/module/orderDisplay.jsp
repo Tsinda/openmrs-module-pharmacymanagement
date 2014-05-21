@@ -294,7 +294,7 @@ $(document).ready( function() {
 	
 	<tr>
 		<td><spring:message code="pharmacymanagement.lotNr" /></td>
-		<td><div id="lotNoId"><input type="text" name="noLotStock" /></div>
+		<td><div id="lotNoId"><input type="text" name="prodFromLot" /></div>
 			
 		</td>
 	</tr>

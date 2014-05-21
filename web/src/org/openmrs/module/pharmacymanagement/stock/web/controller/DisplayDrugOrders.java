@@ -98,9 +98,9 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 		
 
 		if (request.getParameter("givenQnty") != null && !request.getParameter("givenQnty").equals("")
-				&& request.getParameter("pharmacyProduct") != null && !request.getParameter("givenQnty").equals("")
+				&& request.getParameter("pharmacyProduct") != null && !request.getParameter("pharmacyProduct").equals("")
 				&& request.getParameter("orderId") != null && !request.getParameter("orderId").equals("")
-				&& request.getParameter("noLotStock") != null && !request.getParameter("givenQnty").equals("")
+				&& request.getParameter("prodFromLot") != null && !request.getParameter("prodFromLot").equals("")
 				&& request.getParameter("expDate") != null && !request.getParameter("expDate").equals("")) {
 
 			DrugProductInventory dpi = new DrugProductInventory();

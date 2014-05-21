@@ -263,6 +263,9 @@ $(document).ready(function() {
 		var toId = $('#toId');
 		var sb = '<option value="">-- select --</option>';
 		$("#toId").val(dftLocId).attr("selected","selected");
+
+		$('.drug_disp_load').empty().html("Loading...");
+		
 		$.getJSON('json.htm?fromId=' + fromId.val() + '&toId=' + toId.val() + '&retType=' + retVar + '&productType=' + productType, function(data) {
 			if(retVar == 'external') {
 				for(var i in drugArray) {
@@ -284,6 +287,7 @@ $(document).ready(function() {
 			}
 			
 			$("#drugId").html(sb);
+			$('.drug_disp_load').empty().html("");
 		});
 	});
 	
@@ -293,7 +297,11 @@ $(document).ready(function() {
 		var fromId = $('#cons_fromId');
 		var toId = $('#cons_toId');
 		var sb = '<option value="">-- select --</option>';
+		
 		$("#cons_toId").val(dftLocId).attr("selected","selected");
+
+		$('.cons_disp_load').empty().html("Loading...");
+
 		$.getJSON('json.htm?fromId=' + fromId.val() + '&toId=' + toId.val() + '&retType=' + retVar + '&productType=' + productType, function(data) {
 			if(retVar == 'external') {
 				for(var i in drugArray) {
@@ -315,6 +323,7 @@ $(document).ready(function() {
 			}
 			
 			$("#consumableId").html(sb);
+			$('.cons_disp_load').empty().html("");
 		});
 	});
 	
@@ -325,12 +334,15 @@ $(document).ready(function() {
 		var toId = $('#toId');
 		var sb = '<option value="">-- select --</option>';
 		$("#fromId").val(dftLocId).attr("selected","selected");
+
+		$('.drug_disp_load').empty().html("Loading...");
+		
 		$.getJSON('json.htm?fromId=' + fromId.val() + '&toId=' + toId.val() + '&retType=' + retVar + '&productType=' + productType, function(data) {
-			
 			for(var i in data) {
 				sb += '<option value="'+data[i].id+'">'+data[i].name+'</option>';
 			}
 			$("#drugId").html(sb);
+			$('.drug_disp_load').empty().html("");
 			$("#toReplace").html('<select name="lot" id="lotId"><option value="">-- select --</option></select>');
 			$("#expDateId").val("");
 			$("#qtyId").val("").attr("disabled", "disabled");
@@ -344,12 +356,17 @@ $(document).ready(function() {
 		var toId = $('#cons_toId');
 		var sb = '<option value="">-- select --</option>';
 		$("#cons_fromId").val(dftLocId).attr("selected","selected");
-		$.getJSON('json.htm?fromId=' + fromId.val() + '&toId=' + toId.val() + '&retType=' + retVar + '&productType=' + productType, function(data) {
-			$("#consumableId").html('<option value=""><center><img src="${pageContext.request.contextPath}/images/loading.gif" /></center></option>');
+
+		$('.cons_disp_load').empty().html("Loading...");
+
+		$.getJSON('json.htm?fromId=' + fromIdype.val() + '&toId=' + toId.val() + '&retType=' + retVar + '&productType=' + productType, function(data) {
+						
 			for(var i in data) {
 				sb += '<option value="'+data[i].id+'">'+data[i].name+'</option>';
 			}
 			$("#consumableId").html(sb);
+			$('.cons_disp_load').empty().html("");
+			$('#loadingMsg').empty().html("");
 			$("#cons_toReplace").html('<select name="lot" id="cons_lotId"><option value="">-- select --</option></select>');
 			$("#cons_expDateId").val("");
 			$("#cons_qtyId").val("").attr("disabled", "disabled");
@@ -548,6 +565,7 @@ function populateLocations(type) {
 		<td>
 			<select name="to" id="toId">
 			</select>
+			<div class="drug_disp_load"></div>
 		</td>
 	</tr>
 	<tr>
@@ -637,11 +655,16 @@ function populateLocations(type) {
 	</tr>
 	<tr>
 		<td><spring:message code="pharmacymanagement.from" /></td>
-		<td><select name="from" id="cons_fromId">
-		</select></td>
+		<td>
+			<select name="from" id="cons_fromId">
+			</select>
+		</td>
 		<td><spring:message code="pharmacymanagement.to" /></td>
-		<td><select name="to" id="cons_toId">
-		</select></td>
+		<td>
+			<select name="to" id="cons_toId">
+			</select>
+			<div class="cons_disp_load"></div>
+		</td>
 	</tr>
 	<tr>
 		<td colspan="6">
