@@ -259,23 +259,24 @@ public class PharmacyRequestForm extends ParameterizableViewController {
 			}
 			
 			for (DrugProduct dp : dps1) {
-				if (dp.getDrugId() != null
-						&& serviceDrug.getReturnStockByDP(dp).get(0)
+				if (dp.getDrugId() != null && serviceDrug.getReturnStockByDP(dp).size() > 0) {
+						if(serviceDrug.getReturnStockByDP(dp).get(0)
 								.getDestination().getLocationId() == dftLoc
 								.getLocationId()) {
-					currSolde = serviceDrug.getCurrSolde(dp.getDrugId()
-							.getDrugId()
-							+ "", null, serviceDrug.getReturnStockByDP(dp).get(
-							0).getDestination().getLocationId()
-							+ "", dp.getExpiryDate() + "", dp.getLotNo(), null);
-					if (currSolde > 0) {
-						dpSet.add(dp);
-					}
+							currSolde = serviceDrug.getCurrSolde(dp.getDrugId()
+									.getDrugId()
+									+ "", null, serviceDrug.getReturnStockByDP(dp).get(
+									0).getDestination().getLocationId()
+									+ "", dp.getExpiryDate() + "", dp.getLotNo(), null);
+							if (currSolde > 0) {
+								dpSet.add(dp);
+							}
+						}
 				}
 			}
 
-		}	
-		
+		}
+				
 		
 		for(DrugProduct drugproduct : dpSet) {
 			drugMap.put(drugproduct.getDrugId().getDrugId(), drugproduct);

@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 <%@ include file="/WEB-INF/template/header.jsp"%>
+<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/validator.js" />
 <openmrs:require privilege="View Drug Store management" otherwise="/login.htm" redirect="/module/pharmacymanagement/order.list"/>
 
 <div>
@@ -105,6 +106,26 @@ $(document).ready( function() {
 				alert("Updated Successfully");
 			});
 		});
+	});	
+
+	$('#orderUpdate').salidate({
+			        'givenQnty' : {
+			            callback: 'required',
+			            msg: 'The given quantity is required.'
+			        },
+			        'prodFromLot' : {
+			            callback: 'required',
+			            msg: 'The Lot number is required.'
+			        },
+			        'expDate' : {
+			            callback: 'required',
+			            msg: 'The Expiration date is required.'
+			        },
+			        'invDate' : {
+			            callback: 'required',
+			            msg: 'The Inventory date is required.'
+			        }
+
 	});	
 });
 </script>
@@ -276,7 +297,7 @@ $(document).ready( function() {
 
 <!-- update order modal -->
 <div id="basic-modal-content">
-<form method="post" action="order.list?orderId=${cmdDrug.cmddrugId}" >
+<form method="post" action="order.list?orderId=${cmdDrug.cmddrugId}" id="orderUpdate" >
 <input type="hidden" id="pharmacyProductId"  name="pharmacyProduct" size="5" />
 <input type="hidden" name="pharmacyId" value="${cmdDrug.pharmacy.pharmacyId}" id="pharmacyId" />
 <table>

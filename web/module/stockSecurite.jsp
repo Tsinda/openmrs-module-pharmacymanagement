@@ -72,10 +72,8 @@ var $ = jQuery.noConflict();
 				<th>N<sup>o</sup></th>
 				<th><spring:message code="pharmacymanagement.date" /></th>
 				<th><spring:message code="pharmacymanagement.location" /></th>
-				<c:if test="${drug.name != null}">
 				<th><spring:message code="pharmacymanagement.lotNr" /></th>
 				<th><spring:message code="pharmacymanagement.expDate" /></th>
-				</c:if>
 				<th><spring:message code="pharmacymanagement.in" /></th>
 				<th><spring:message code="pharmacymanagement.out" /></th>
 				<th><spring:message code="pharmacymanagement.solde" /></th>
@@ -87,10 +85,8 @@ var $ = jQuery.noConflict();
 					<td>${num.count}.</td>
 					<td>${inventory.inventoryDate}</td>
 					<td>${inventory.drugproductId.cmddrugId.locationId.name eq null ? inventory.drugproductId.cmddrugId.pharmacy.name : inventory.drugproductId.cmddrugId.locationId.name}</td>
-					<c:if test="${drug.name != null}">
 					<td>${inventory.drugproductId.lotNo}</td>
 					<td>${inventory.drugproductId.expiryDate}</td>
-					</c:if>
 					<td>${inventory.entree}</td>
 					<td>${inventory.sortie}</td>
 					<td>${inventory.solde}</td>

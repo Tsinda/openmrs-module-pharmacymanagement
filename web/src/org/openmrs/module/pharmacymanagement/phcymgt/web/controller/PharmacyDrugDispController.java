@@ -233,13 +233,13 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 									}
 
 									dop.setEncounterId(encounter);
-//									try {
+									try {
 										orderService.saveOrder(drugOrder);
 										dop.setOrderId(drugOrder);
 										service.saveDrugOrderPrescription(dop);
-//									} catch (org.openmrs.api.APIException e) {
-//										mav.addObject("msg", "You cannot dispense before prescription");
-//									}				
+									} catch (org.openmrs.api.APIException e) {
+										mav.addObject("msg", "You cannot dispense before prescription");
+									}
 									
 									pi = new PharmacyInventory();
 									pi.setDate(encDate);

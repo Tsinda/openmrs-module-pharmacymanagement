@@ -313,15 +313,15 @@ public class Utils {
 			DrugProduct drugProduct) throws ParseException {
 		Drug drug = drugProduct.getDrugId();
 		int sum = 0;
-		Date startDate = null;
-		Date endDate = null;
+		Date startDate = null, endDate = null, dateCheck = null;
 		DrugOrderService service = Context.getService(DrugOrderService.class);
 		int month = date.getMonth() + 1;
 		int gregMonth = date.getMonth();
 		int year = date.getYear() + 1900;
 		int lastDayOfMonth = getLastDayOfMonth(year, gregMonth);
+		String dateStr = "";
 		List<ProductReturnStore> rss = new ArrayList();
-
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		for (int i = 1; i <= lastDayOfMonth; i++) {
 			dateStr = i + "/" + month + "/" + year;
@@ -334,8 +334,9 @@ public class Utils {
 						sum += rs.getRetQnty();
 					}
 				}
+			dateStr = "";
+			dateCheck = null;
 		}
-		System.out.println("Sum: Lent *******************************************************************************: " + sum); 
 		
 		startDate = sdf.parse("01/" + month + "/" + year);
 		endDate = sdf.parse(lastDayOfMonth + "/" + month + "/" + year);
