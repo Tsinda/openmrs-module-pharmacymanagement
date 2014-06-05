@@ -188,7 +188,6 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						dpi.setEntree(givenQnty);
 						dpi.setIsStore(true);
 						total = currSolde + givenQnty;
-						log.info("******************************************* store --> total: " + total + " currSolde: " + currSolde + " givenQnty: " + givenQnty);
 					}
 					if (cmddrug.getDestination().getLocationId() == dftLoc
 							.getLocationId()
@@ -197,7 +196,6 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						dpiCurrSortie.setSortie(givenQnty);
 						dpiCurrSortie.setIsStore(true);
 						total1 = currentSolde - givenQnty;
-						log.info("******************************************* store --> total1: " + total1 + " currSolde: " + currSolde + " givenQnty: " + givenQnty);
 					}
 				} else {
 					// operating on the level of the pharmacy(dispensing)
@@ -292,7 +290,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 
 			for (DrugProduct dp : drugProducts) {
 
-				log.info("Start loop ************************************************************************************: "+new Date());
+				log.info("Start loop *********************************************: "+new Date());
 				
 				Consommation drugReq = new Consommation();
 				Consommation consReq = new Consommation();
@@ -622,7 +620,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						consommationMap.put(key, consReq);
 					}
 				}
-				log.info("End loop ************************************************************************************: "+new Date());
+				log.info("End loop *****************************************: "+new Date());
 			}
 		}
 
