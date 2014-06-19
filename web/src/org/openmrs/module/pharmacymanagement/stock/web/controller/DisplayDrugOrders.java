@@ -121,9 +121,12 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 
 			CmdDrug cmddrug = service.getCmdDrugById(orderId);
 
+			Location lcation = null;
+
 			// Store
 			if (cmddrug.getLocationId() != null) {
-				if (dp.getDrugId() != null) {
+				lcation = cmddrug.getLocationId();
+				if (dp.getDrugId() != null) {	
 					currSolde = service.getCurrSolde(dp.getDrugId().getDrugId()
 							+ "", null, cmddrug.getLocationId().getLocationId()
 							+ "", dateStr, noLot, null);
@@ -147,6 +150,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 				}
 				
 			} else { // Dispensing Pharmacy
+				lcation = cmddrug.getDestination();
 				if (dp.getDrugId() != null) {
 					currSolde = service.getCurrSolde(dp.getDrugId().getDrugId()
 							+ "", null, cmddrug.getPharmacy().getLocationId()
@@ -158,9 +162,10 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 							+ "", cmddrug.getPharmacy().getLocationId()
 							.getLocationId() + "", dateStr, noLot, null);
 				}
+
 			}
 
-			if (givenQnty <= dp.getQntyReq()) {
+			if (givenQnty <= dp.getQntyReq()) {	
 				if (request.getParameter("invDate") != null
 						&& !request.getParameter("invDate").equals("")) {
 					String inventoryDateStr = request.getParameter("invDate");
@@ -173,13 +178,10 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 
 				dpi.setInventoryDate(invDate);
 
-				Location lcation = null;
+				
 
-				if (dp.getCmddrugId() != null) {
-					lcation = dp.getCmddrugId().getLocationId();
-				} else {
-					lcation = service.getReturnStockByDP(dp).get(0)
-							.getDestination();
+				if (dp.getCmddrugId() == null) {
+					lcation = service.getReturnStockByDP(dp).get(0).getDestination();
 				}
 
 				// when operating on the level of the main store
@@ -189,9 +191,9 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						dpi.setIsStore(true);
 						total = currSolde + givenQnty;
 					}
-					if (cmddrug.getDestination().getLocationId() == dftLoc
-							.getLocationId()
-							&& cmddrug.getLocationId().getLocationId() != null) {
+					
+					if (cmddrug.getDestination().getLocationId() == dftLoc.getLocationId()
+							&& cmddrug.getLocationId() != null) {
 						dpiCurrSortie.setInventoryDate(invDate);
 						dpiCurrSortie.setSortie(givenQnty);
 						dpiCurrSortie.setIsStore(true);
@@ -264,7 +266,6 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
 								"The Given Quantity has to be less or equal to the number requested");
 			}
-
 		}
 
 		// displaying a particular order

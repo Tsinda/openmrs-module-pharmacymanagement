@@ -1,6 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 <%@ include file="/WEB-INF/template/header.jsp"%>
-<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/validator.js" />
 <openmrs:require privilege="View Drug Store management" otherwise="/login.htm" redirect="/module/pharmacymanagement/order.list"/>
 
 <div>
@@ -12,71 +11,71 @@
 
 <%@ include file="template/localHeader.jsp"%>
 <script type="text/javascript">
-var $ = jQuery.noConflict();
-$(document).ready( function() {
-	$('.cmts').hide();
+var $dm = jQuery.noConflict();
+$dm(document).ready( function() {
+	$dm('.cmts').hide();
 	      
-	$(".basic").click(
+	$dm(".basic").click(
 			function() {
 				var target = this.id;
-				$("#pharmacyProductId").attr("value", target);
+				$dm("#pharmacyProductId").attr("value", target);
 				<c:if test="${cmdDrug.locationId.locationId != dftLoc.locationId}">
-					$("#lotNoId").empty().html('Loading...');
-					$("#lotNoId").load("patOrders.list?drugproductId="+target+" #lots");
+					$dm("#lotNoId").empty().html('Loading...');
+					$dm("#lotNoId").load("patOrders.list?drugproductId="+target+" #lots");
 				</c:if>
 	});
 
-	$("#lotNoId").change(function() {
-		var selectId = $("#selectLotId").val();
+	$dm("#lotNoId").change(function() {
+		var selectId = $dm("#selectLotId").val();
 		<c:if test="${cmdDrug.locationId.locationId == null}">
-			$("#expirationId").empty().html('Loading...');
-			$("#expirationId").load("patOrders.list?dpFromGet="+selectId+" #expDate");
+			$dm("#expirationId").empty().html('Loading...');
+			$dm("#expirationId").load("patOrders.list?dpFromGet="+selectId+" #expDate");
 		</c:if>
 	});
 
 	//jquery to print the div with printArea as class
-	$("#print_button").click(function(){
-		$('.cmts').show();
-		$(".printArea").printArea();
-		$('.cmts').hide();
+	$dm("#print_button").click(function(){
+		$dm('.cmts').show();
+		$dm(".printArea").printArea();
+		$dm('.cmts').hide();
 	});
 
-	$("#printSelect").change(function() {
-		var print = $("#printSelect").val();
+	$dm("#printSelect").change(function() {
+		var print = $dm("#printSelect").val();
 		if(print == 1) {
-			$('.cmts').show();
-			$(".printArea").printArea();
-			$('.cmts').hide();
+			$dm('.cmts').show();
+			$dm(".printArea").printArea();
+			$dm('.cmts').hide();
 		} 
 		if (print == 2) {
-			$('.cmts').show();
+			$dm('.cmts').show();
 			
 			//removing the colspan attributes
-			$('.doubles').attr('colspan', '');
-			$('.triples').attr('colspan', '');
-			$('.quintuples').attr('colspan', '');
+			$dm('.doubles').attr('colspan', '');
+			$dm('.triples').attr('colspan', '');
+			$dm('.quintuples').attr('colspan', '');
 
 			//adding the colspan attributes
-			$('.simpleSpan').attr('colspan', '2');
+			$dm('.simpleSpan').attr('colspan', '2');
 			
-			$('.simple').hide();
-			$(".printArea").printArea();
-			$('.simple').show();
+			$dm('.simple').hide();
+			$dm(".printArea").printArea();
+			$dm('.simple').show();
 
 			//removing the colspan attributes
-			$('.simpleSpan').attr('colspan', '');
+			$dm('.simpleSpan').attr('colspan', '');
 
 			//restoring the colspan
-			$('.doubles').attr('colspan', '2');
-			$('.triples').attr('colspan', '3');
-			$('.quintuples').attr('colspan', '5');
-			//$('#qtyReceivedDuringMonthId').attr('colspan', '');
-			//$('#qtyReceivedId').attr('colspan','');
-			$('.cmts').hide();
+			$dm('.doubles').attr('colspan', '2');
+			$dm('.triples').attr('colspan', '3');
+			$dm('.quintuples').attr('colspan', '5');
+			//$dm('#qtyReceivedDuringMonthId').attr('colspan', '');
+			//$dm('#qtyReceivedId').attr('colspan','');
+			$dm('.cmts').hide();
 		}		
 	});
 	
-	$('.edit-basic').click(function () {
+	$dm('.edit-basic').click(function () {
 		var currId = this.id;
 		var arrDrug = new Array();
 		var drugString = "<c:out value="${drugs}" />";
@@ -90,43 +89,46 @@ $(document).ready( function() {
 		var locString = "<c:out value="${locations}" />";
 		arrLoc = locString.split(",");
 		
-		var drug = $(this).parents('tr').children("td:nth-child(2)").text();
-		var qtyRec = $(this).parents('tr').children("td:nth-child(14)").text();
-		var month = $('#month').text();
-		var supProg = $('#supProg').text();
-		var loc = $('#loc').text();
+		var drug = $dm(this).parents('tr').children("td:nth-child(2)").text();
+		var qtyRec = $dm(this).parents('tr').children("td:nth-child(14)").text();
+		var month = $dm('#month').text();
+		var supProg = $dm('#supProg').text();
+		var loc = $dm('#loc').text();
 		var drugId = null;
 		var drugName = null;
 		var currIdSplit = new Array();
 		currIdSplit = currId.split("_");
-		$('#simplemodal-container').width(840);
-		$('#simplemodal-container').css({'left':'428.5px'});
-		$("#edit-modal-content").load("cmdUpdate.form?dpId=" + currIdSplit[1] + " #cmdUpdate", function() {
-			$("#cmdUpdateBtn").click(function() {
+		$dm('#simplemodal-container').width(840);
+		$dm('#simplemodal-container').css({'left':'428.5px'});
+		$dm("#edit-modal-content").load("cmdUpdate.form?dpId=" + currIdSplit[1] + " #cmdUpdate", function() {
+			$dm("#cmdUpdateBtn").click(function() {
 				alert("Updated Successfully");
 			});
 		});
-	});	
+	});
 
-	$('#orderUpdate').salidate({
-			        'givenQnty' : {
-			            callback: 'required',
-			            msg: 'The given quantity is required.'
-			        },
-			        'prodFromLot' : {
-			            callback: 'required',
-			            msg: 'The Lot number is required.'
-			        },
-			        'expDate' : {
-			            callback: 'required',
-			            msg: 'The Expiration date is required.'
-			        },
-			        'invDate' : {
-			            callback: 'required',
-			            msg: 'The Inventory date is required.'
-			        }
-
-	});	
+	$dm('form').submit(function(e) {
+        var invDate = $.trim($dm('#invDateId').val());
+        var givenQnty = $.trim($dm('#givenQntyId').val());
+        var lot = $.trim($dm('#selectLotId').val());
+        var exp = $.trim($dm('#expDateId').val());
+        if(invDate === '') {
+                $dm('#invDateId').css({'background-color' : 'red'});
+                e.preventDefault(e);
+        }
+        if(givenQnty === '') {
+                $dm('#givenQntyId').css({'background-color' : 'red'});
+                e.preventDefault(e);
+        }
+        if(lot === '') {
+                $dm('#selectLotId').css({'background-color' : 'red'});
+                e.preventDefault(e);
+        }
+        if(exp === '') {
+                $dm('#expDateId').css({'background-color' : 'red'});
+                e.preventDefault(e);
+        }
+    });	
 });
 </script>
 <select id="printSelect">
@@ -304,13 +306,13 @@ $(document).ready( function() {
 	<tr>
 		<td><spring:message code="pharmacymanagement.inventoryDate" /></td>		
 		<td><input type="hidden" name="now" id="nowId" value="<openmrs:formatDate date="${now}" type='textbox' />" />
-			<input type="text" name="invDate" id="invDateId" onchange="CompareDates('<openmrs:datePattern />');"
+			<input type="text" name="invDate" id="invDateId" onchange="CompareDates('<openmrs:datePattern />', 'invDateId');"
 				onfocus="showCalendar(this)" class="date" size="11" /><span id="msgId"></span></td>
 	</tr>
 	
 	<tr>
 		<td><spring:message code="pharmacymanagement.givenQnty" /></td>
-		<td><input type="text" name="givenQnty" size="5" /></td>
+		<td><input type="text" name="givenQnty" size="5" id="givenQntyId" /></td>
 	</tr>
 	
 	<tr>
@@ -322,7 +324,7 @@ $(document).ready( function() {
 	
 	<tr>
 		<td><spring:message code="pharmacymanagement.expDate" /></td>
-		<td><div id="expirationId"><input type="text" name="expDate" onfocus="showCalendar(this)" class="date" size="11" /></div></td>
+		<td><div id="expirationId"><input type="text" name="expDate" onfocus="showCalendar(this)" class="date" size="11" id="expDateId" /></div></td>
 	</tr>
 	
 	<tr>

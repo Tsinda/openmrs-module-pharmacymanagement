@@ -115,6 +115,26 @@ $dsm(document).ready(function() {
                     });
             }
     }
+
+    $dsm('form').submit(function(e) {
+        var vd = $dsm.trim($dsm('#encDateId').val());
+        var kg = $dsm.trim($dsm('#weightId').val());
+        var dp = $dsm('.dpClass').val();
+        if(vd === '') {
+            $dsm('#encDateId').css({'background-color' : 'red'});
+            e.preventDefault(e);
+        }
+        if(kg === '') {
+            $dsm('#weightId').css({'background-color' : 'red'});
+            e.preventDefault(e);
+        }
+        if(dp === '') {
+            $dsm('.dpClass').css({'background-color' : 'red'});
+            e.preventDefault(e);
+
+        }
+    });
+
 });
 
 </script>
@@ -134,7 +154,7 @@ $dsm(document).ready(function() {
 <center><b><spring:message code="Drug Dispensing" /></b></center>
 </div>
 <div class="daebox">
-<form method="post" name="frm">
+<form method="post" name="frm" id="drugDispenserId">
 <table class="shadow">
 	<thead>
 		<tr class="adhere">

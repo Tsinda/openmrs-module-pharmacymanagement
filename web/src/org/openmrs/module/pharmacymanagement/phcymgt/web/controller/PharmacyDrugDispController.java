@@ -123,6 +123,8 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 									person,
 									conceptService
 											.getConcept(PharmacyConstants.WEIGHT))));
+
+
 			mav.addObject("obsWeight", obsWeight);
 		}
 		
@@ -157,7 +159,7 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 			EncounterType encounterType = encounterService
 					.getEncounterType(Utils
 							.getGP("pharmacymanagement.pharmacyEncounter"));
-			List<Obs> observations = Context.getObsService().getObservationsByPersonAndConcept(Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("patientId"))), Context.getConceptService().getConcept(5089));
+			List<Obs> observations = Context.getObsService().getObservationsByPersonAndConcept(Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("patientId"))), Context.getConceptService().getConcept(PharmacyConstants.WEIGHT));
 			
 			if(observations.size() == 0) {
 				Obs weightObs = Utils.createObservation(encDate, dftLoc, patient,
@@ -175,7 +177,7 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 			if(request.getParameter("pharmacy") != null && !request.getParameter("pharmacy").equals(""))
 				pharmacyIdStr = request.getParameter("pharmacy");
 			
-			if(obsList.size() == 0)
+			if(obsList.size() != 0)
 				encounter = Utils.createEncounter(encDate, user, dftLoc, patient,
 						encounterType, obsList);
 			
@@ -227,7 +229,7 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 									//auto expire the regimen to remove from the list which appears when dispensing what have been prescribed
 									drugOrder.setAutoExpireDate(encDate);
 									
-									if (count == 1 && obsList.size() == 0) {
+									if (count == 1 && obsList.size() != 0) {
 										encounterService
 												.saveEncounter(encounter);
 									}
