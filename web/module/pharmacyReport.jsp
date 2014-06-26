@@ -129,7 +129,7 @@ function subSevenDaysToFrom() {
 				<th><spring:message code="pharmacymanagement.storeQntyFist" /></th>
 				<th><spring:message code="pharmacymanagement.qntyRecDurRep" /></th>
 				<th><spring:message code="pharmacymanagement.qntyDispDurRep" /></th>
-				<th><spring:message code="pharmacymanagement.storeQntyLastDay" /></th>
+				<th><spring:message code="Solde" /></th>
 			</tr>
 		</thead>
 		<tbody id="weeklyReprtId">
