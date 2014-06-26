@@ -99,6 +99,7 @@ $dsm(document).ready(function() {
                     	var loadedWeight = $dsm(".obsValue").text();
                     	$dsm("#weightId").val(loadedWeight);
                    	});
+                   	
                    	$dsm("#pharmaRpt").load("drugOrder.list?patientId="+patId+" #dt_example", function() {
                             $dsm('#example').dataTable();
                    	});

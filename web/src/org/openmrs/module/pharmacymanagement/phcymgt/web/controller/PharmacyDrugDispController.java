@@ -177,9 +177,8 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 			if(request.getParameter("pharmacy") != null && !request.getParameter("pharmacy").equals(""))
 				pharmacyIdStr = request.getParameter("pharmacy");
 			
-			if(obsList.size() != 0)
-				encounter = Utils.createEncounter(encDate, user, dftLoc, patient,
-						encounterType, obsList);
+			// if(obsList.size() != 0)
+				encounter = Utils.createEncounter(encDate, user, dftLoc, patient, encounterType, obsList);
 			
 			if (fieldNames.size() != 0) {
 				for (String str : fieldNames) {
@@ -229,12 +228,11 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 									//auto expire the regimen to remove from the list which appears when dispensing what have been prescribed
 									drugOrder.setAutoExpireDate(encDate);
 									
-									if (count == 1 && obsList.size() != 0) {
+									if (count == 1) { // && obsList.size() != 0) {
 										encounterService
 												.saveEncounter(encounter);
+										dop.setEncounterId(encounter);
 									}
-
-									dop.setEncounterId(encounter);
 									try {
 										orderService.saveOrder(drugOrder);
 										dop.setOrderId(drugOrder);

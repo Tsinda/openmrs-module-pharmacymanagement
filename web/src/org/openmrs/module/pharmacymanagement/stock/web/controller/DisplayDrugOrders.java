@@ -59,7 +59,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 				"pharmacymanagement.periodDispense");
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");		
 		
-		int total = 0, total1 = 0, currSolde, currentSolde = 0, lentProd = 0, borrowedProd = 0;		
+		int total = 0, total1 = 0, currSolde = 0, currentSolde = 0, lentProd = 0, borrowedProd = 0;		
 		
 		List<Drug> drugs = conceptService.getAllDrugs();
 		List<Location> locations = locationService.getAllLocations();
@@ -126,7 +126,7 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 			// Store
 			if (cmddrug.getLocationId() != null) {
 				lcation = cmddrug.getLocationId();
-				if (dp.getDrugId() != null) {	
+				if (dp.getDrugId() != null) {
 					currSolde = service.getCurrSolde(dp.getDrugId().getDrugId()
 							+ "", null, cmddrug.getLocationId().getLocationId()
 							+ "", dateStr, noLot, null);
@@ -150,17 +150,16 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 				}
 				
 			} else { // Dispensing Pharmacy
-				lcation = cmddrug.getDestination();
+				DrugProduct dproduct = service.getDrugProductById(Integer.valueOf(noLot));
+				noLot = dproduct.getLotNo();
 				if (dp.getDrugId() != null) {
 					currSolde = service.getCurrSolde(dp.getDrugId().getDrugId()
-							+ "", null, cmddrug.getPharmacy().getLocationId()
-							.getLocationId()
+							+ "", null, cmddrug.getDestination().getLocationId()
 							+ "", dateStr, noLot, null);
 				} else {
 					currSolde = service.getCurrSolde(null, dp.getConceptId()
 							.getConceptId()
-							+ "", cmddrug.getPharmacy().getLocationId()
-							.getLocationId() + "", dateStr, noLot, null);
+							+ "", cmddrug.getDestination().getLocationId() + "", dateStr, noLot, null);
 				}
 
 			}
@@ -179,18 +178,16 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 				dpi.setInventoryDate(invDate);
 
 				
-
-				if (dp.getCmddrugId() == null) {
-					lcation = service.getReturnStockByDP(dp).get(0).getDestination();
-				}
+				
+				// if (dp.getCmddrugId() == null) {
+				// 	lcation = service.getReturnStockByDP(dp).get(0).getDestination();
+				// }
 
 				// when operating on the level of the main store
 				if (lcation != null) {
-					if (locations.contains(lcation)) {
-						dpi.setEntree(givenQnty);
-						dpi.setIsStore(true);
-						total = currSolde + givenQnty;
-					}
+					dpi.setEntree(givenQnty);
+					dpi.setIsStore(true);
+					total = currSolde + givenQnty;
 					
 					if (cmddrug.getDestination().getLocationId() == dftLoc.getLocationId()
 							&& cmddrug.getLocationId() != null) {
@@ -198,9 +195,11 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 						dpiCurrSortie.setSortie(givenQnty);
 						dpiCurrSortie.setIsStore(true);
 						total1 = currentSolde - givenQnty;
-					}
+					}	
 				} else {
 					// operating on the level of the pharmacy(dispensing)
+
+					lcation = cmddrug.getDestination();
 					int currStat = 0;
 					if (dp.getDrugId() != null)
 						currStat = service.getCurrSoldeDisp(dp.getDrugId()
@@ -231,6 +230,9 @@ public class DisplayDrugOrders extends ParameterizableViewController {
 							service.savePharmacyInventory(pi);
 						}
 					}
+
+
+					System.out.println("Store::destination not null ***************************** " + lcation.getName() + " disp solde: " + solde + " Total" + total + " previous drug solde: " + currSolde + " previous cons sold: " + currStat + " given quantity: " + givenQnty);
 				}
 
 				if (total >= 0) {
