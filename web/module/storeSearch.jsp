@@ -78,7 +78,16 @@ var $ = jQuery.noConflict();
 		<c:forEach var="item" items="${itemMap}" varStatus="num">
 			<tr>
 				<td>${num.count}.</td>
-				<td>${item.value.drugName}</td>
+				<td>
+					<c:choose>
+					    <c:when test="${empty item.value.drugProduct.conceptId}">
+					    	<a href="${pageContext.request.contextPath}/module/pharmacymanagement/stocksecurity.list?drugId=${item.value.drugProduct.drugId.drugId}&locationId=${empty item.value.drugProduct.cmddrugId.locationId ? item.value.drugProduct.cmddrugId.destination.locationId : item.value.drugProduct.cmddrugId.locationId.locationId}">${item.key}</a>
+					    </c:when>
+					    <c:otherwise>
+					        <a href="${pageContext.request.contextPath}/module/pharmacymanagement/stocksecurity.list?consumableId=${item.value.drugProduct.conceptId.conceptId}&locationId=${empty item.value.drugProduct.cmddrugId.locationId ? item.value.drugProduct.cmddrugId.destination.locationId : item.value.drugProduct.cmddrugId.locationId.locationId}">${item.key}</a>
+					    </c:otherwise>
+					</c:choose>
+				</td>
 				<td>${item.value.lotNo}</td>
 				<td>${item.value.expirationDate}</td>
 				<td>${item.value.in}</td>

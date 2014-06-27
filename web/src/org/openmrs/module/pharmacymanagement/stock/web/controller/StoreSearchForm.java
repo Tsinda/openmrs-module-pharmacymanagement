@@ -22,6 +22,7 @@ import org.openmrs.module.pharmacymanagement.DrugProductInventory;
 import org.openmrs.module.pharmacymanagement.PharmacyConstants;
 import org.openmrs.module.pharmacymanagement.StoreWarning;
 import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
+import org.openmrs.module.pharmacymanagement.DrugProduct;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
@@ -47,6 +48,7 @@ public class StoreSearchForm extends ParameterizableViewController {
 				.getConcept(PharmacyConstants.CONSUMABLE).getAnswers();
 		String drugId = null, consumableId = null, name = "";
 		int in = 0, out = 0, solde = 0;
+		DrugProduct drugProduct = null;
 
 		String locationStr = Context.getAuthenticatedUser().getUserProperties()
 				.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
@@ -58,8 +60,7 @@ public class StoreSearchForm extends ParameterizableViewController {
 				consumableId = dpi.getDrugproductId().getConceptId()
 						.getConceptId()
 						+ "";
-				name = dpi.getDrugproductId().getConceptId().getName()
-						.getName();
+				drugProduct = dpi.getDrugproductId();
 				Object outStr1 = service
 						.getSumEntreeSortieByFromToDrugLocation(null,
 								new Date() + "", drugId, consumableId,
@@ -77,12 +78,12 @@ public class StoreSearchForm extends ParameterizableViewController {
 
 				solde = in - out;
 
-				storeWarning = new StoreWarning(name, out, in, solde,
+				storeWarning = new StoreWarning(dpi.getDrugproductId(), out, in, solde,
 						dpi.getDrugproductId().getLotNo(), dpi
 								.getDrugproductId().getExpiryDate()
 								+ "");
 
-				itemMap.put(name, storeWarning);
+				itemMap.put(dpi.getDrugproductId().getConceptId().getName().getName(), storeWarning);
 				drugId = null;
 				consumableId = null;
 			}
@@ -109,8 +110,7 @@ public class StoreSearchForm extends ParameterizableViewController {
 
 				solde = in - out;
 
-				storeWarning = new StoreWarning(dpi.getDrugproductId()
-						.getDrugId().getName(), out, in, solde, dpi
+				storeWarning = new StoreWarning(dpi.getDrugproductId(), out, in, solde, dpi
 						.getDrugproductId().getLotNo(), dpi
 						.getDrugproductId().getExpiryDate() + "");
 

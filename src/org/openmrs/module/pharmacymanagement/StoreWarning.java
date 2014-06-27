@@ -1,6 +1,9 @@
 package org.openmrs.module.pharmacymanagement;
 
+import org.openmrs.module.pharmacymanagement.DrugProduct;
+
 public class StoreWarning {
+	private DrugProduct drugProduct;
 	private String drugName;
 	private int consumed;
 	private int in;
@@ -11,8 +14,8 @@ public class StoreWarning {
 	public StoreWarning() {
 	}
 	
-	public StoreWarning(String drugName, int consumed, int in, int store, String lotNo, String expirationDate) {
-		this.drugName = drugName;
+	public StoreWarning(DrugProduct drugProduct, int consumed, int in, int store, String lotNo, String expirationDate) {
+		this.drugProduct = drugProduct;
 		this.consumed = consumed;
 		this.in = in;
 		this.store = store;
@@ -21,6 +24,17 @@ public class StoreWarning {
 	}
 	
 	/**
+	 * @return the drugProduct
+	 */
+	public DrugProduct getDrugProduct() {
+		return drugProduct;
+	}
+	/**
+	 * @param drugName the drugProduct to set
+	 */
+	public void setDrugProduct(DrugProduct drugProduct) {
+		this.drugProduct = drugProduct;
+	}/**
 	 * @return the drugName
 	 */
 	public String getDrugName() {

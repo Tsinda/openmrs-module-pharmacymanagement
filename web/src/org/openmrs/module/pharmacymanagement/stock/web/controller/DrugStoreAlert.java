@@ -83,10 +83,10 @@ public class DrugStoreAlert extends ParameterizableViewController {
 				
 				if( solde <= Utils.getTheConsommationMaximumMoyenne("HC", dpr)) {
 					if(dpr.getDrugId() != null) {
-						sw.setDrugName(dpr.getDrugId().getName());
+						sw.setDrugProduct(dpr);
 						sw.setLotNo(dpr.getLotNo());
 					} else {
-						sw.setDrugName(dpr.getConceptId().getName().getName());
+						sw.setDrugProduct(dpr);
 					}
 					sw.setStore(solde);
 					swList.add(sw);
