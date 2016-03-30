@@ -11,7 +11,6 @@ import javax.servlet.http.HttpSession;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -20,9 +19,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.mohappointment.model.Appointment;
-import org.openmrs.module.mohappointment.model.AppointmentState;
-import org.openmrs.module.mohappointment.utils.AppointmentUtil;
+import org.openmrs.module.mohorderentrybridge.api.MoHOrderEntryBridgeService;
 import org.openmrs.module.pharmacymanagement.PharmacyConstants;
 import org.openmrs.module.pharmacymanagement.utils.Utils;
 import org.openmrs.util.OpenmrsConstants;
@@ -70,19 +67,6 @@ public class DrugOrderPrescriptionController extends AbstractController {
 			if (request.getParameter("editcreate").equals("create")) {
 
 				/** Creating an Pharmacy appointment if not exists (KAMONYO) */
-
-//				if (request.getParameter("appointmentId") != null
-//						&& !request.getParameter("appointmentId").equals("")) {
-//					appointmentId = Integer.parseInt(request
-//							.getParameter("appointmentId"));
-//
-//					/**
-//					 * Setting Appointment as Attended here and
-//					 * creating a pharmacy waiting one:
-//					 */
-//					createPharmacyAppointment(appointmentId, request, patient,
-//							null);
-//				}
 				/** ... END of Appointment ... */
 				
 				Utils.createWaitingPharmacyAppointment(patient, null);
@@ -98,7 +82,7 @@ public class DrugOrderPrescriptionController extends AbstractController {
 				if (request.getParameter("quantity") != null
 						&& !request.getParameter("quantity").equals("")) {
 					qtyStr = request.getParameter("quantity");
-					drugOrder.setQuantity(Integer.valueOf(qtyStr));
+					drugOrder.setQuantity(Double.valueOf(qtyStr));
 				}
 
 				drugOrder.setCreator(Context.getAuthenticatedUser());
@@ -108,18 +92,18 @@ public class DrugOrderPrescriptionController extends AbstractController {
 				drugOrder.setDateCreated(new Date());
 				drugOrder.setPatient(patient);
 				drugOrder.setDrug(drug);
-				drugOrder.setDiscontinued(false);
-				drugOrder.setOrderer(Context.getAuthenticatedUser());
+				//drugOrder.setDiscontinued(false);
+				drugOrder.setOrderer(Context.getService(MoHOrderEntryBridgeService.class).getFirstCurrentProvider());
 
 				if (request.getParameter("dose") != null
 						&& !request.getParameter("dose").equals(""))
 					drugOrder.setDose(Double.valueOf(request
 							.getParameter("dose")));
-				drugOrder.setFrequency(request.getParameter("frequency"));
-				drugOrder.setUnits(request.getParameter("units"));
+				//TODO > drugOrder.setFrequency(request.getParameter("frequency"));
+				//TODO > drugOrder.setUnits(request.getParameter("units"));
 				if (request.getParameter("quantity") != null
 						&& !request.getParameter("quantity").equals(""))
-					drugOrder.setQuantity(Integer.valueOf(request
+					drugOrder.setQuantity(Double.valueOf(request
 							.getParameter("quantity")));
 				if (!startDateStr.equals("") && startDateStr != null) {
 					Date startDate = null;
@@ -128,9 +112,9 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
-					drugOrder.setStartDate(startDate);
+					drugOrder.setDateActivated(startDate);
 
-					orderService.saveOrder(drugOrder);
+					orderService.saveOrder(drugOrder, null);
 
 					/*
 					 * To be uncommented whenever the commented lines are
@@ -158,9 +142,8 @@ public class DrugOrderPrescriptionController extends AbstractController {
 				&& !request.getParameter("editcreate").equals("")
 				&& patient != null) {
 			if (request.getParameter("editcreate").equals("edit")) {
-				DrugOrder drugOrder = orderService.getOrder(
-						Integer.valueOf(request.getParameter("orderId")),
-						DrugOrder.class);
+				DrugOrder drugOrder = (DrugOrder) orderService.getOrder(
+						Integer.valueOf(request.getParameter("orderId")));
 				// Order order = orderService.getOrder(Integer.valueOf(request
 				// .getParameter("orderId")));
 
@@ -178,12 +161,12 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
-					drugOrder.setStartDate(startDate);
+					drugOrder.setDateActivated(startDate);
 				}
 				if (request.getParameter("quantity") != null
 						&& !request.getParameter("quantity").equals("")) {
 					qtyStr = request.getParameter("quantity");
-					drugOrder.setQuantity(Integer.valueOf(qtyStr));
+					drugOrder.setQuantity(Double.valueOf(qtyStr));
 				}
 
 				drugOrder.setConcept(drug.getConcept());
@@ -197,15 +180,15 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					drugOrder.setDose(Double.valueOf(request
 							.getParameter("dose")));
 
-				drugOrder.setFrequency(request.getParameter("frequency"));
-				drugOrder.setUnits(request.getParameter("units"));
+				//TODO > drugOrder.setFrequency(request.getParameter("frequency"));
+				//TODO > drugOrder.setUnits(request.getParameter("units"));
 
 				if (request.getParameter("quantity") != null
 						&& !request.getParameter("quantity").equals(""))
-					drugOrder.setQuantity(Integer.valueOf(request
+					drugOrder.setQuantity(Double.valueOf(request
 							.getParameter("quantity")));
 
-				orderService.saveOrder(drugOrder);
+				orderService.saveOrder(drugOrder, null);
 				mav.addObject("msg", "An order has been updated successfully!");
 			}
 		}
@@ -218,7 +201,7 @@ public class DrugOrderPrescriptionController extends AbstractController {
 			order.setVoided(true);
 			order.setVoidedBy(Context.getAuthenticatedUser());
 			order.setVoidReason(request.getParameter("deleteReason"));
-			orderService.saveOrder(order);
+			orderService.saveOrder(order, null);
 			mav.addObject("msg", "An order has been deleted successfully!");
 
 		}
@@ -238,12 +221,9 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					e.printStackTrace();
 				}
 
-				order.setDiscontinuedReason(concept);
-				order.setDiscontinuedDate(date);
-				order.setDiscontinued(true);
-				order.setDiscontinuedBy(Context.getAuthenticatedUser());
-
-				orderService.saveOrder(order);
+				orderService.discontinueOrder(order, concept, date, Context.getService(MoHOrderEntryBridgeService.class).getFirstCurrentProvider(), order.getEncounter());//TODO must this be a new encounter
+				
+				orderService.saveOrder(order, null);
 				mav.addObject("msg", "An order has been stopped successfully!");
 			}
 		}

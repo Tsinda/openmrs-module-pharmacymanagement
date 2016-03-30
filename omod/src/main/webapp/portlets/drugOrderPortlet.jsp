@@ -1,8 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
 <openmrs:require privilege="Patient Dashboard - View Drug Order Section" otherwise="/login.htm" redirect="/module/pharmacymanagement/storequest.form"/>
- 
-<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/jquery1.js" />
+
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/demo_page1.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/demo_table1.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/jquery.dataTables1.js" />
@@ -10,7 +9,7 @@
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/jquery.createdit.js" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/basic1.js" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/basic1.css" />
-<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/calendar1.js" />
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/jquery.PrintArea.js" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/dataentrystyle.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/chosen.css" />

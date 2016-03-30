@@ -42,7 +42,7 @@ public class DrugStoreAlert extends ParameterizableViewController {
 					drugproducts.add(dp);
 				}
 			} else {
-				if(!dpTemp.contains(dp.getConceptId().getName().getName()) && dp.getIsDelivered()) {
+				if(dp.getConceptId().getName() != null && !dpTemp.contains(dp.getConceptId().getName().getName()) && dp.getIsDelivered()) {
 					dpTemp.add(dp.getConceptId().getName().getName());
 					drugproducts.add(dp);
 				}

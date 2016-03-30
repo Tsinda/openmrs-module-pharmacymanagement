@@ -12,11 +12,8 @@
 	<%@ include file="template/localHeader.jsp"%>
 	
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/dataentrystyle.css" />
-<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.js" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.validate.js" />
-<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/validator.js" />	
-<!-- <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/chosen.css" />
-<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/chosen.jquery.min.js" /> -->
+<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/validator.js" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/create_dynamic_field.js" />
 
 	<script type="text/javascript">

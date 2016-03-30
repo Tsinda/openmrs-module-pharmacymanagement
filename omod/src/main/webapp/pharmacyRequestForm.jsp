@@ -9,7 +9,6 @@
 </div>
 <div id="middle"><%@ include
 	file="template/dispensingLocalHeader.jsp"%> <openmrs:htmlInclude
-	file="/moduleResources/pharmacymanagement/jquery.js" /> <openmrs:htmlInclude
 	file="/moduleResources/pharmacymanagement/jquery.validate.js" /> <openmrs:htmlInclude
 	file="/moduleResources/pharmacymanagement/create_dynamic_field.js" /> <openmrs:htmlInclude
 	file="/moduleResources/pharmacymanagement/validator.js" /> <openmrs:htmlInclude

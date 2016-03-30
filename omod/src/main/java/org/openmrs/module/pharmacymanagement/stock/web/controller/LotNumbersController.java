@@ -22,9 +22,7 @@ public class LotNumbersController implements Controller {
 	protected final Log log = LogFactory.getLog(getClass());
 
 	@Override
-	public ModelAndView handleRequest(HttpServletRequest request,
-
-	HttpServletResponse response) throws Exception {
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		AjaxView av = null;
 		log.info("Returning ajax view");
 		LocationService locationService = Context.getLocationService();
@@ -39,7 +37,7 @@ public class LotNumbersController implements Controller {
 			log.info("No Default Location Set");
 		}
 
-		Map<Integer, List<Object[]>> dpLot = new HashMap<Integer, List<Object[]>>();
+		Map<String, List<Object[]>> dpLot = new HashMap<String, List<Object[]>>();
 		DrugOrderService service = Context.getService(DrugOrderService.class);
 
 		if (request.getParameter("drugId") != null
@@ -49,7 +47,8 @@ public class LotNumbersController implements Controller {
 					null);
 			
 			av = new AjaxView();			
-			dpLot.put(1, obj);
+			dpLot.put("1", obj);
+			
 			return new ModelAndView(av,dpLot);
 		}		
 		
@@ -60,7 +59,7 @@ public class LotNumbersController implements Controller {
 					null);
 			
 			av = new AjaxView();			
-			dpLot.put(1, obj);
+			dpLot.put("1", obj);
 			return new ModelAndView(av,dpLot);
 		}	
 		

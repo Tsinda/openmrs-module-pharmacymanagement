@@ -24,6 +24,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.mohorderentrybridge.api.MoHOrderEntryBridgeService;
 import org.openmrs.module.pharmacymanagement.PharmacyConstants;
 import org.openmrs.module.pharmacymanagement.utils.Utils;
 import org.openmrs.util.OpenmrsConstants;
@@ -94,7 +95,7 @@ public class DrugOrderPortletController extends PortletController {
 		List<DrugOrder> drugOrders = new ArrayList<DrugOrder>();
 //		Collection<DrugProduct> dpList = dos.getAllProducts();
 		if (patient != null) {
-			drugOrders = orderService.getDrugOrdersByPatient(patient);
+			drugOrders = Context.getService(MoHOrderEntryBridgeService.class).getDrugOrdersByPatient(patient);
 			model.put("patient", patient);
 		}
 		for(Drug drg : drugs) {
@@ -117,9 +118,9 @@ public class DrugOrderPortletController extends PortletController {
 		for(DrugOrder o : drugOrders) {
 			List<DrugOrder> ordList = new ArrayList<DrugOrder>();
 			for(DrugOrder o1 : drugOrders) {
-				if(o1.getStartDate().equals(o.getStartDate())) {
+				if(o1.getEffectiveStartDate().equals(o.getEffectiveStartDate())) {
 					ordList.add(o1);
-					dat1 = o1.getStartDate();
+					dat1 = o1.getEffectiveStartDate();
 				}
 			}
 			map.put(dat1, ordList);

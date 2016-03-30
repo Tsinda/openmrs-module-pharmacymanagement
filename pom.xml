@@ -24,19 +24,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!--
-			Libraries from lib to add as dependencies with compile or runtime scope:
-			lib/gson-2.1.jar
-				
-			Find matching dependencies in maven central repository.
-			<dependency>
-				<groupId>org.other.library</groupId>
-				<artifactId>library-name</artifactId>
-				<version>library.version</version>
-				<scope>compile</scope>
-			</dependency>
-			-->
-			
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -56,6 +43,8 @@
 
 	<properties>
 		<openMRSVersion>1.11.5</openMRSVersion>
+		<mohappointmentVersion>0.2</mohappointmentVersion>
+		<mohorderentrybridgeVersion>1.0-beta</mohorderentrybridgeVersion>
 	</properties>
 
 	<build>

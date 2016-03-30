@@ -10,19 +10,18 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -32,15 +31,14 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.mohappointment.model.Appointment;
 import org.openmrs.module.mohappointment.model.AppointmentState;
+import org.openmrs.module.mohappointment.model.MoHAppointment;
 import org.openmrs.module.mohappointment.model.Services;
 import org.openmrs.module.mohappointment.utils.AppointmentUtil;
 import org.openmrs.module.pharmacymanagement.ConsumableDispense;
 import org.openmrs.module.pharmacymanagement.DrugOrderPrescription;
 import org.openmrs.module.pharmacymanagement.DrugProduct;
 import org.openmrs.module.pharmacymanagement.DrugProductInventory;
-import org.openmrs.module.pharmacymanagement.Pharmacy;
 import org.openmrs.module.pharmacymanagement.PharmacyInventory;
 import org.openmrs.module.pharmacymanagement.ProductReturnStore;
 import org.openmrs.module.pharmacymanagement.service.DrugOrderService;
@@ -747,16 +745,12 @@ public class Utils {
 						.compareTo(((Drug) obj2).getName().toLowerCase());
 
 			else if (obj1 instanceof ConceptAnswer
-					&& obj2 instanceof ConceptAnswer)
-				compareInt = ((ConceptAnswer) obj1)
-						.getAnswerConcept()
-						.getName()
-						.getName()
-						.toLowerCase()
-						.compareTo(
-								((ConceptAnswer) obj2).getAnswerConcept()
-										.getName().getName().toLowerCase());
-			else if(obj1 instanceof DrugProduct && obj2 instanceof DrugProduct) {
+					&& obj2 instanceof ConceptAnswer) {
+				ConceptName name = ((ConceptAnswer) obj1).getAnswerConcept() != null ? ((ConceptAnswer) obj1).getAnswerConcept().getName() : null;
+				ConceptName name2 = ((ConceptAnswer) obj2).getAnswerConcept() != null ? ((ConceptAnswer) obj2).getAnswerConcept().getName() : null;
+				compareInt = name == null || StringUtils.isBlank(name.getName()) || name2 == null || StringUtils.isBlank(name2.getName()) ? compareInt : name.getName().toLowerCase().compareTo(
+								name2.getName().toLowerCase());
+			} else if(obj1 instanceof DrugProduct && obj2 instanceof DrugProduct) {
 				String str1 = ((DrugProduct) obj1).getConceptId() != null ? ((DrugProduct) obj1).getConceptId().getName().getName().toLowerCase() : ((DrugProduct) obj1).getDrugId().getName().toLowerCase();
 				String str2 = ((DrugProduct) obj2).getConceptId() != null ? ((DrugProduct) obj2).getConceptId().getName().getName().toLowerCase() : ((DrugProduct) obj2).getDrugId().getName().toLowerCase();
 				
@@ -860,7 +854,7 @@ public class Utils {
 	}
 
 	public static void setConsultationAppointmentAsAttended(
-			Appointment appointment) {
+			MoHAppointment appointment) {
 		AppointmentUtil.saveAttendedAppointment(appointment);
 	}
 
@@ -872,7 +866,7 @@ public class Utils {
 	 */
 	public static void createWaitingPharmacyAppointment(Patient patient,
 			Encounter encounter) throws ParseException {
-		Appointment waitingAppointment = new Appointment();
+		MoHAppointment waitingAppointment = new MoHAppointment();
 		Services service = AppointmentUtil.getServiceByConcept(Context
 				.getConceptService().getConcept(6711));
 
@@ -900,7 +894,7 @@ public class Utils {
 
 	}
 
-	public static void setPharmacyAppointmentAsAttended(Appointment appointment) {
+	public static void setPharmacyAppointmentAsAttended(MoHAppointment appointment) {
 		AppointmentUtil.saveAttendedAppointment(appointment);
 	}
 	

@@ -3,12 +3,11 @@
 
 <openmrs:require privilege="Manage Pharmacy" otherwise="/login.htm" redirect="/module/pharmacymanagement/pharmacyDrugDisp.htm"/>
 
-<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.js" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/dataentrystyle.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/demo_page.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/demo_table.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/jquery.dataTables.js" />
-<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/calendar.js" />
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <script type="text/javascript">
 

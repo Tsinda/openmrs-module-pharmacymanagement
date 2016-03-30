@@ -15,7 +15,6 @@
 <openmrs:htmlInclude
 	file="/moduleResources/pharmacymanagement/dataentrystyle.css" />
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
-<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.js" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/validator.js" />
 
 

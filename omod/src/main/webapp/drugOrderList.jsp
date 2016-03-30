@@ -3,8 +3,6 @@
 <openmrs:require privilege="Manage Pharmacy" otherwise="/login.htm"
 	redirect="/module/pharmacymanagement/drugOrder.list" />
 
-
-<openmrs:htmlInclude file="/moduleResources/pharmacymanagement/jquery.js" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/demo_page.css" />
 <openmrs:htmlInclude file="/moduleResources/pharmacymanagement/demo_table.css" />
 <openmrs:htmlInclude

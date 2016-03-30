@@ -28,6 +28,13 @@
 			<artifactId>openmrs-web</artifactId>
 			<type>jar</type>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>mohorderentrybridge-api</artifactId>
+			<scope>provided</scope>
+			<version>${mohorderentrybridgeVersion}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -74,12 +81,6 @@
 		</testResources>
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<artifactId>maven-resources-plugin</artifactId>
-					<configuration>
-						<includeEmptyDirs>true</includeEmptyDirs>
-					</configuration>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>

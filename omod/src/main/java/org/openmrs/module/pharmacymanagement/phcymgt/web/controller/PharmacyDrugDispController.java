@@ -201,7 +201,7 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 								int dpId = Integer.valueOf(request.getParameter(dpSuffix));
 								DrugProduct drugProduct = service.getDrugProductById(dpId);
 								
-								DrugOrder drugOrder = orderService.getOrder(Integer.valueOf(request.getParameter(dOSuffix)), DrugOrder.class);
+								DrugOrder drugOrder = (DrugOrder) orderService.getOrder(Integer.valueOf(request.getParameter(dOSuffix)));
 								Concept discontinueReason = conceptService.getConcept(1714);
 								
 								patient = patientService.getPatient(Integer
@@ -234,7 +234,7 @@ public class PharmacyDrugDispController extends ParameterizableViewController {
 										dop.setEncounterId(encounter);
 									}
 									try {
-										orderService.saveOrder(drugOrder);
+										orderService.saveOrder(drugOrder, null);
 										dop.setOrderId(drugOrder);
 										service.saveDrugOrderPrescription(dop);
 									} catch (org.openmrs.api.APIException e) {

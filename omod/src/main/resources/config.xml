@@ -20,15 +20,6 @@
        <require_module version="0.0.8">org.openmrs.module.mohappointment</require_module>
 	</require_modules>
 	
-	<!-- AOP
-	<advice>
-	  	<point>org.openmrs.api.OrderService</point>
-	  	<class>@MODULE_PACKAGE@.advice.DrugOrderServiceAdvice</class>
-	 </advice>
-	-->	
-	
-	<!-- Extensions -->
-	
 	<extension>
 		<point>org.openmrs.tracmodule.list</point>
 		<class>@MODULE_PACKAGE@.extension.html.AdminList</class>
@@ -121,7 +112,7 @@
 	<!-- /Internationalization -->
 	
 	<mappingFiles>
-	CmdDrug.hbm.xml
+		CmdDrug.hbm.xml
 	</mappingFiles>
 	
 	
