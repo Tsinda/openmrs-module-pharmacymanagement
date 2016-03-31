@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.Drug;
-import org.openmrs.DrugOrder;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -24,6 +23,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.mohorderentrybridge.MoHDrugOrder;
 import org.openmrs.module.mohorderentrybridge.api.MoHOrderEntryBridgeService;
 import org.openmrs.module.pharmacymanagement.PharmacyConstants;
 import org.openmrs.module.pharmacymanagement.utils.Utils;
@@ -92,10 +92,10 @@ public class DrugOrderPortletController extends PortletController {
 		List<Obs> insuranceNumberObsList = obsService.getObservationsByPersonAndConcept(person, insuranceNumberConcept);
 		String insuranceNumber = insuranceNumberObsList.size() == 0 ? null : insuranceNumberObsList.get(insuranceNumberObsList.size() -1 ).getValueText();
 		
-		List<DrugOrder> drugOrders = new ArrayList<DrugOrder>();
+		List<MoHDrugOrder> drugOrders = new ArrayList<MoHDrugOrder>();
 //		Collection<DrugProduct> dpList = dos.getAllProducts();
 		if (patient != null) {
-			drugOrders = Context.getService(MoHOrderEntryBridgeService.class).getDrugOrdersByPatient(patient);
+			drugOrders = Context.getService(MoHOrderEntryBridgeService.class).getMoHDrugOrdersByPatient(patient);
 			model.put("patient", patient);
 		}
 		for(Drug drg : drugs) {
@@ -112,15 +112,15 @@ public class DrugOrderPortletController extends PortletController {
 //		System.out.println("The loop A End: ********************* " + new Date());
 		
 		
-		Map<Date, List<DrugOrder>> map = new HashMap<Date, List<DrugOrder>>();		
+		Map<Date, List<MoHDrugOrder>> map = new HashMap<Date, List<MoHDrugOrder>>();		
 		
 		Date dat1 = null;
-		for(DrugOrder o : drugOrders) {
-			List<DrugOrder> ordList = new ArrayList<DrugOrder>();
-			for(DrugOrder o1 : drugOrders) {
-				if(o1.getEffectiveStartDate().equals(o.getEffectiveStartDate())) {
+		for(MoHDrugOrder o : drugOrders) {
+			List<MoHDrugOrder> ordList = new ArrayList<MoHDrugOrder>();
+			for(MoHDrugOrder o1 : drugOrders) {
+				if(o1.getDrugOrder().getEffectiveStartDate().equals(o.getDrugOrder().getEffectiveStartDate())) {
 					ordList.add(o1);
-					dat1 = o1.getEffectiveStartDate();
+					dat1 = o1.getDrugOrder().getEffectiveStartDate();
 				}
 			}
 			map.put(dat1, ordList);

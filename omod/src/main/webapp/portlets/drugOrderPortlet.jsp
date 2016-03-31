@@ -33,7 +33,7 @@
 		if(count > 1) {
 			drName += ", ";
 		}
-		drName += "<c:out value="${ord.drug.name}"/>";
+		drName += "<c:out value="${ord.drugOrder.drug.name}"/>";
 	</c:forEach>
 	
 	$dm('#patientRegimen').hide();
@@ -42,6 +42,7 @@
 	$dm('#patientHeaderRegimen').html(drName); **/
 	
 	$dm(document).ready( function() {
+		$dm(".dialogCloseImg").trigger("click");
 		$dm('.searchBox').hide();
 		oTable = $dm('#example_do').dataTable({
 			"fnDrawCallback": function ( oSettings ) {
@@ -293,22 +294,56 @@
 			<tr>
 				<td><openmrs:formatDate date="${key.key}" type="textbox" /></td>
 				<td>
-					<input type="hidden" id="instructions_${do.orderId}" value="${do.instructions}" /> 
-					<span id="drugId_${do.orderId}">
-						${not empty do.drug.drugId ? do.drug.drugId : '<img id="stop_${do.orderId}" class="stop" src="images/alert.gif"	style="cursor: pointer;" title="Needs to be updated" />'}
-					</span>
+					<input type="hidden" id="instructions_${do.drugOrder.orderId}" value="${do.drugOrder.dosingInstructions}" /> 
+					<span id="drugId_${do.drugOrder.orderId}">${do.drugOrder.drug.drugId}</span>
 				</td>
-				<td><span id="name_${do.orderId}">${not empty do.drug ? do.drug.name : do.concept.name.name}</span></td>
-				<td><span id="dose_${do.orderId}">${do.dose}</span></td>
-				<td><span id="units_${do.orderId}">${do.units}</span></td>
-				<td><span id="frequency_${do.orderId}">${do.frequency}</span></td>
-				<td><span id="quantity_${do.orderId}">${do.quantity}</span></td>
-				<td><span id="startDate_${do.orderId}"><openmrs:formatDate date="${do.startDate}" type="textbox" /></span></td>
-				<td><span id="discontinuedDate_${do.orderId}"><openmrs:formatDate date="${do.discontinuedDate}" type="textbox" /></span></td>
-				<td><span id="discontinuedReason_${do.orderId}">${do.discontinuedReason.name}</span></td>
-				<td><img id="edit_${do.orderId}" class="edit" src="${pageContext.request.contextPath}/images/edit.gif" style="cursor: pointer" title="Edit" /></td>
-				<td><img id="stop_${do.orderId}" class="stop" src="${pageContext.request.contextPath}/images/stop.gif" style="cursor: pointer;" title="Stop" /></td>
-				<td><img id="delete_${do.orderId}" class="delete" src="${pageContext.request.contextPath}/images/delete.gif" style="cursor: pointer;" title="Delete" /></td>
+				<td><span id="name_${do.drugOrder.orderId}">${not empty do.drugOrder.drug ? do.drugOrder.drug.name : do.concept}</span></td>
+				<td><span id="dose_${do.drugOrder.orderId}">${do.drugOrder.dose}</span></td>
+				<td><span id="units_${do.drugOrder.orderId}">${do.doseUnitsName}</span></td>
+				<td><span id="frequency_${do.drugOrder.orderId}">${do.drugOrder.frequency.name}</span></td>
+				<td><span id="quantity_${do.drugOrder.orderId}">${do.drugOrder.quantity}</span></td>
+				<td><span id="startDate_${do.drugOrder.orderId}"><openmrs:formatDate date="${do.startDate}" type="textbox" /></span></td>
+				<td>
+					<c:choose>
+						<c:when test="${do.isActive ne null && do.isActive eq false}">
+							<span id="discontinuedDate_${do.drugOrder.orderId}"><openmrs:formatDate date="${do.stopDate}" type="textbox" /></span>
+					</c:when>
+						<c:otherwise>
+							<!-- TODO do what? -->
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td>
+					<c:choose>
+						<c:when test="${do.isActive ne null && do.isActive eq false}">
+							<span id="discontinuedReason_${do.drugOrder.orderId}">${do.orderReason}</span>
+						</c:when>
+						<c:otherwise>
+							<!-- TODO do what? -->
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td>
+					<c:choose>
+						<c:when test="${do.isActive ne null && do.isActive eq true}">
+							<img id="edit_${do.drugOrder.orderId}" class="edit" src="${pageContext.request.contextPath}/images/edit.gif" style="cursor: pointer" title="Edit" />
+						</c:when>
+						<c:otherwise>
+							<!-- TODO do what? -->
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td>
+					<c:choose>
+						<c:when test="${do.isActive ne null && do.isActive eq true}">
+							<img id="stop_${do.drugOrder.orderId}" class="stop" src="${pageContext.request.contextPath}/images/stop.gif" style="cursor: pointer;" title="Stop" />
+						</c:when>
+						<c:otherwise>
+							<!-- TODO do what? -->
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td><img id="delete_${do.drugOrder.orderId}" class="delete_disabled" src="${pageContext.request.contextPath}/images/delete.gif" style="cursor: pointer;" title="Delete" /></td>
 			</tr>
 			</c:forEach>
 		</c:forEach>
@@ -322,7 +357,7 @@
 			<td></td>
 			<td></td>			
 			<td>
-			<button id="create" class="send"><spring:message
+			<button id="create_disabled" class="send"><spring:message
 				code="pharmacymanagement.create" /></button>
 			</td>
 			<td></td>
@@ -343,29 +378,6 @@
 <!-- End of this -->
 
 <table>
-<!-- 
-	<tr class="toBRepl">		
-		<td>Drug Family</td>
-		<td>
-			<input name="appointmentId" type="hidden" value="${param.appointmentId}" />
-			<input name="serviceId" type="hidden" value="${param.appointmentId}" />
-			<select name="medSet" id="medSetId" style="width:500px;">
-				<option><center>--Drug Family--</center></option>
-				<c:forEach items="${model.medSet}" var="medset">
-					<option value="${medset.conceptId}">${medset.name.name}</option>
-				</c:forEach>
-			</select>
-		</td>
-	</tr>
-	<tr class="toBRepl">
-		<td>Drug</td>
-		<td>
-			<select name="drugConcept" id="drugConceptId">
-				<option value="">--Drug--</option>
-			</select>
-		</td>
-	</tr>
-	 -->
 	<tr>
 		<td><spring:message code="Drug Details" /></td>
 		<td>

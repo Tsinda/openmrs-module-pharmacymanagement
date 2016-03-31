@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -68,7 +69,7 @@ public class DrugReturnForm extends ParameterizableViewController {
 		String locationStr = Context.getAuthenticatedUser().getUserProperties()
 				.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
 		
-		Collection<ConceptAnswer> adjustmentReasons = conceptService.getConcept(PharmacyConstants.ADJUSTMENT_REASON).getAnswers();
+		Collection<ConceptAnswer> adjustmentReasons = conceptService.getConcept(PharmacyConstants.ADJUSTMENT_REASON) != null ? conceptService.getConcept(PharmacyConstants.ADJUSTMENT_REASON).getAnswers() : new HashSet<ConceptAnswer>();
 		mav.addObject("adjustmentReasons", adjustmentReasons);
 		
 

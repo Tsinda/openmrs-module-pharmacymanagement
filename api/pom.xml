@@ -40,6 +40,7 @@
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>mohappointment-api</artifactId>
 			<version>${mohappointmentVersion}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
