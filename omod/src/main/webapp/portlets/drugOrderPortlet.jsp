@@ -2,58 +2,56 @@
 
 <openmrs:require privilege="Patient Dashboard - View Drug Order Section" otherwise="/login.htm" redirect="/module/pharmacymanagement/storequest.form"/>
 
-<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/demo_page1.css" />
-<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/demo_table1.css" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/jquery.dataTables1.js" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/jquery.simplemodal1.js" />
-<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/jquery.createdit.js" />
+<!-- openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/jquery.createdit.js" /-->
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/basic1.js" />
-<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/basic1.css" />
-<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/jquery.PrintArea.js" />
-<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/dataentrystyle.css" />
-<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/chosen.css" />
-<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/chosen.jquery.min.js" />
 <openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/create_dynamic_field.js" />
 
+<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/demo_page1.css" />
+<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/demo_table1.css" />
+<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/basic1.css" />
+<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/dataentrystyle.css" />
+<openmrs:htmlInclude file="/moduleResources/@MODULE_ID@/scripts/chosen.css" />
+
 <script type="text/javascript">
-	var $dm = jQuery.noConflict();
 
 	// drugs options
     var drugsName = new Array();
     var drugsId = new Array();
     <c:forEach var="drug" items="${model.drugMap}">
-    	drugsName.push("<c:out value="${drug.value}"/>");
-    	drugsId.push(<c:out value="${drug.key}"/>);    
+    	drugsName.push('<c:out value="${drug.value}"/>');
+    	drugsId.push('<c:out value="${drug.key}"/>');    
     </c:forEach>
 
     var drName = ""; 
 	<c:forEach var="ord" items="${model.drugOrders}" varStatus="status">
-		var count = <c:out value="${status.count}"/>; 
+		var count = '<c:out value="${status.count}"/>'; 
 		if(count > 1) {
 			drName += ", ";
 		}
-		drName += "<c:out value="${ord.drugOrder.drug.name}"/>";
+		drName += '<c:out value="${ord.drugOrder.drug.name}"/>';
 	</c:forEach>
 	
-	$dm('#patientRegimen').hide();
-	$dm('#patientRegimenTab').hide();
+	//jQuery('#patientRegimen').hide();
+	//jQuery('#patientRegimenTab').hide();
 	/**
-	$dm('#patientHeaderRegimen').html(drName); **/
+	jQuery('#patientHeaderRegimen').html(drName); **/
 	
-	$dm(document).ready( function() {
-		$dm(".dialogCloseImg").trigger("click");
-		$dm('.searchBox').hide();
-		oTable = $dm('#example_do').dataTable({
+	jQuery(document).ready( function() {
+		//jQuery(".dialogCloseImg").trigger("click");
+		jQuery('.searchBox').hide();
+		oTable = jQuery('#example_do').dataTable({
 			"fnDrawCallback": function ( oSettings ) {
 				if ( oSettings.aiDisplay.length == 0 )
 				{
-					$dm('table#example_do').css({'width':'100%'});
+					jQuery('table#example_do').css({'width':'100%'});
 					return;
 				}
 
-				var nTrs = $dm('tbody tr', oSettings.nTable);
-				$dm('table#example_do').css({'width':'100%'});
+				var nTrs = jQuery('tbody tr', oSettings.nTable);
+				jQuery('table#example_do').css({'width':'100%'});
 				var iColspan = nTrs[0].getElementsByTagName('td').length;
 				var sLastGroup = "";
 				for ( var i=0 ; i<nTrs.length ; i++ )
@@ -81,91 +79,91 @@
 			"sDom": 'lfr<"giveHeight"t>ip'
 		});
 
-		$dm('.edit').click( function() {
-			$dm('.toBRepl').hide();
+		jQuery('.edit').click( function() {
+			jQuery('.toBRepl').hide();
 			var drugsOption = '<option value="">-- Drugs --</option>';			
 			for(var i = 0; i < drugsName.length; i++) {
 				drugsOption += '<option value="'+drugsId[i]+'">'+drugsName[i]+'</option>';
 			}
-			$dm('#dname').html(drugsOption);
+			jQuery('#dname').html(drugsOption);
 			var index = this.id;
 			var prefix = index.substring(0, index.indexOf("_"));
 			var suffix = index.substring(index.indexOf("_") + 1);
 
-			var varDose = $dm("#dose_" + suffix).text();
-			var drugId = $dm("#drugId_" + suffix).text().trim();
-			var varUnits = $dm("#units_" + suffix).text();
-			var varQuantity = $dm("#quantity_" + suffix).text();
-			var varStartDate = $dm("#startDate_" + suffix).text();
-			var varDiscDate = $dm("#discontinuedDate_" + suffix).text();
-			var varInstructions = $dm("#instructions_" + suffix).val();
+			var varDose = jQuery("#dose_" + suffix).text();
+			var drugId = jQuery("#drugId_" + suffix).text().trim();
+			var varUnits = jQuery("#units_" + suffix).text();
+			var varQuantity = jQuery("#quantity_" + suffix).text();
+			var varStartDate = jQuery("#startDate_" + suffix).text();
+			var varDiscDate = jQuery("#discontinuedDate_" + suffix).text();
+			var varInstructions = jQuery("#instructions_" + suffix).val();
 			
-			var varFrequency = $dm("#frequency_" + suffix).text();
+			var varFrequency = jQuery("#frequency_" + suffix).text();
 			var varFrequencyArray = varFrequency.split('X');
 			var freqDrugQty = varFrequencyArray[0];
 			var freqTimesperday = varFrequencyArray[1];
 			var freqDays = varFrequencyArray[2];
-			$dm('#qtyTakenAtOnceId').val(freqDrugQty).attr('selected', true);
-			$dm('#timesPerDayId').val(freqTimesperday).attr('selected',true);
-			$dm('#daysId').val(freqDays).attr('selected',true);
+			jQuery('#qtyTakenAtOnceId').val(freqDrugQty).attr('selected', true);
+			jQuery('#timesPerDayId').val(freqTimesperday).attr('selected',true);
+			jQuery('#daysId').val(freqDays).attr('selected',true);
 
-			$dm("#editing").attr("value", suffix);
+			jQuery("#editing").attr("value", suffix);
 			
-			$dm('#dname').val(drugId).attr('selected', true);							
-			$dm("#dquantity").attr("value", varQuantity);
-			$dm("#dstartDate").attr("value", varStartDate);
-			$dm("#ddiscontinuedDate").attr("value", varDiscDate);
-			$dm("#dinstructions").html(varInstructions);
-			$dm("#editingcreating").attr("value", "edit");
+			jQuery('#dname').val(drugId).attr('selected', true);							
+			jQuery("#dquantity").attr("value", varQuantity);
+			jQuery("#dstartDate").attr("value", varStartDate);
+			jQuery("#ddiscontinuedDate").attr("value", varDiscDate);
+			jQuery("#dinstructions").html(varInstructions);
+			jQuery("#editingcreating").attr("value", "edit");
 			});
 
-		$dm('.stop').click( function() {
+		jQuery('.stop').click( function() {
 			var index = this.id;
 			var prefix = index.substring(0, index.indexOf("_"));
 			var suffix = index.substring(index.indexOf("_") + 1);
-			var stopDate = $dm("#discontinuedDate_" + suffix).text();
+			var stopDate = jQuery("#discontinuedDate_" + suffix).text();
 			var varReason = document.getElementById("stopReasonId");
-			var reason = $dm("#discontinuedReason_" + suffix).text().trim();
+			var reason = jQuery("#discontinuedReason_" + suffix).text().trim();
 			
-			$dm('#stopReasonId').val(reason).attr('selected', true);
+			jQuery('#stopReasonId').val(reason).attr('selected', true);
 			
-			$dm('#stopDateId').attr("value", stopDate);
-			$dm("#stopping").attr("value", suffix);
-			$dm("#stop").attr("value", "stop");
+			jQuery('#stopDateId').attr("value", stopDate);
+			jQuery("#stopping").attr("value", suffix);
+			jQuery("#stop").attr("value", "stop");
 		});
 
-		$dm('#create').click(function() {
-			$dm("#editingcreating").attr("value", "create");
+		jQuery('#create').click(function() {
+			jQuery("#editingcreating").attr("value", "create");
 			var item = '';
-			$dm('#dname').change(function() {
-				$dm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/drugSolde.htm?drugId='+$dm("#dname").val(), function(data) {
+			jQuery('#dname').change(function() {
+				$dm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/drugSolde.htm?drugId='+jQuery("#dname").val(), function(data) {
 					if(data[0].solde == 0) {
 						item = 'No Such drug in store';
-						$dm('#soldeId').html(item).css('color','red');
+						jQuery('#soldeId').html(item).css('color','red');
 					} else {
 						item = 'Solde: ' + data[0].solde;
-						$dm('#soldeId').html(item).css('color','black');
+						jQuery('#soldeId').html(item).css('color','black');
 					}
 					
 					
 				});
 			});
-			$dm('#dname').chosen({no_results_text: "No results matched"});
+			jQuery('#dname').chosen({no_results_text: "No results matched"});
 		});		
 		
-		$dm('#print_ordonance').click(function() {
+		jQuery('#print_ordonance').click(function() {
 			var row = null;
 			var s = '';
 			var tableObject = null;
-			var columns = $dm('#example_do thead th').map(function() {
-				return $dm(this).text();
+			var columns = jQuery('#example_do thead th').map(function() {
+				return jQuery(this).text();
 			});		
-			tableObject = $dm('#example_do tbody tr').map(function(i) {
+			tableObject = jQuery('#example_do tbody tr').map(function(i) {
 				row = {};
-				$dm(this).find('td').each(function(i) {
+				jQuery(this).find('td').each(function(i) {
 					var rowName = columns[i];
-				    row[rowName] = $dm(this).text();
-				    s += $dm(this).text()+',';
+				    row[rowName] = jQuery(this).text();
+				    s += jQuery(this).text()+',';
 				});
 				s += ';';
 			});
@@ -177,7 +175,7 @@
 			var dose = '';
 			var units = '';
 			var frequency = '';
-			var patientName = $dm('#patientHeaderPatientName').text();
+			var patientName = jQuery('#patientHeaderPatientName').text();
 			for(var k = 0; k < res.length; k++) {
 				tmpArr = res[k].split(',');
 				for(var j = 0; j < tmpArr.length; j++) {
@@ -193,7 +191,7 @@
 							tmpStr += '<td align="center" style="background-color:#E5E5FF;">' + tmpArr[4] + '</td>';
 							tmpStr += '<td align="center" style="background-color:#E5E5FF;">' + tmpArr[5] + '</td>';
 							tmpStr += '<td style="background-color:#E5E5FF;">&nbsp;</td><td style="background-color:#E5E5FF;">&nbsp;</td>';
-							$dm('#presc-drugs'+count).html(tmpStr);
+							jQuery('#presc-drugs'+count).html(tmpStr);
 							count++
 						}
 					}
@@ -203,34 +201,34 @@
 			if(count > 5) {
 				alert("More than 4 are not allowed");
 			} else {
-				$dm('#presc-drugs').html(tmpStr);
-				$dm('#dateId').html(date);
-				$dm("#ordonance-modal-content").dialog();
-				$dm("#ordonance-modal-content").css({'width':'100%', 'height':'405px'});
-				$dm("#createditdialog-container").css({'width':'650px', 'height':'500px'});
-				$dm("#createditdialog-container").css({'top':'120px'});
-				$dm("#createditdialog-container").css({'background-color':'#ffffff'});
+				jQuery('#presc-drugs').html(tmpStr);
+				jQuery('#dateId').html(date);
+				jQuery("#ordonance-modal-content").dialog();
+				jQuery("#ordonance-modal-content").css({'width':'100%', 'height':'405px'});
+				jQuery("#createditdialog-container").css({'width':'650px', 'height':'500px'});
+				jQuery("#createditdialog-container").css({'top':'120px'});
+				jQuery("#createditdialog-container").css({'background-color':'#ffffff'});
 			}
 		});
 		
-		$dm("#print_button").click(function() {
-			$dm(".printArea").printArea();
+		jQuery("#print_button").click(function() {
+			jQuery(".printArea").printArea();
 		});
 
 
-		$dm('#medSetId').change(function() {
-			var medSetId = $dm('#medSetId');
+		jQuery('#medSetId').change(function() {
+			var medSetId = jQuery('#medSetId');
 			var sb = '<option value="">--Concept--</option>';
 			$dm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/conceptdrug.htm?medSet=' + medSetId.val(), function(data) {				
 				for(var i in data) {
 					sb += '<option value="'+data[i].id+'">'+data[i].name+'</option>';
 				}
-				$dm("#drugConceptId").html(sb);
+				jQuery("#drugConceptId").html(sb);
 			});
 		});
 
-		$dm('#drugConceptId').change(function() {
-			var drugConceptId = $dm('#drugConceptId');
+		jQuery('#drugConceptId').change(function() {
+			var drugConceptId = jQuery('#drugConceptId');
 			var sb1 = '<option value="">--Concept--</option>';
 			var opt = '';
 			$dm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/conceptdrug.htm?drugConcept=' + drugConceptId.val(), function(data) {
@@ -246,20 +244,20 @@
 						}
 					}				
 				}
-				$dm('.not_in_store').css({'color':'red'});
-				$dm("#dname").html(sb1);
+				jQuery('.not_in_store').css({'color':'red'});
+				jQuery("#dname").html(sb1);
 			});
 		});
 		
-		$dm('#daysId').change(function() {
-			var qtyTakenAtOnce = $dm('#qtyTakenAtOnceId').val();
-			var timesPerDay = $dm('#timesPerDayId').val();
-			var days = $dm('#daysId').val();
+		jQuery('#daysId').change(function() {
+			var qtyTakenAtOnce = jQuery('#qtyTakenAtOnceId').val();
+			var timesPerDay = jQuery('#timesPerDayId').val();
+			var days = jQuery('#daysId').val();
 			var quantity = qtyTakenAtOnce * timesPerDay * days;
 			
-			$dm('#frequencyId').val(qtyTakenAtOnce + 'X' + timesPerDay + 'X' + days);
+			jQuery('#frequencyId').val(qtyTakenAtOnce + 'X' + timesPerDay + 'X' + days);
 			
-			$dm('#dquantity').val(quantity);
+			jQuery('#dquantity').val(quantity);
 		});
 		
 	});
