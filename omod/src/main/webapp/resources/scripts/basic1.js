@@ -23,7 +23,7 @@ jQuery(function ($) {
 		var index = this.id;
 		var suffix = index.substring(index.indexOf("_") + 1);
 		var varReason = document.getElementById("stopReasonId");
-		var reason = $dm('#discontinuedReason_'+suffix).text();
+		var reason = $('#discontinuedReason_'+suffix).text();
 		for ( var i = 0; i < varReason.options.length; i++) {
 			if (varReason.options[i].value == reason) {
 				varReason.selectedIndex = i;
@@ -36,8 +36,8 @@ jQuery(function ($) {
 	});
 	
 	$('#create').click(function(e) {
-		$dm('#edit-dialog-content').dialog();
-		$dm("#createditdialog-container").css({'width':'710px', 'height':'240px'});
+		$('#edit-dialog-content').dialog();
+		$("#createditdialog-container").css({'width':'710px', 'height':'240px'});
 		return false;
 	});
 	
@@ -63,7 +63,7 @@ jQuery(function ($) {
 	$(".delete").click(function(e) {
 		var deleteBtnId = this.id;
 		var orderId = deleteBtnId.substring(deleteBtnId.indexOf("_") + 1);
-		$dm('#orderToDelId').val(orderId);
+		$('#orderToDelId').val(orderId);
 		
 		$("#delete-modal-content").dialog();
 		$("#delete-modal-content").css({'width':'100%', 'height':'100%'});

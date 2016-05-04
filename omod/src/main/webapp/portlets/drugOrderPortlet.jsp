@@ -355,7 +355,7 @@
 			<td></td>
 			<td></td>			
 			<td>
-			<button id="create_disabled" class="send"><spring:message
+			<button id="create" class="send"><spring:message
 				code="pharmacymanagement.create" /></button>
 			</td>
 			<td></td>
