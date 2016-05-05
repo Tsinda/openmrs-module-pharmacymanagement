@@ -2,7 +2,9 @@ package org.openmrs.module.pharmacymanagement.phcymgt.web.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,10 +13,16 @@ import javax.servlet.http.HttpSession;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.OrderService;
@@ -76,6 +84,8 @@ public class DrugOrderPrescriptionController extends AbstractController {
 						.getParameter("drugs")));
 				String startDateStr = ServletRequestUtils.getStringParameter(
 						request, "startdate", null);
+				String stopDateStr = ServletRequestUtils.getStringParameter(
+						request, "stopdate", null);
 
 				OrderType orderType = orderService
 						.getOrderType(PharmacyConstants.DRUG_ORDER_TYPE);
@@ -92,30 +102,50 @@ public class DrugOrderPrescriptionController extends AbstractController {
 				drugOrder.setDateCreated(new Date());
 				drugOrder.setPatient(patient);
 				drugOrder.setDrug(drug);
-				//drugOrder.setDiscontinued(false);
 				drugOrder.setOrderer(Context.getService(MoHOrderEntryBridgeService.class).getFirstCurrentProvider());
-
+				drugOrder.setCareSetting(Context.getOrderService().getCareSettingByName("Inpatient"));//TODO how can i do this better instead of hard coding it to inpatient
+				
+				String drugRoute = request.getParameter("drugRoute");
+				String units = request.getParameter("units");
+				String frequency = request.getParameter("frequency");
+				Concept route = Context.getConceptService().getConceptByUuid(drugRoute);
+				Concept doseUnit = Context.getConceptService().getConceptByUuid(units);
+				OrderFrequency freq = Context.getOrderService().getOrderFrequencyByUuid(frequency);
+				
+				drugOrder.setRoute(route );
+				drugOrder.setFrequency(freq );
+				drugOrder.setDoseUnits(doseUnit );
+				drugOrder.setDose(Double.parseDouble(request.getParameter("dose")));
+				drugOrder.setEncounter(setDrugOrderEncounterAndOrdererAndSaveDrugOrder(patient, drugOrder, sdf.parse(startDateStr), Context.getEncounterService().getEncounterType(2)));//encounter type hard codede to adult return
+				drugOrder.setQuantityUnits(Context.getConceptService().getConceptByUuid(request.getParameter("quantityUnits")));
+				
 				if (request.getParameter("dose") != null
 						&& !request.getParameter("dose").equals(""))
 					drugOrder.setDose(Double.valueOf(request
 							.getParameter("dose")));
-				//TODO > drugOrder.setFrequency(request.getParameter("frequency"));
-				//TODO > drugOrder.setUnits(request.getParameter("units"));
 				if (request.getParameter("quantity") != null
 						&& !request.getParameter("quantity").equals(""))
 					drugOrder.setQuantity(Double.valueOf(request
 							.getParameter("quantity")));
 				if (!startDateStr.equals("") && startDateStr != null) {
 					Date startDate = null;
+					Date stopDate = null;
 					try {
 						startDate = sdf.parse(startDateStr);
+						if(stopDateStr.equals("") && stopDateStr != null)
+						stopDate = sdf.parse(stopDateStr);
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
 					drugOrder.setDateActivated(startDate);
+					drugOrder.setAutoExpireDate(stopDate);
 
-					orderService.saveOrder(drugOrder, null);
-
+					try {
+						orderService.saveOrder(drugOrder, null);
+					} catch (APIException e) {
+						request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+					}
+					
 					/*
 					 * To be uncommented whenever the commented lines are
 					 * validated
@@ -126,8 +156,8 @@ public class DrugOrderPrescriptionController extends AbstractController {
 					 * obsValue, 4); os.saveObs(o, null);
 					 */
 
-					mav.addObject("msg",
-							"An order has been created successfully!");
+					//mav.addObject("msg", "An order has been created successfully!");
+					request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "An order has been Created successfully!");
 				} else {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
 							"You need to enter the start date!");
@@ -174,22 +204,40 @@ public class DrugOrderPrescriptionController extends AbstractController {
 				drugOrder.setDateCreated(new Date());
 				drugOrder.setPatient(patient);
 				drugOrder.setDrug(drug);
-
+				drugOrder.setEncounter(setDrugOrderEncounterAndOrdererAndSaveDrugOrder(patient, drugOrder, sdf.parse(request.getParameter("startdate")), Context.getEncounterService().getEncounterType(2)));//encounter type hard codede to adult return
+				drugOrder.setOrderer(Context.getService(MoHOrderEntryBridgeService.class).getFirstCurrentProvider());
+				drugOrder.setCareSetting(Context.getOrderService().getCareSettingByName("Inpatient"));//TODO how can i do this better instead of hard coding it to inpatient
+				
+				String drugRoute = request.getParameter("drugRoute");
+				String units = request.getParameter("units");
+				String frequency = request.getParameter("frequency");
+				Concept route = Context.getConceptService().getConceptByUuid(drugRoute);
+				Concept doseUnit = Context.getConceptService().getConceptByUuid(units);
+				OrderFrequency freq = Context.getOrderService().getOrderFrequencyByUuid(frequency);
+				
+				drugOrder.setRoute(route );
+				drugOrder.setFrequency(freq );
+				drugOrder.setDoseUnits(doseUnit );
+				drugOrder.setDose(Double.parseDouble(request.getParameter("dose")));
+				drugOrder.setQuantityUnits(Context.getConceptService().getConceptByUuid(request.getParameter("quantityUnits")));
+				
 				if (request.getParameter("dose") != null
 						&& !request.getParameter("dose").equals(""))
 					drugOrder.setDose(Double.valueOf(request
 							.getParameter("dose")));
-
-				//TODO > drugOrder.setFrequency(request.getParameter("frequency"));
-				//TODO > drugOrder.setUnits(request.getParameter("units"));
-
+				
 				if (request.getParameter("quantity") != null
 						&& !request.getParameter("quantity").equals(""))
 					drugOrder.setQuantity(Double.valueOf(request
 							.getParameter("quantity")));
 
-				orderService.saveOrder(drugOrder, null);
-				mav.addObject("msg", "An order has been updated successfully!");
+				try {
+					orderService.saveOrder(drugOrder, null);
+				} catch (APIException e) {
+					request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+				}
+				//mav.addObject("msg", "An order has been updated successfully!");
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "An order has been Revised successfully!");
 			}
 		}
 
@@ -201,9 +249,13 @@ public class DrugOrderPrescriptionController extends AbstractController {
 			order.setVoided(true);
 			order.setVoidedBy(Context.getAuthenticatedUser());
 			order.setVoidReason(request.getParameter("deleteReason"));
-			orderService.saveOrder(order, null);
-			mav.addObject("msg", "An order has been deleted successfully!");
-
+			try {
+				orderService.saveOrder(order, null);
+			} catch (APIException e) {
+				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+			}
+			//mav.addObject("msg", "An order has been deleted successfully!");
+			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "An order has been deleted successfully!");
 		}
 
 		// Stopping an order
@@ -223,15 +275,61 @@ public class DrugOrderPrescriptionController extends AbstractController {
 
 				orderService.discontinueOrder(order, concept, date, Context.getService(MoHOrderEntryBridgeService.class).getFirstCurrentProvider(), order.getEncounter());//TODO must this be a new encounter
 				
-				orderService.saveOrder(order, null);
-				mav.addObject("msg", "An order has been stopped successfully!");
+				try {
+					orderService.saveOrder(order, null);
+				} catch (APIException e) {
+					request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+				}
+				//mav.addObject("msg", "An order has been stopped successfully!");
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "An order has been Stopped successfully!");
 			}
 		}
 
 		return new ModelAndView(new RedirectView(
 				"../../patientDashboard.form?patientId=" + patientId));
 	}
+	
+	private Encounter setDrugOrderEncounterAndOrdererAndSaveDrugOrder(Patient patient, DrugOrder drugOrder, Date startDate, EncounterType encounterType) {
+		Encounter enc = createEncounter(startDate, Context.getAuthenticatedUser(),
+				Context.getLocationService().getDefaultLocation(), patient, encounterType, new ArrayList<Obs>());
+		if(enc != null) {
+			Context.getEncounterService().saveEncounter(enc);
+		}
+		
+		return enc;
+	}
+	
+	private Encounter createEncounter(Date encounterDate, User provider,
+			Location location, Patient patient, EncounterType encounterType,
+			List<Obs> obsList) {
+		Encounter enc = new Encounter();
+		
+		if(encounterDate.after(new Date()))
+			encounterDate = new Date();
+		try {
+			enc.setDateCreated(new Date());
+			enc.setEncounterDatetime(encounterDate);
+			enc.setProvider(provider);
+			enc.setLocation(location);
+			enc.setPatient(patient);
+			enc.setEncounterType(encounterType);
 
+			for (Obs o : obsList) {
+				if (null != o)
+					enc.addObs(o);
+				else
+					System.out
+							.println("An observation has not been saved because it was null.");
+			}
+		} catch (Exception e) {
+			System.out
+					.println("An Error occured when trying to create an encounter :\n");
+			e.printStackTrace();
+			enc = null;
+		}
+		return enc;
+	}
+	
 	/**
 	 * Creates Pharmacy Waiting Appointment, and sets existing Consultation
 	 * waiting appointments as they are now no longer needed...

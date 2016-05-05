@@ -44,7 +44,7 @@
 	<properties>
 		<openMRSVersion>1.11.5</openMRSVersion>
 		<mohappointmentVersion>0.2</mohappointmentVersion>
-		<mohorderentrybridgeVersion>1.0-beta</mohorderentrybridgeVersion>
+		<mohorderentrybridgeVersion>1.0.1</mohorderentrybridgeVersion>
 	</properties>
 
 	<build>

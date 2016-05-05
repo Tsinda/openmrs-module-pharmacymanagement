@@ -34,13 +34,7 @@
 		drName += '<c:out value="${ord.drugOrder.drug.name}"/>';
 	</c:forEach>
 	
-	//jQuery('#patientRegimen').hide();
-	//jQuery('#patientRegimenTab').hide();
-	/**
-	jQuery('#patientHeaderRegimen').html(drName); **/
-	
 	jQuery(document).ready( function() {
-		//jQuery(".dialogCloseImg").trigger("click");
 		jQuery('.searchBox').hide();
 		oTable = jQuery('#example_do').dataTable({
 			"fnDrawCallback": function ( oSettings ) {
@@ -136,7 +130,7 @@
 			jQuery("#editingcreating").attr("value", "create");
 			var item = '';
 			jQuery('#dname').change(function() {
-				$dm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/drugSolde.htm?drugId='+jQuery("#dname").val(), function(data) {
+				jQuery.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/drugSolde.htm?drugId='+jQuery("#dname").val(), function(data) {
 					if(data[0].solde == 0) {
 						item = 'No Such drug in store';
 						jQuery('#soldeId').html(item).css('color','red');
@@ -203,10 +197,10 @@
 			} else {
 				jQuery('#presc-drugs').html(tmpStr);
 				jQuery('#dateId').html(date);
-				jQuery("#ordonance-modal-content").dialog();
-				jQuery("#ordonance-modal-content").css({'width':'100%', 'height':'405px'});
-				jQuery("#createditdialog-container").css({'width':'650px', 'height':'500px'});
-				jQuery("#createditdialog-container").css({'top':'120px'});
+				jQuery("#ordonance-modal-content").dialog({'width':'70%'});
+				//jQuery("#ordonance-modal-content").css({'width':'100%', 'height':'405px'});
+				//jQuery("#createditdialog-container").css({'width':'650px', 'height':'500px'});
+				//jQuery("#createditdialog-container").css({'top':'120px'});
 				jQuery("#createditdialog-container").css({'background-color':'#ffffff'});
 			}
 		});
@@ -219,7 +213,7 @@
 		jQuery('#medSetId').change(function() {
 			var medSetId = jQuery('#medSetId');
 			var sb = '<option value="">--Concept--</option>';
-			$dm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/conceptdrug.htm?medSet=' + medSetId.val(), function(data) {				
+			jQuery.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/conceptdrug.htm?medSet=' + medSetId.val(), function(data) {				
 				for(var i in data) {
 					sb += '<option value="'+data[i].id+'">'+data[i].name+'</option>';
 				}
@@ -231,7 +225,7 @@
 			var drugConceptId = jQuery('#drugConceptId');
 			var sb1 = '<option value="">--Concept--</option>';
 			var opt = '';
-			$dm.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/conceptdrug.htm?drugConcept=' + drugConceptId.val(), function(data) {
+			jQuery.getJSON('${pageContext.request.contextPath}/module/pharmacymanagement/conceptdrug.htm?drugConcept=' + drugConceptId.val(), function(data) {
 				for(var i in data) {
 					opt = '<span class="" ><option value="'+data[i].id+'">'+data[i].name+'</option></span>';
 					for(var j in drugsId) {
@@ -281,9 +275,8 @@
 			<th><spring:message code="@MODULE_ID@.startDate" /></th>
 			<th><spring:message code="@MODULE_ID@.stopDate" /></th>
 			<th><spring:message code="Stopped Reason" /></th>
-			<th><spring:message code="@MODULE_ID@.edit" /></th>
+			<th><spring:message code="Revise/Clone" /></th>
 			<th><spring:message code="@MODULE_ID@.stop" /></th>
-			<th><spring:message code="Delete" /></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -341,7 +334,6 @@
 						</c:otherwise>
 					</c:choose>
 				</td>
-				<td><img id="delete_${do.drugOrder.orderId}" class="delete_disabled" src="${pageContext.request.contextPath}/images/delete.gif" style="cursor: pointer;" title="Delete" /></td>
 			</tr>
 			</c:forEach>
 		</c:forEach>
@@ -391,36 +383,61 @@
 	<tr>
 		<td><spring:message code="pharmacymanagement.frequency" /></td>
 		<td>
-			<select name="qtyTakenAtOnce" id="qtyTakenAtOnceId">
-				<option value="">---</option>
-				<c:forEach var="i" begin="1" end="4">
-				  <option value="${i}"><c:out value="${i}"/></option>
-				</c:forEach>
-			</select> X
-			
-			<select name="timesPerDay" id="timesPerDayId">
-				<option value="">---</option>
-				<c:forEach var="i" begin="1" end="5">
-				  <option value="${i}"><c:out value="${i}"/>/Day</option>
-				</c:forEach>
-			</select> X
-			
-			<select name="days" id="daysId">
-				<option value="">---</option>
-				<option value="1">1 Day</option>
-				<c:forEach var="i" begin="2" end="30">
-				  <option value="${i}"><c:out value="${i}"/> Days</option>
+			<select name="frequency" id="dfrequency">
+				<c:forEach items="${model.orderFrequencies}" var="dFreq">
+					<option value="${dFreq.orderFrequency.uuid}">${dFreq.name}</option>
 				</c:forEach>
 			</select>
-		<input id="frequencyId" type="hidden" name="frequency" /><input id="dquantity" type="hidden" name="quantity" size="5"/></td>
-	</tr>
-	
+		</td>
 	<tr>
 		<td><spring:message code="pharmacymanagement.startDate" /></td>
 		<td><input id="dstartDate" type="text" name="startdate" onfocus="showCalendar(this)" onchange="CompareDates('<openmrs:datePattern />', 'dstartDate');" class="date" size="11" />(dd/mm/yyyy)
 		<span id="msgId" style="width"></span></td>
 	</tr>
-	
+	<tr>
+		<td>Stop Date</td>
+		<td><input id="ddiscontinuedDate" type="text" name="stopdate"
+			onfocus="showCalendar(this)" class="date" size="11"
+			readonly="readonly" /> (dd/mm/yyyy)</td>
+	</tr>
+	<tr>
+		<td><spring:message code="Dose" /></td>
+		<td><input id="ddose" type="text" name="dose" size="5" /></td>
+	</tr>
+	<tr>
+		<td><spring:message code="Quantity" /></td>
+		<td><input id="dquantity" type="text" name="quantity" /></td>
+	</tr>
+	<tr>
+		<td>Dose Units</td>
+		<td>
+			<select name="units" id="dunits">
+				<c:forEach items="${model.doseUnits}" var="dose">
+					<option value="${dose.concept.uuid}">${dose.name}</option>
+				</c:forEach>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="Quantity Units" /></td>
+		<td>
+			<select name="quantityUnits" id="dquantityunits">
+				<c:forEach items="${model.quantityUnits}" var="dQtyU">
+					<option value="${dQtyU.concept.uuid}">${dQtyU.name}</option>
+				</c:forEach>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Drug Route</td>
+		<td>
+			<select name="drugRoute" id="dRoute">
+				<c:forEach items="${model.drugRoutes}" var="dRoute">
+					<option value="${dRoute.concept.uuid}">${dRoute.name}</option>
+				</c:forEach>
+			</select>
+		</td>
+	</tr>
 	<tr>
 		<td valign="top"><spring:message code="@MODULE_ID@.instructions" /></td>
 		<td><textarea name="instructions" cols="50" rows="4"

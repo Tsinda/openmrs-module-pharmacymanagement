@@ -23,7 +23,9 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.mohorderentrybridge.MoHConcept;
 import org.openmrs.module.mohorderentrybridge.MoHDrugOrder;
+import org.openmrs.module.mohorderentrybridge.MoHOrderFrequency;
 import org.openmrs.module.mohorderentrybridge.api.MoHOrderEntryBridgeService;
 import org.openmrs.module.pharmacymanagement.PharmacyConstants;
 import org.openmrs.module.pharmacymanagement.utils.Utils;
@@ -111,7 +113,10 @@ public class DrugOrderPortletController extends PortletController {
 //		}		
 //		System.out.println("The loop A End: ********************* " + new Date());
 		
-		
+		List<MoHOrderFrequency> orderFrequencies = Context.getService(MoHOrderEntryBridgeService.class).getMoHOrderFrequencies(false);//exclude retired
+		List<MoHConcept> doseUnits = Context.getService(MoHOrderEntryBridgeService.class).convertConceptsListToMoHConceptsList(Context.getOrderService().getDrugDosingUnits());
+		List<MoHConcept> quantityUnits = Context.getService(MoHOrderEntryBridgeService.class).convertConceptsListToMoHConceptsList(Context.getOrderService().getDrugDispensingUnits());
+		List<MoHConcept> drugRoutes = Context.getService(MoHOrderEntryBridgeService.class).convertConceptsListToMoHConceptsList(Context.getOrderService().getDrugRoutes());
 		Map<Date, List<MoHDrugOrder>> map = new HashMap<Date, List<MoHDrugOrder>>();		
 		
 		Date dat1 = null;
@@ -143,8 +148,13 @@ public class DrugOrderPortletController extends PortletController {
 		model.put("timesAday", possibleFrequency[1]);
 		model.put("days", possibleFrequency[2]);
 		model.put("insuranceType", insuranceType);
+		model.put("orderFrequencies", orderFrequencies);
+		model.put("doseUnits", doseUnits);
+		model.put("quantityUnits", quantityUnits);
+		model.put("drugRoutes", drugRoutes);
 		model.put("insuranceNumber", insuranceNumber);
 		super.populateModel(request, model);
+		
 	}
 	
 }
